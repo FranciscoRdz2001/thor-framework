@@ -1,0 +1,14 @@
+{
+  "landing": {
+    "color-contrast": "the landing's own palette (its orange primary on light surfaces)"
+  },
+  "realworld-home": {
+    "color-contrast": "the RealWorld Conduit theme, kept as in the spec"
+  },
+  "realworld-article": {
+    "color-contrast": "the RealWorld Conduit theme, kept as in the spec"
+  },
+  "realworld-login": {
+    "color-contrast": "the RealWorld Conduit theme, kept as in the spec"
+  }
+}

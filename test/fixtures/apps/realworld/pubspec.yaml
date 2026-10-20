@@ -1,0 +1,25 @@
+name: realworld
+description: RealWorld (Conduit), the reference blogging app, rebuilt with thor. Typed routes (ThorRouter), server data, sessions, form actions (post/redirect/get) and a progressively enhanced tag editor.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  html: ^0.15.4
+  markdown: ^7.3.0
+  thor_engine:
+    path: ../../../../packages/thor_engine
+  thor_server:
+    path: ../../../../packages/thor_server
+  thor_ui:
+    path: ../../../../packages/thor_ui
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  test: ^1.25.0
+  thor_builder:
+    path: ../../../../packages/thor_builder
+  thor_test:
+    path: ../../../../packages/thor_test

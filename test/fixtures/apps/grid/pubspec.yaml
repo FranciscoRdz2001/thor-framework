@@ -1,0 +1,23 @@
+name: grid
+description: A data grid on one page — sorting, filtering, grouping, inline editing, row selection and a details drawer over 2,000 seeded records.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  thor_engine:
+    path: ../../../../packages/thor_engine
+  thor_server:
+    path: ../../../../packages/thor_server
+  thor_ui:
+    path: ../../../../packages/thor_ui
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  test: ^1.25.0
+  thor_builder:
+    path: ../../../../packages/thor_builder
+  thor_test:
+    path: ../../../../packages/thor_test

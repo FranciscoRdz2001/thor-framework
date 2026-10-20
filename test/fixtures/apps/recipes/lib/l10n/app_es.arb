@@ -1,0 +1,12 @@
+{
+  "@@locale": "es",
+  "recipes": "Recetas",
+  "@recipes": {"description": "Name of the app, in the bar and the page titles."},
+  "homeTitle": "Recetas de thor",
+  "homeMeta": "Inicio",
+  "homeDescription": "Pantallas comunes escritas como se escriben en thor. Cada una es un archivo en lib/routes/ y tiene su test.",
+  "homeHint": "Usa el menú para verlas.",
+  "menu": "Menú",
+  "navigation": "Navegación",
+  "language": "Idioma"
+}

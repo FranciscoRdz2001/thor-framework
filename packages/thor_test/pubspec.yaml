@@ -1,0 +1,31 @@
+name: thor_test
+description: "Test tooling for thor apps, like flutter_test for Flutter: the HTTP test client (handler.client()), its matchers and the render helpers. A dev dependency."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_test
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - testing
+  - web
+  - flutter
+  - http
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  # Ranges, not pins: a hybrid app that also uses flutter_test pins matcher
+  # (flutter_test: matcher 0.12.20) and both must resolve together.
+  html: ^0.15.5
+  matcher: ^0.12.16
+  test_api: '>=0.7.0 <1.0.0'
+  thor_engine:
+    path: ../thor_engine
+  thor_server:
+    path: ../thor_server
+  thor_ui:
+    path: ../thor_ui
+
+dev_dependencies:
+  test: ^1.25.0

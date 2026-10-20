@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <style>@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;</style>
+    <style>@layer thor.reset {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}</style>
+    <title>Animaciones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t-animations-page{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; justify-content: center}.t-animations-page__column{min-width: 0; flex: 0 1 auto; max-width: 520px; align-self: center; box-sizing: border-box; width: 100%; display: flex; flex-direction: column; min-height: 0; align-items: stretch; gap: 20px; padding: 16px}.t-animations-page__text{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 28px; font-weight: 800; flex: 0 0 auto; translate: 0% 30%; animation: ta107ibmg 500ms linear 0s 1 normal both}.t-_section{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; gap: 8px; padding: 16px; background-color: #ffffff; border-radius: 16px; box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.102)}.t-_section__text{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 18px; font-weight: 700}.t-_section__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; color: #5b6170; font-size: 14px}.t-_section__sized-box{flex: 0 0 auto; height: 4px}.t-_pulse{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; width: 16px; height: 16px; background-color: #22c55e; border-radius: 50%; opacity: 0.35; animation: ta1rc61md 900ms linear 0s infinite alternate both}.t-_section__column{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: flex-start; gap: 12px}.t-_section__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px}.t-_section__filled-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 24px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: var(--t-primary, #6750a4); color: var(--t-on-primary, #ffffff); overflow-wrap: anywhere}.t-_section__outlined-button{appearance: none; border: 1px solid var(--t-outline, #79747e); margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 9px 23px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-_section__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-_section__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; color: #5b6170; font-size: 14px; white-space: pre-wrap}.t-_section__decorated-box{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; background-color: #eef2ff; border-radius: 12px; opacity: 0; scale: 0.92; transform-origin: 0% 0%}.t-_section__text-4{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0; padding: 16px}.t-_section__row-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 16px}.t-_section__container{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; width: 40px; height: 40px; background-color: #4361ee; border-radius: 10px; rotate: 0turn}.t-_section__text-5{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 32px; scale: 1}.t-_section__container-2{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; width: 40px; height: 40px; background-color: #f59e0b; border-radius: 8px; transform: none; transform-origin: 50% 50%; transition-property: width, height, min-width, min-height, max-width, max-height, padding, margin, background-color, border-radius, border-color, border-width, box-shadow, transform; transition-duration: 400ms; transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1)}.t-_section__container-3{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; width: 40px; height: 40px; background-color: #f59e0b; border-radius: 8px; transform: matrix(0.8253, 0.5646, -0.5646, 0.8253, 19.8081, 13.5514); transform-origin: 50% 50%; transition-property: width, height, min-width, min-height, max-width, max-height, padding, margin, background-color, border-radius, border-color, border-width, box-shadow, transform; transition-duration: 400ms; transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1)}.t-_section__container-4{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; width: 40px; height: 40px; background-color: #4361ee; border-radius: 8px; transition-property: all; transition-duration: 400ms; transition-timing-function: linear; transform: translate(0px, 0px)}.t-_section__container-5{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; width: 40px; height: 40px; background-color: #4361ee; border-radius: 8px; transition-property: all; transition-duration: 400ms; transition-timing-function: linear; opacity: 0.3; transform: translate(0px, -12px)}.t-_section__text-6{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; transition-property: color, font-size, font-weight, line-height, letter-spacing, word-spacing; transition-duration: 400ms; transition-timing-function: linear; font-size: 16px; font-weight: 300; letter-spacing: 0px; line-height: 1}.t-_section__text-7{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; transition-property: color, font-size, font-weight, line-height, letter-spacing, word-spacing; transition-duration: 400ms; transition-timing-function: linear; font-size: 16px; font-weight: 800; letter-spacing: 4px; line-height: 2}@media (prefers-reduced-motion: reduce){.t-animations-page__text{animation-duration: 1ms; animation-delay: -1ms; animation-iteration-count: 1}.t-_pulse{animation-duration: 1ms; animation-delay: -1ms; animation-iteration-count: 1}.t-_section__container-2{transition-duration: 1ms}.t-_section__container-3{transition-duration: 1ms}.t-_section__container-4{transition-duration: 1ms}.t-_section__container-5{transition-duration: 1ms}.t-_section__text-6{transition-duration: 1ms}.t-_section__text-7{transition-duration: 1ms}}@media (hover: hover){.t-_section__filled-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 92%, var(--t-on-primary, #ffffff)); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3)}.t-_section__outlined-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-_section__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}}.t-_section__filled-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-on-primary, #ffffff) 10%, var(--t-primary, #6750a4))}.t-_section__filled-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-_section__filled-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-_section__outlined-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-_section__outlined-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-_section__outlined-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-_section__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-_section__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-_section__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}@media (prefers-reduced-motion: reduce){.t-_section__filled-button{transition-duration: 1ms}.t-_section__outlined-button{transition-duration: 1ms}.t-_section__text-button{transition-duration: 1ms}}}@keyframes ta107ibmg{0%{translate:0% 30%;animation-timing-function:cubic-bezier(0.215, 0.61, 0.355, 1)}100%{translate:0% 0%}}@keyframes ta1rc61md{0%{opacity:0.35}100%{opacity:1}}</style>
+    <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"[data-no-prefetch],[rel~=nofollow],[download],[target]:not([target=_self])"}}]},"eagerness":"moderate"}]}</script>
+    <script data-thor-prefetch="/_thor/prefetch.5yhk6q.js">(()=>{var d=document,u=d.currentScript.getAttribute("data-thor-prefetch");HTMLScriptElement.supports&&HTMLScriptElement.supports("speculationrules")||addEventListener("load",()=>{var s=d.createElement("script");s.src=u;d.head.append(s)})})()</script>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="/engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="/engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <div class="t-animations-page" data-thor="Center">
+      <main class="t-animations-page__column" data-thor="Column">
+        <h1 class="t-animations-page__text" data-thor="Text">Animaciones</h1>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Un bucle sin JavaScript</span>
+          <span class="t-_section__text-2" data-thor="Text">repeat(reverse: true) al pintar: una animación de CSS.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_pulse" data-thor="Container"></div>
+        </div>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Un panel que aparece</span>
+          <span class="t-_section__text-2" data-thor="Text">AnimationController en un ThorState: forward, reverse, toggle.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_section__column" data-thor="Column">
+            <div class="t-_section__row" data-thor="Row">
+              <button class="t-_section__filled-button" type="button" data-t-on="click:MotionState.show" data-thor="FilledButton">Mostrar</button>
+              <button class="t-_section__outlined-button" type="button" data-t-on="click:MotionState.hide" data-thor="OutlinedButton">Ocultar</button>
+              <button class="t-_section__text-button" type="button" data-t-on="click:MotionState.toggle" data-thor="TextButton">Alternar</button>
+              <button class="t-_section__outlined-button" type="button" data-t-on="click:MotionState.half" data-thor="OutlinedButton">A la mitad</button>
+              <button class="t-_section__outlined-button" type="button" data-t-on="click:MotionState.quarter" data-thor="OutlinedButton">Bajar a un cuarto</button>
+              <button class="t-_section__outlined-button" type="button" data-t-on="click:MotionState.flingUp" data-thor="OutlinedButton">Lanzar</button>
+            </div>
+            <span class="t-_section__text-3" data-tt="MotionState.revealLabel" data-thor="Text">Oculto</span>
+            <div class="t-_section__decorated-box" data-ta="[{&quot;c&quot;:&quot;MotionState.reveal&quot;,&quot;k&quot;:[{&quot;offset&quot;:0.0,&quot;opacity&quot;:&quot;0&quot;},{&quot;offset&quot;:1.0,&quot;opacity&quot;:&quot;1&quot;}]},{&quot;c&quot;:&quot;MotionState.reveal&quot;,&quot;k&quot;:[{&quot;offset&quot;:0.0,&quot;scale&quot;:&quot;0.92&quot;,&quot;easing&quot;:&quot;cubic-bezier(0.175, 0.885, 0.32, 1.275)&quot;},{&quot;offset&quot;:1.0,&quot;scale&quot;:&quot;1&quot;}],&quot;r&quot;:[{&quot;offset&quot;:0.0,&quot;scale&quot;:&quot;0.92&quot;,&quot;easing&quot;:&quot;cubic-bezier(0.42, 0, 1, 1)&quot;},{&quot;offset&quot;:1.0,&quot;scale&quot;:&quot;1&quot;}]},{&quot;c&quot;:&quot;MotionState.reveal&quot;,&quot;k&quot;:[{&quot;offset&quot;:0.0,&quot;backgroundColor&quot;:&quot;#eef2ff&quot;},{&quot;offset&quot;:1.0,&quot;backgroundColor&quot;:&quot;#c7d2fe&quot;}]},{&quot;c&quot;:&quot;MotionState.reveal&quot;,&quot;k&quot;:[{&quot;offset&quot;:0.0,&quot;borderRadius&quot;:&quot;12px&quot;},{&quot;offset&quot;:1.0,&quot;borderRadius&quot;:&quot;24px&quot;}]}]" data-thor="DecoratedBox"><span class="t-_section__text-4" data-thor="Text">Hola: sé aparecer y ocultarme.</span></div>
+          </div>
+        </div>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Girar hasta que lo detengas</span>
+          <span class="t-_section__text-2" data-thor="Text">repeat() y stop() desde métodos del estado.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_section__row-2" data-thor="Row">
+            <div class="t-_section__container" data-ta="[{&quot;c&quot;:&quot;MotionState.spin&quot;,&quot;k&quot;:[{&quot;offset&quot;:0.0,&quot;rotate&quot;:&quot;0turn&quot;},{&quot;offset&quot;:1.0,&quot;rotate&quot;:&quot;1turn&quot;}]}]" data-thor="Container"></div>
+            <button class="t-_section__outlined-button" type="button" data-t-on="click:MotionState.rock" data-thor="OutlinedButton">Mecer</button>
+            <button class="t-_section__filled-button" data-tv="MotionState.isSpinning" type="button" data-t-on="click:MotionState.startSpin" data-thor="FilledButton" data-tp-1="|data-t-on|=click:MotionState.stopSpin;|#|=Detener">Girar</button>
+          </div>
+        </div>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Un latido</span>
+          <span class="t-_section__text-2" data-thor="Text">TweenSequence: sube rápido y baja con curva.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_section__row-2" data-thor="Row">
+            <span class="t-_section__text-5" data-ta="[{&quot;c&quot;:&quot;MotionState.beat&quot;,&quot;k&quot;:[{&quot;offset&quot;:0.0,&quot;scale&quot;:&quot;1&quot;},{&quot;offset&quot;:0.25,&quot;scale&quot;:&quot;1.3&quot;,&quot;easing&quot;:&quot;linear(0, 0.223, 0.5, 0.772, 1, 1.161, 1.25, 1.275, 1.25, 1.194, 1.125, 1.057, 1, 0.96, 0.938, 0.931, 0.938, 0.951, 0.969, 0.986, 1, 1.01, 1.016, 1.017, 1.016, 1.012, 1.008, 1.004, 1, 0.997, 0.996, 0.996, 0.996, 0.997, 0.998, 0.999, 1, 1.001, 1.001, 1.001, 1)&quot;},{&quot;offset&quot;:1.0,&quot;scale&quot;:&quot;1&quot;}]}]" data-thor="Text">❤</span>
+            <button class="t-_section__outlined-button" type="button" data-t-on="click:MotionState.pulse" data-thor="OutlinedButton">Latir</button>
+          </div>
+        </div>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Una transformación</span>
+          <span class="t-_section__text-2" data-thor="Text">AnimatedContainer(transform:) transiciona la matriz.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_section__row-2" data-thor="Row">
+            <div class="t-_section__container-2" data-tv="ImplicitState.isTilted" data-thor="Container" data-tp-1="|class|=t-_section__container-3"></div>
+            <button class="t-_section__outlined-button" type="button" data-t-on="click:ImplicitState.toggleTilt" data-thor="OutlinedButton">Inclinar</button>
+          </div>
+        </div>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Un valor interpolado</span>
+          <span class="t-_section__text-2" data-thor="Text">TweenAnimationBuilder: el elemento transiciona entre los valores del objetivo.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_section__row-2" data-thor="Row">
+            <div class="t-_section__container-4" data-tv="ImplicitState.isLifted" data-thor="Container" data-tp-1="|class|=t-_section__container-5"></div>
+            <button class="t-_section__outlined-button" type="button" data-t-on="click:ImplicitState.toggleLift" data-thor="OutlinedButton">Subir</button>
+          </div>
+        </div>
+        <div class="t-_section" data-thor="Column">
+          <span class="t-_section__text" data-thor="Text">Un estilo de texto</span>
+          <span class="t-_section__text-2" data-thor="Text">AnimatedDefaultTextStyle: peso, interlineado y espaciado.</span>
+          <div class="t-_section__sized-box" data-thor="SizedBox"></div>
+          <div class="t-_section__row-2" data-thor="Row">
+            <span class="t-_section__text-6" data-tv="ImplicitState.isBold" data-thor="Text" data-tp-1="|class|=t-_section__text-7">Texto</span>
+            <button class="t-_section__outlined-button" type="button" data-t-on="click:ImplicitState.toggleBold" data-thor="OutlinedButton">Resaltar</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

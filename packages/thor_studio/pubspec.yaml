@@ -1,0 +1,34 @@
+name: thor_studio
+description: "thor's design system: tokens, a Material-style theme (light and dark), scaffold and navigation, docs content widgets and the example bench. No JavaScript."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_studio
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - design-system
+  - web
+  - flutter
+  - ui
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  thor_style:
+    path: ../thor_style
+  thor_ui:
+    path: ../thor_ui
+
+dev_dependencies:
+  test: ^1.25.0
+  thor_test:
+    path: ../thor_test
+
+# Published into the apps that use it by the thor command (`thor dev`,
+# `thor build`): fonts/ → the app's web/fonts/ (what StudioTheme loads),
+# scripts/ → web/scripts/ (the code blocks' copy button).
+thor:
+  public:
+    fonts: fonts
+    scripts: scripts

@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      # The site's messages (lib/l10n/*.arb): Spanish is the template; a new
+      # language is one more ARB file next to it.
+      thor_builder:thor_l10n:
+        options:
+          template_arb_file: app_es.arb

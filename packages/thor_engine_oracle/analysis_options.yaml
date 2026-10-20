@@ -1,0 +1,7 @@
+# The oracle is thor_engine's internal twin: it reaches into
+# thor_engine's `lib/src` on purpose (the same signals, states and protocol).
+include: ../../analysis_options.yaml
+
+linter:
+  rules:
+    implementation_imports: false

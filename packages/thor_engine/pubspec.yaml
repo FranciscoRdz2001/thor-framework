@@ -1,0 +1,21 @@
+name: thor_engine
+description: "Minimal reactive client engine for thor: signals, declared bindings and a hydration runtime that attaches to server-rendered HTML without building a component tree."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_engine
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - web
+  - signals
+  - reactive
+  - ssr
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  html: ^0.15.5
+
+dev_dependencies:
+  test: ^1.25.0

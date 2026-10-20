@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <style>@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;</style>
+    <style>@layer thor.reset {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}</style>
+    <title>Controladores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t-controls-page{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; justify-content: center}.t-controls-page__column{min-width: 0; flex: 0 1 auto; max-width: 520px; align-self: center; box-sizing: border-box; width: 100%; display: flex; flex-direction: column; min-height: 0; align-items: stretch; gap: 24px; padding: 16px}.t-controls-page__column-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: flex-start; gap: 12px}.t-controls-page__text{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 18px; font-weight: 700; flex: 0 0 auto}.t-controls-page__column-3{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: flex-start; height: 120px; overflow: auto}.t-controls-page__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; padding: 4px 0px}.t-controls-page__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; white-space: pre-wrap}.t-controls-page__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px}.t-controls-page__outlined-button{appearance: none; border: 1px solid var(--t-outline, #79747e); margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 9px 23px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-controls-page__text-field{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; gap: 4px}.t-controls-page__text-4{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 14px; line-height: 20px; font-weight: 500; padding: 0 4px}.t-controls-page__text-field-2{flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; box-sizing: border-box; min-width: 0; box-shadow: inset 0 -1px 0 0 var(--t-on-surface-variant, #49454f), var(--t-field-ring, 0 0 #0000); transition-property: box-shadow; transition-duration: 150ms}.t-controls-page__text-field-2:focus-within{box-shadow: inset 0 -2px 0 0 var(--t-primary, #6750a4), var(--t-field-ring, 0 0 #0000)}.t-controls-page__text-field-2:has(input[aria-invalid="true"]){box-shadow: inset 0 0 0 2px var(--t-error, #b3261e), var(--t-field-ring, 0 0 #0000)}.t-controls-page__input{flex: 1 1 0; min-width: 0; border: 0; outline: 0; margin: 0; background: transparent; font: inherit; color: inherit; box-sizing: border-box; padding: 16px 12px}.t-controls-page__input::placeholder{color: color-mix(in srgb, currentColor 60%, transparent); opacity: 1}.t-controls-page__wrap{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; flex-wrap: wrap; align-items: flex-start; column-gap: 8px; row-gap: 8px}:root:has(dialog:modal){overflow: hidden; scrollbar-gutter: stable; overscroll-behavior: none}.t-controls-page__alert-dialog{flex: 0 0 auto; box-sizing: border-box; min-width: 280px; max-width: min(560px, calc(100vw - 48px)); padding: 24px; border: 0; border-radius: 28px; background-color: var(--t-surface-container-high, #ece6f0); color: var(--t-on-surface, #1d1b20); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); overscroll-behavior: contain}.t-controls-page__alert-dialog::backdrop{background-color: rgba(0, 0, 0, 0.32)}.t-controls-page__alert-dialog[open]{display: flex; flex-direction: column; gap: 16px}.t-controls-page__text-5{margin: 0; min-width: 0; overflow-wrap: break-word; font-weight: inherit; font-size: var(--t-headline-small-size, 24px); letter-spacing: var(--t-headline-small-tracking, normal); line-height: var(--t-headline-small-line, 32px); flex: 0 0 auto}.t-controls-page__text-6{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: var(--t-body-medium-size, 14px); letter-spacing: var(--t-body-medium-tracking, normal); line-height: var(--t-body-medium-line, 20px); color: var(--t-on-surface-variant, #49454f); flex: 0 0 auto; white-space: pre-wrap}.t-controls-page__div{flex: 0 0 auto; display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px}.t-controls-page__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-controls-page__text-7{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto}@media (hover: hover){.t-controls-page__outlined-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-controls-page__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}}.t-controls-page__outlined-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-controls-page__outlined-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-controls-page__outlined-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-controls-page__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-controls-page__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-controls-page__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}@media (prefers-reduced-motion: reduce){.t-controls-page__outlined-button{transition-duration: 1ms}.t-controls-page__text-button{transition-duration: 1ms}}}</style>
+    <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"[data-no-prefetch],[rel~=nofollow],[download],[target]:not([target=_self])"}}]},"eagerness":"moderate"}]}</script>
+    <script data-thor-prefetch="/_thor/prefetch.5yhk6q.js">(()=>{var d=document,u=d.currentScript.getAttribute("data-thor-prefetch");HTMLScriptElement.supports&&HTMLScriptElement.supports("speculationrules")||addEventListener("load",()=>{var s=d.createElement("script");s.src=u;d.head.append(s)})})()</script>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="/engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="/engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <div class="t-controls-page" data-thor="Center">
+      <main class="t-controls-page__column" data-thor="Column">
+        <div class="t-controls-page__column-2" data-thor="Column">
+          <h2 class="t-controls-page__text" data-thor="Text">Desplazamiento</h2>
+          <div class="t-controls-page__column-3" tabindex="0" data-tsc="ControlsState.feed" data-thor="Column">
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 1</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 2</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 3</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 4</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 5</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 6</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 7</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 8</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 9</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 10</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 11</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 12</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 13</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 14</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 15</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 16</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 17</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 18</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 19</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 20</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 21</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 22</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 23</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 24</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 25</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 26</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 27</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 28</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 29</span>
+            <span class="t-controls-page__text-2" data-thor="Text">Fila 30</span>
+          </div>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.scrollLabel" data-thor="Text">Desplazado: 0 de 0 px (ventana 0)</span>
+          <div class="t-controls-page__row" data-thor="Row">
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.toTop" data-thor="OutlinedButton">Arriba</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.toEnd" data-thor="OutlinedButton">Al final</button>
+          </div>
+        </div>
+        <div class="t-controls-page__column-2" data-thor="Column">
+          <h2 class="t-controls-page__text" data-thor="Text">Texto y foco</h2>
+          <div class="t-controls-page__text-field" data-thor="TextField">
+            <label class="t-controls-page__text-4" for="t-tf1" data-thor="Text">Nombre</label>
+            <div class="t-controls-page__text-field-2" data-thor="TextField">
+              <input id="t-tf1" class="t-controls-page__input" type="text" value="Ana" data-ttc="ControlsState.name" data-tfn="ControlsState.nameFocus"/>
+            </div>
+          </div>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.greeting" data-thor="Text">Hola, Ana (3)</span>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.focusLabel" data-thor="Text">Sin foco</span>
+          <div class="t-controls-page__wrap" data-thor="Wrap">
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.clearName" data-thor="OutlinedButton">Limpiar</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.setBea" data-thor="OutlinedButton">Poner Bea</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.focusName" data-thor="OutlinedButton">Enfocar</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.blurName" data-thor="OutlinedButton">Quitar foco</button>
+          </div>
+        </div>
+        <div class="t-controls-page__column-2" data-thor="Column">
+          <h2 class="t-controls-page__text" data-thor="Text">Hoja</h2>
+          <div class="t-controls-page__row" data-thor="Row">
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.openSheet" data-thor="OutlinedButton">Abrir desde el estado</button>
+            <button class="t-controls-page__outlined-button" commandfor="hoja" command="show-modal" type="button" data-thor="OutlinedButton">Abrir sin estado</button>
+          </div>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.sheetLabel" data-thor="Text">Hoja cerrada</span>
+          <dialog id="hoja" class="t-controls-page__alert-dialog" aria-labelledby="hoja-title" closedby="any" data-tdc="ControlsState.sheet" data-thor="AlertDialog">
+            <h2 class="t-controls-page__text-5" id="hoja-title" data-thor="Text">Hoja</h2>
+            <span class="t-controls-page__text-6" data-tt="ControlsState.sheetLabel" data-thor="Text">Hoja cerrada</span>
+            <div class="t-controls-page__div">
+              <button class="t-controls-page__text-button" type="button" data-t-on="click:ControlsState.closeSheet" data-thor="TextButton">Cerrar</button>
+            </div>
+          </dialog>
+        </div>
+        <div class="t-controls-page__column-2" data-thor="Column">
+          <h2 class="t-controls-page__text" data-thor="Text">Navegación</h2>
+          <span class="t-controls-page__text-7" data-tv="ControlsState.isCompact" data-thor="Text" data-tp-1="|#|=Vista compacta">Vista amplia</span>
+          <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.toggleCompact" data-thor="OutlinedButton">Cambiar vista</button>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.navNote" data-thor="Text">Sin navegar</span>
+          <div class="t-controls-page__row" data-thor="Row">
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.goNext" data-thor="OutlinedButton">Ir a la vista 2</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.tryUnsafe" data-thor="OutlinedButton">Probar javascript:</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.askBack" data-thor="OutlinedButton">¿Puedo volver?</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.goBack" data-thor="OutlinedButton">Volver</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.reloadPage" data-thor="OutlinedButton">Recargar</button>
+          </div>
+        </div>
+        <div class="t-controls-page__column-2" data-thor="Column">
+          <h2 class="t-controls-page__text" data-thor="Text">Tiempo</h2>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.elapsedLabel" data-thor="Text">0:00:00.000000 · 0 min · 0 s×1,5 · corto</span>
+          <span class="t-controls-page__text-3" data-tt="ControlsState.dateLabel" data-thor="Text">2026-09-25T08:30:00.000Z · 2026-09-25 08:30:00.000Z · día 5 · 0 h · 30 días en el mes · 2026-1-31 · TimeOfDay(08:30) · antes de octubre · 2026-09-01T08:30:00.000Z · inicio</span>
+          <span class="t-controls-page__text-7" data-tv="ControlsState.afternoon" data-thor="Text" data-tp-1="|#|=Por la tarde">Por la mañana</span>
+          <div class="t-controls-page__wrap" data-thor="Wrap">
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.addLap" data-thor="OutlinedButton">+95 s</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.addHour" data-thor="OutlinedButton">+1 h</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.back" data-thor="OutlinedButton">−200 s</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.nextDay" data-thor="OutlinedButton">+1 día</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.nextMonth" data-thor="OutlinedButton">+31 días</button>
+            <button class="t-controls-page__outlined-button" type="button" data-t-on="click:ControlsState.prevWeek" data-thor="OutlinedButton">−7 días</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

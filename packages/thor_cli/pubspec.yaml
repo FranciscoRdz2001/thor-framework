@@ -1,0 +1,35 @@
+name: thor_cli
+description: "The thor command: create an app, run it with everything rebuilt on change, add pages and states, build, export and preview."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_cli
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - cli
+  - web
+  - flutter
+  - ssr
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  args: ^2.5.0
+  path: ^1.9.0
+  thor_engine:
+    path: ../thor_engine
+  thor_server:
+    path: ../thor_server
+  thor_style:
+    path: ../thor_style
+  vm_service: ">=14.2.0 <16.0.0"
+  watcher: ^1.1.0
+  yaml: ^3.1.2
+
+dev_dependencies:
+  test: ^1.25.0
+  web: ^1.1.0
+
+executables:
+  thor: thor

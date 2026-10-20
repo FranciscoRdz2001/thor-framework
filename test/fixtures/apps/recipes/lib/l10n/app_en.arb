@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "recipes": "Recipes",
+  "homeTitle": "thor recipes",
+  "homeMeta": "Home",
+  "homeDescription": "Common screens written the way they are written in thor. Each one is a file in lib/routes/ and has its test.",
+  "homeHint": "Use the menu to see them.",
+  "menu": "Menu",
+  "navigation": "Navigation",
+  "language": "Language"
+}

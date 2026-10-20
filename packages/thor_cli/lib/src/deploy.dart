@@ -1,0 +1,546 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
+
+import 'errors.dart';
+import 'resources.dart';
+import 'run.dart' show ThorException;
+import 'workspace.dart';
+
+/// Where an app goes: a host `thor deploy init` writes the configuration
+/// for. It writes files; it never deploys.
+///
+/// A server app (`bin/server.dart`) runs as a container: `thor build`
+/// inside the image, then only the executable, `build/public`, the image
+/// manifest and the declared `build/resources` in an image with no shell ([docker], [fly], [railway],
+/// [render]). A static site (`build/site`) goes to a file host with the
+/// cache headers thor's hashed names need ([cloudflarePages], [vercel],
+/// [netlify]).
+enum DeployTarget {
+  /// A `Dockerfile` (multi-stage, final image from `scratch`), its
+  /// `.dockerignore` and the health check executable.
+  docker('docker', server: true),
+
+  /// [docker] plus `fly.toml`.
+  fly('fly', server: true),
+
+  /// [docker] plus `railway.json`.
+  railway('railway', server: true),
+
+  /// [docker] plus `render.yaml`.
+  render('render', server: true),
+
+  /// `wrangler.toml` and the site build script.
+  cloudflarePages('cloudflare-pages', server: false),
+
+  /// `vercel.json` and the site build script.
+  vercel('vercel', server: false),
+
+  /// `netlify.toml` and the site build script.
+  netlify('netlify', server: false);
+
+  const DeployTarget(this.id, {required this.server});
+
+  /// Its name on the command line.
+  final String id;
+
+  /// Runs the app's server (else: serves a static site).
+  final bool server;
+
+  /// The target named [id], or a [ThorException] (THOR-B017 for hosts
+  /// that can't run a Dart server, with what to use instead).
+  static DeployTarget parse(String id) {
+    for (final target in values) {
+      if (target.id == id) return target;
+    }
+    final serverless = _serverless[id];
+    if (serverless != null) {
+      throw ThorException(
+        thorError(
+          'THOR-B017',
+          '$id runs JavaScript functions, not a Dart server. $serverless',
+        ),
+      );
+    }
+    throw ThorException(
+      'No deploy target "$id". Targets: ${values.map((t) => t.id).join(', ')}.',
+    );
+  }
+}
+
+const _serverSuggestion =
+    'Run the server as a container (docker, fly, railway or render), or '
+    'export the app as a static site (cloudflare-pages, vercel, netlify).';
+
+const _serverless = {
+  'cloudflare-workers': _serverSuggestion,
+  'workers': _serverSuggestion,
+  'vercel-functions': _serverSuggestion,
+  'netlify-functions': _serverSuggestion,
+  'lambda': _serverSuggestion,
+  'aws-lambda': _serverSuggestion,
+};
+
+/// What `thor deploy init` writes: files by path relative to the project,
+/// and the steps to deploy them.
+class DeployPlan {
+  /// A plan.
+  const DeployPlan(this.files, this.steps);
+
+  /// Relative path → content.
+  final Map<String, String> files;
+
+  /// Commands and notes, in order.
+  final List<String> steps;
+}
+
+/// The files for [target] in [project]. [dartImage] is the Dart SDK image
+/// tag the build stage uses (default: this SDK's `major.minor`).
+DeployPlan planDeploy(
+  Project project,
+  DeployTarget target, {
+  String? dartImage,
+}) {
+  final hasExport = File(project.path('bin/export.dart')).existsSync();
+  if (target.server && !project.isServer) {
+    throw ThorException(
+      thorError(
+        'THOR-B017',
+        '${target.id} runs a server, and ${project.display} is a static site '
+            '(no bin/server.dart). Use cloudflare-pages, vercel or netlify.',
+      ),
+    );
+  }
+  if (!target.server && project.isServer && !hasExport) {
+    throw ThorException(
+      thorError(
+        'THOR-B017',
+        '${target.id} serves files, and ${project.display} is a server '
+            '(bin/server.dart, no bin/export.dart). Use docker, fly, railway or '
+            'render, or add bin/export.dart to export it as a static site.',
+      ),
+    );
+  }
+  return target.server
+      ? _serverPlan(project, target, dartImage ?? _sdkImage())
+      : _staticPlan(project, target, export: hasExport);
+}
+
+String _sdkImage() {
+  final version = RegExp(r'^(\d+)\.(\d+)').firstMatch(Platform.version);
+  return version == null ? 'stable' : '${version[1]}.${version[2]}';
+}
+
+/// The VM flag a server needs with more than four isolates: they share one
+/// heap and every young-generation collection stops all of them, so a
+/// larger semi-space keeps it scaling (8 isolates: from about 1 000 to
+/// 2 200 req/s). The VM reads it from `DART_VM_OPTIONS`; it can't be set from
+/// Dart or at compile time.
+const serverGcFlag = '--new_gen_semi_max_size=256';
+
+/// `build/run.sh`, next to `build/server`: starts the server with
+/// [serverGcFlag] unless `DART_VM_OPTIONS` already sets it, so a deploy with
+/// `ISOLATES=8` needs nothing by hand.
+String serverLauncher() =>
+    '''
+#!/bin/sh
+# Generated by `thor build`: starts build/server with the GC flag that keeps
+# more than four isolates scaling. Your own DART_VM_OPTIONS wins.
+case "\${DART_VM_OPTIONS:-}" in
+  *new_gen_semi_max_size*) ;;
+  *) DART_VM_OPTIONS="\${DART_VM_OPTIONS:+\$DART_VM_OPTIONS }$serverGcFlag"
+     export DART_VM_OPTIONS ;;
+esac
+# Follow symlinks (a link in PATH) to the real build/ directory.
+self="\$0"
+while [ -L "\$self" ]; do
+  link="\$(readlink "\$self")"
+  case "\$link" in
+    /*) self="\$link" ;;
+    *) self="\$(dirname "\$self")/\$link" ;;
+  esac
+done
+exec "\$(cd "\$(dirname "\$self")" && pwd)/server" "\$@"
+''';
+
+/// Writes [serverLauncher] to `build/run.sh` (executable). Its path.
+String writeServerLauncher(Project project) {
+  final file = File(project.path('build/run.sh'))
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(serverLauncher());
+  if (!Platform.isWindows) Process.runSync('chmod', ['+x', file.path]);
+  return file.path;
+}
+
+/// A variable the app's `lib/env.dart` declares.
+typedef EnvVar = ({String name, bool secret});
+
+/// The variables `lib/env.dart` declares, in order (read from the source:
+/// `EnvString('API_URL')`, `EnvSecret('SESSION_SECRET')`…).
+List<EnvVar> envVars(Project project) {
+  final file = File(project.path('lib/env.dart'));
+  if (!file.existsSync()) return const [];
+  final seen = <String>{};
+  return [
+    for (final m in RegExp(
+      r"Env(String|Int|Bool|Url|Secret)\(\s*'([A-Za-z_][A-Za-z0-9_]*)'",
+    ).allMatches(file.readAsStringSync()))
+      if (seen.add(m[2]!)) (name: m[2]!, secret: m[1] == 'Secret'),
+  ];
+}
+
+DeployPlan _serverPlan(Project project, DeployTarget target, String image) {
+  final context = project.pubRoot;
+  final app = p.relative(project.dir, from: context);
+  final inApp = app == '.' ? '' : '$app/';
+  // Where the app sits in the build stage.
+  final src = app == '.' ? '/src' : '/src/$app';
+  final activate = _activateThor(project, context);
+  final images = _imageTools(project);
+  // What the server reads at run time (`thor: resources:`, `thor: sdk:`).
+  final resources = ServerResources(project);
+  final bundles = resources.declared().isNotEmpty || resources.wantsSdk;
+  // PORT is the host's (Railway, Render and Fly set it; the image says
+  // 8080).
+  final env = [
+    for (final v in envVars(project))
+      if (v.name != 'PORT') v,
+  ];
+  final dockerfile = '${inApp}Dockerfile';
+  final contextName = app == '.' ? 'this folder' : 'the repository root';
+  final build = 'docker build -f $dockerfile -t ${project.name} .';
+
+  final files = <String, String>{
+    'Dockerfile':
+        '''
+# syntax=docker/dockerfile:1
+# Generated by `thor deploy init ${target.id}`. Build it from $contextName:
+#   $build
+#   docker run -p 8080:8080 ${env.map((v) => '-e ${v.name}=… ').join()}${project.name}
+#
+# The build stage runs `thor build` on Linux (native executable, public
+# files, engine, images); the final image holds only those, on `scratch`:
+# no shell, no package manager, a non-root user.
+
+FROM dart:$image AS build
+${images.isEmpty ? '' : 'RUN apt-get update && apt-get install -y --no-install-recommends ${images.join(' ')} \\\n    && rm -rf /var/lib/apt/lists/*\n'}WORKDIR /src
+COPY . .
+RUN dart pub get
+RUN $activate
+WORKDIR $src
+RUN dart pub global run thor_cli:thor build
+RUN dart compile exe deploy/healthcheck.dart -o build/healthcheck
+
+FROM scratch
+# The C runtime the Dart executable needs (the SDK image ships it).
+COPY --from=build /runtime/ /
+WORKDIR /app
+COPY --from=build $src/build/server build/server
+COPY --from=build $src/build/healthcheck build/healthcheck
+COPY --from=build $src/build/public build/public
+COPY --from=build $src/build/images.json build/images.json
+${bundles ? 'COPY --from=build $src/build/resources build/resources\n' : ''}ENV PORT=8080
+# Isolates share one heap; this keeps ISOLATES above 4 scaling (the image
+# has no shell for a launcher, so the VM reads it from here).
+ENV DART_VM_OPTIONS=$serverGcFlag
+EXPOSE 8080
+USER 65532:65532
+# ThorServer answers /_thor/health (503 while it drains on SIGTERM).
+HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \\
+  CMD ["/app/build/healthcheck"]
+STOPSIGNAL SIGTERM
+ENTRYPOINT ["/app/build/server"]
+''',
+    // BuildKit reads `<Dockerfile>.dockerignore` next to the Dockerfile, so
+    // it works from a monorepo root too.
+    'Dockerfile.dockerignore':
+        '''
+# Generated by `thor deploy init ${target.id}`: what the build doesn't need.
+**/.dart_tool
+**/build
+**/node_modules
+**/.git
+**/.env
+**/.env.*
+''',
+    'deploy/healthcheck.dart':
+        '''
+// Generated by `thor deploy init ${target.id}`: the image's HEALTHCHECK
+// (the final image has no shell or curl). Exits 0 when the server answers
+// /_thor/health with 200 on its PORT.
+import 'dart:io';
+
+Future<void> main() async {
+  final port = int.tryParse(Platform.environment['PORT'] ?? '') ?? 8080;
+  final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
+  try {
+    final request = await client.get('127.0.0.1', port, '/_thor/health');
+    final response = await request.close();
+    await response.drain<void>();
+    exitCode = response.statusCode == 200 ? 0 : 1;
+  } on Object {
+    exitCode = 1;
+  } finally {
+    client.close(force: true);
+  }
+}
+''',
+  };
+
+  final secrets = [
+    for (final v in env)
+      if (v.secret) v.name,
+  ];
+  final plain = [
+    for (final v in env)
+      if (!v.secret) v.name,
+  ];
+  final steps = <String>[];
+  switch (target) {
+    case DeployTarget.fly:
+      files['fly.toml'] =
+          '''
+# Generated by `thor deploy init fly`. Deploy from $contextName:
+#   fly deploy --config ${inApp}fly.toml --dockerfile $dockerfile .
+${secrets.isEmpty ? '' : '# Secrets first: fly secrets set ${secrets.map((s) => '$s=…').join(' ')}\n'}
+app = "${project.name.replaceAll('_', '-')}"
+kill_signal = "SIGTERM"
+kill_timeout = "10s"
+
+[env]
+  PORT = "8080"
+${plain.map((v) => '  # $v = "…"\n').join()}
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/_thor/health"
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "10s"
+
+[[vm]]
+  memory = "512mb"
+''';
+      steps.add(
+        'fly deploy --config ${inApp}fly.toml --dockerfile $dockerfile .',
+      );
+    case DeployTarget.railway:
+      files['railway.json'] =
+          '''
+{
+  "\$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "$dockerfile"
+  },
+  "deploy": {
+    "healthcheckPath": "/_thor/health",
+    "healthcheckTimeout": 60,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5
+  }
+}
+''';
+      steps.add(
+        'Railway: new service from the repository'
+        '${app == '.' ? '' : ', config file path ${inApp}railway.json'}; '
+        'it sets PORT itself.',
+      );
+    case DeployTarget.render:
+      files['render.yaml'] =
+          '''
+# Generated by `thor deploy init render`. A Render Blueprint reads
+# render.yaml at the repository root${app == '.' ? '' : ': move (or merge) this file there'}.
+services:
+  - type: web
+    name: ${project.name.replaceAll('_', '-')}
+    runtime: docker
+    dockerfilePath: ./$dockerfile
+    dockerContext: .
+    healthCheckPath: /_thor/health
+${env.isEmpty ? '' : '    envVars:\n${env.map((v) => '      - key: ${v.name}\n        sync: false\n').join()}'}''';
+      steps.add('Render: New → Blueprint, pick the repository.');
+    case DeployTarget.docker:
+    case DeployTarget.cloudflarePages:
+    case DeployTarget.vercel:
+    case DeployTarget.netlify:
+      break;
+  }
+  steps.insert(0, build);
+  if (env.isNotEmpty) {
+    steps.add(
+      'Set ${env.map((v) => v.name).join(', ')} on the host '
+      '(lib/env.dart; the server names any that is missing and stops).',
+    );
+  }
+  return DeployPlan(files, steps);
+}
+
+/// How the build stage gets the `thor` command: from the workspace's own
+/// checkout, from the git repository the app takes thor_ui from, or from
+/// pub.dev.
+String _activateThor(Project project, String context) {
+  if (File(p.join(context, 'packages/thor_cli/pubspec.yaml')).existsSync()) {
+    return 'dart pub global activate --source path packages/thor_cli';
+  }
+  final pubspec = loadYaml(
+    File(project.path('pubspec.yaml')).readAsStringSync(),
+  );
+  final deps = pubspec is YamlMap ? pubspec['dependencies'] : null;
+  final dep = deps is YamlMap ? deps['thor_ui'] : null;
+  if (dep is YamlMap && dep['git'] != null) {
+    final git = dep['git'];
+    final url = git is YamlMap ? git['url'] : git;
+    final ref = git is YamlMap ? git['ref'] : null;
+    return 'dart pub global activate --source git $url '
+        '--git-path packages/thor_cli${ref == null ? '' : ' --git-ref $ref'}';
+  }
+  if (dep is YamlMap && dep['path'] != null) {
+    final thorUi = p.normalize(p.join(project.dir, dep['path'] as String));
+    final repo = p.dirname(p.dirname(thorUi));
+    if (!p.isWithin(context, repo) && repo != context) {
+      throw ThorException(
+        thorError(
+          'THOR-B017',
+          'thor_ui comes from $thorUi, outside the build context '
+              '($context): the image can\'t see it. Take thor from git '
+              '(`thor create --git <url>`) or build from a folder that holds '
+              'both.',
+        ),
+      );
+    }
+    return 'dart pub global activate --source path '
+        '${p.relative(p.join(repo, 'packages/thor_cli'), from: context)}';
+  }
+  return 'dart pub global activate thor_cli';
+}
+
+/// Debian packages the image step needs: `webp` when the app declares
+/// `thor.images`, ImageMagick when it asks for AVIF.
+List<String> _imageTools(Project project) {
+  final pubspec = loadYaml(
+    File(project.path('pubspec.yaml')).readAsStringSync(),
+  );
+  final thor = pubspec is YamlMap ? pubspec['thor'] : null;
+  final images = thor is YamlMap ? thor['images'] : null;
+  if (images == null) return const [];
+  final formats = images is YamlMap ? images['formats'] : null;
+  return [
+    'webp',
+    if (formats is YamlList && formats.contains('avif')) 'imagemagick',
+  ];
+}
+
+DeployPlan _staticPlan(
+  Project project,
+  DeployTarget target, {
+  required bool export,
+}) {
+  final build = export
+      // `thor export` and `thor build` write content-hashed names and _headers.
+      ? 'thor export --base-url "\${SITE_URL:?set SITE_URL, e.g. https://example.com}"'
+      : 'thor build';
+  final files = <String, String>{
+    'deploy/build.sh':
+        '''
+#!/usr/bin/env sh
+# Generated by `thor deploy init ${target.id}`: the site in build/site with
+# content-hashed file names and their cache headers.
+set -eu
+cd "\$(dirname "\$0")/.."
+$build
+${target == DeployTarget.vercel ? '# Vercel reads its settings from the folder it deploys.\ncp deploy/vercel.json build/site/vercel.json\n' : ''}''',
+  };
+  const immutable = 'public, max-age=31536000, immutable';
+  switch (target) {
+    case DeployTarget.vercel:
+      files['deploy/vercel.json'] =
+          '''
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    { "source": "/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/_thor/(.*)", "headers": [{ "key": "Cache-Control", "value": "$immutable" }] },
+    { "source": "/(.*)\\\\.([0-9a-f]{8})\\\\.([A-Za-z0-9]+)", "headers": [{ "key": "Cache-Control", "value": "$immutable" }] }
+  ]
+}
+''';
+    case DeployTarget.netlify:
+      files['netlify.toml'] =
+          '''
+# Generated by `thor deploy init netlify`. Build with deploy/build.sh
+# (locally or in CI: the build image has no Dart), then
+#   netlify deploy --prod --dir build/site
+[build]
+  publish = "build/site"
+
+# build/site/_headers (written by the build) caches each hashed file for a
+# year and revalidates pages; the shared stylesheets too:
+[[headers]]
+  for = "/_thor/*"
+  [headers.values]
+    Cache-Control = "$immutable"
+''';
+    case DeployTarget.cloudflarePages:
+      files['wrangler.toml'] =
+          '''
+# Generated by `thor deploy init cloudflare-pages`. Build with
+# deploy/build.sh, then
+#   npx wrangler pages deploy
+# Pages serves /pricing from pricing.html and 404.html for the rest;
+# build/site/_headers sets the caches.
+name = "${project.name.replaceAll('_', '-')}"
+pages_build_output_dir = "build/site"
+compatibility_date = "2026-01-01"
+''';
+    case DeployTarget.docker:
+    case DeployTarget.fly:
+    case DeployTarget.railway:
+    case DeployTarget.render:
+      break;
+  }
+  return DeployPlan(files, [
+    '${export ? 'SITE_URL=https://… ' : ''}sh deploy/build.sh',
+    switch (target) {
+      DeployTarget.vercel => 'vercel deploy build/site --prod',
+      DeployTarget.netlify => 'netlify deploy --prod --dir build/site',
+      _ => 'npx wrangler pages deploy',
+    },
+  ]);
+}
+
+/// Writes [plan] into [project]; files that exist stay unless [force]
+/// (then a [ThorException] names them). The paths written.
+List<String> writeDeployPlan(
+  Project project,
+  DeployPlan plan, {
+  bool force = false,
+}) {
+  final existing = [
+    for (final path in plan.files.keys)
+      if (File(project.path(path)).existsSync()) path,
+  ];
+  if (existing.isNotEmpty && !force) {
+    throw ThorException(
+      '${existing.join(', ')} already exist'
+      '${existing.length == 1 ? 's' : ''}: --force replaces them.',
+    );
+  }
+  for (final MapEntry(key: path, value: content) in plan.files.entries) {
+    final file = File(project.path(path));
+    file.parent.createSync(recursive: true);
+    file.writeAsStringSync(content);
+    if (path.endsWith('.sh') && !Platform.isWindows) {
+      Process.runSync('chmod', ['+x', file.path]);
+    }
+  }
+  return plan.files.keys.toList();
+}

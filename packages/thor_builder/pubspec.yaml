@@ -1,0 +1,37 @@
+name: thor_builder
+description: "Build step for thor apps: lists the members of every ThorState class, writes the server and browser entries and the typed messages of the ARB files."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_builder
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - build-runner
+  - codegen
+  - web
+  - flutter
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  analyzer: ^12.1.0
+  build: ^4.0.0
+  dart_style: ^3.0.0
+  glob: ^2.1.1
+  path: ^1.9.0
+  # The lite engine's bundle, in thor dev's worker (bin/worker.dart).
+  thor_engine:
+    path: ../thor_engine
+  # The CSS easing of a constant `Curve` in an animateTo, at build time.
+  thor_style:
+    path: ../thor_style
+  # The state misuses (THOR-S001/S011/S012): one detection for the editor
+  # and the code generation.
+  thor_lints:
+    path: ../thor_lints
+  yaml: ^3.1.2
+
+dev_dependencies:
+  build_test: ^3.5.16
+  test: ^1.25.0

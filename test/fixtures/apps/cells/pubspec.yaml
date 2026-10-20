@@ -1,0 +1,22 @@
+name: cells
+description: The 7GUIs Cells task (100 x 26 sheet) in thor, where each cell follows the cells it reads.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  thor_engine:
+    path: ../../../../packages/thor_engine
+  thor_server:
+    path: ../../../../packages/thor_server
+  thor_ui:
+    path: ../../../../packages/thor_ui
+
+dev_dependencies:
+  test: ^1.25.0
+  thor_builder:
+    path: ../../../../packages/thor_builder
+  thor_test:
+    path: ../../../../packages/thor_test

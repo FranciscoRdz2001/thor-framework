@@ -1,0 +1,17 @@
+# What the fragments of the guide take for granted besides tool/docs_world.dart:
+# names of the page's own app, one stub each (tool/docs_check.dart generates
+# them). A name here is one the reader is expected to have written: a typo in a
+# name of the API (`Textt`) is never taken for it. Free variables (`cart`)
+# need no entry.
+#   type    only named (a type argument, a field): any value fits
+#   value   built with any positional arguments
+#   widget  a widget built with any positional arguments
+#   fn      a function called with any positional arguments
+
+type: Article LabServices ArticleData Post Todo CartViewModel Review Order OrderStatus Company Client Cart User
+value: Orders FakeOrdersRepository HttpOrdersRepository OrdersService
+widget: PageTitle BuyButton ArticleView ContactSection Search Tag HeroSection MessageRow MessageTile TaskCard MobileMenu DesktopMenu Compact Medium Wide TableOfContents Counter RootLayout OrdersList ProductCard ProductGrid AppLayout Filters Menu Results Nav Content AccountSummary
+fn: cartLines addToCart ordersPage listOrders appRenderer requireRole provideOrders newId appHandler
+page: OrderPage
+layout: AppShell SalesLayout
+error: AppErrorPage SalesErrorPage

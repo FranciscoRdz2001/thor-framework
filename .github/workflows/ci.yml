@@ -1,0 +1,294 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+# A newer push to the same ref cancels the run in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+      - uses: browser-actions/setup-chrome@v1
+      # The realworld differential tests start test/e2e/mock_api.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dependencies
+        run: |
+          dart pub get
+          (cd packages/thor_lints && dart pub get)
+      - name: Format
+        run: tool/thor format-check
+      - name: Analyze (infos are fatal)
+        run: tool/thor analyze
+      - name: Public API (no removal without deprecation)
+        run: tool/thor api
+      - name: Escape hatch ratchet
+        run: tool/thor ratchet
+      - name: Guide code blocks (docs/guia/es compile)
+        run: tool/thor docs-check
+      - name: VS Code extension snippets (tools/vscode-thor)
+        run: node tools/vscode-thor/test/validate_snippets.mjs
+      # The dart2js oracle engine (internal, never shipped; THOR_INTERNAL_ENGINE=dart)
+      # is not covered by the VM tests or the goldens: a small app is built with
+      # it on every run so the comparison oracle cannot break unnoticed.
+      - name: dart2js oracle engine build (test/fixtures/apps/counter)
+        run: tool/thor dart2js
+      - name: Tests (VM + Chrome)
+        run: tool/thor test --browser
+
+  # The VM side on macOS (format, analyze, public API, VM tests): the host
+  # most developers use. No browser, no e2e: those stay on Linux.
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+      # tool/check.mjs runs the test pool.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dependencies
+        run: |
+          dart pub get
+          (cd packages/thor_lints && dart pub get)
+      - name: Format
+        run: tool/thor format-check
+      - name: Analyze (infos are fatal)
+        run: tool/thor analyze
+      - name: Public API
+        run: tool/thor api
+      - name: Escape hatch ratchet
+        run: tool/thor ratchet
+      - name: Tests (VM)
+        run: tool/thor test
+
+  # The tutorial of the guide, followed end to end (tool/thor tutorial-check):
+  # `thor create` outside the repo with this checkout's packages, the files
+  # and commands of docs/guia/es/primera-app.md in order, `thor test`, `thor build`
+  # and the built server asked for the pages the tutorial promises.
+  tutorial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+      - name: Dependencies
+        run: dart pub get
+      - name: Tutorial
+        run: tool/thor tutorial-check
+
+  # Browser checks (tool/thor e2e): builds the apps, serves them on free
+  # ports and drives them in Chromium, with and without JavaScript. The
+  # checks run on the lite engine (the only one thor ships) and the key
+  # ones again on the dart2js oracle (`-dart`), plus the lite-vs-dart2js conformance.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: test/e2e/runner/package-lock.json
+      - name: Dependencies
+        run: |
+          dart pub get
+          npm ci --prefix test/e2e/runner
+      - name: Chromium cache
+        id: chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('test/e2e/runner/package-lock.json') }}
+      - name: Chromium
+        working-directory: test/e2e/runner
+        run: |
+          if [[ "${{ steps.chromium.outputs.cache-hit }}" == "true" ]]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: WebP encoder (the build's image variants)
+        run: sudo apt-get install -y --no-install-recommends webp
+      - name: E2E checks
+        run: tool/thor e2e
+      # The emitted HTML/CSS of the golden apps, byte for byte (the render core's
+      # regression signal). Machine independent: no byte hashes.
+      - name: Goldens
+        run: tool/golden.sh check
+
+  # The browser checks whose result depends on the browser (focus and Tab, popovers and
+  # the top layer, CSS animations and transitions, dialogs, scroll snapping) again in
+  # Firefox and WebKit: `tool/thor e2e --browsers` runs each one with E2E_BROWSER set.
+  # Their pages are rendered in memory: no app is built.
+  cross-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: test/e2e/runner/package-lock.json
+      - name: Dependencies
+        run: |
+          dart pub get
+          npm ci --prefix test/e2e/runner
+      - name: Browsers cache
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-all-${{ runner.os }}-${{ hashFiles('test/e2e/runner/package-lock.json') }}
+      - name: Browsers
+        working-directory: test/e2e/runner
+        run: |
+          if [[ "${{ steps.browsers.outputs.cache-hit }}" == "true" ]]; then
+            npx playwright install-deps chromium webkit firefox
+          else
+            npx playwright install --with-deps chromium webkit firefox
+          fi
+      - name: E2E in Firefox and WebKit
+        run: tool/thor e2e --browsers
+
+  # Screenshots and accessibility of real pages (tool/thor visual, tool/thor
+  # a11y): landing, docs, realworld, grid and recipes at 390/800/1440, light
+  # and dark, in Chromium, WebKit and Firefox. The refs are this runner's
+  # own screenshots of the last master (a cache, never committed: fonts
+  # render differently on every system). A PR compares against them; a
+  # push to master records the new set. A PR labelled `visual-change`
+  # reports its diffs without failing. axe-core: serious or critical
+  # violations fail unless listed in test/e2e/checks/a11y_known.json.
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: pub-${{ runner.os }}-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: test/e2e/runner/package-lock.json
+      - name: Dependencies
+        run: |
+          dart pub get
+          npm ci --prefix test/e2e/runner
+      - name: Browsers cache
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-all-${{ runner.os }}-${{ hashFiles('test/e2e/runner/package-lock.json') }}
+      - name: Browsers
+        working-directory: test/e2e/runner
+        run: |
+          if [[ "${{ steps.browsers.outputs.cache-hit }}" == "true" ]]; then
+            npx playwright install-deps chromium webkit firefox
+          else
+            npx playwright install --with-deps chromium webkit firefox
+          fi
+      - name: WebP encoder (the build's image variants)
+        run: sudo apt-get install -y --no-install-recommends webp
+      - name: Build the pages
+        run: tool/thor visual build
+      - name: Accessibility
+        run: tool/thor a11y --no-build
+      - name: Refs of the last master run
+        if: github.event_name == 'pull_request'
+        id: refs
+        uses: actions/cache/restore@v4
+        with:
+          path: build/visual/refs
+          key: visual-refs-${{ github.sha }}
+          restore-keys: visual-refs-
+      - name: Compare with master
+        if: github.event_name == 'pull_request' && steps.refs.outputs.cache-matched-key != ''
+        env:
+          VISUAL_ALLOW: ${{ contains(github.event.pull_request.labels.*.name, 'visual-change') && '1' || '0' }}
+        run: tool/thor visual check --no-build
+      - name: No refs yet
+        if: github.event_name == 'pull_request' && steps.refs.outputs.cache-matched-key == ''
+        run: echo "::notice::No master screenshots cached yet; the next push to master records them."
+      - name: Record master's refs
+        if: github.event_name == 'push'
+        run: tool/thor visual record --no-build
+      - name: Save master's refs
+        if: github.event_name == 'push'
+        uses: actions/cache/save@v4
+        with:
+          path: build/visual/refs
+          key: visual-refs-${{ github.sha }}
+      - name: Report
+        if: failure() || contains(github.event.pull_request.labels.*.name, 'visual-change')
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-report
+          path: |
+            build/visual/report.html
+            build/visual/current
+            build/visual/diff
+            build/visual/a11y.json
+          if-no-files-found: ignore

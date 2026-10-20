@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <style>@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;</style>
+    <style>@layer thor.reset {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}</style>
+    <title>Fixtures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t1ecvr4b{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center}.t1w2dd8x{margin: 0; min-width: 0; overflow-wrap: break-word; text-decoration: none; color: inherit; flex: 0 0 auto}}</style>
+    <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"[data-no-prefetch],[rel~=nofollow],[download],[target]:not([target=_self])"}}]},"eagerness":"moderate"}]}</script>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+  </head>
+  <body>
+    <div class="t1ecvr4b" data-thor="Column">
+      <a class="t1w2dd8x" href="/animated-list" data-thor="Text">/animated-list</a>
+      <a class="t1w2dd8x" href="/animations" data-thor="Text">/animations</a>
+      <a class="t1w2dd8x" href="/controls" data-thor="Text">/controls</a>
+      <a class="t1w2dd8x" href="/dates" data-thor="Text">/dates</a>
+      <a class="t1w2dd8x" href="/drag" data-thor="Text">/drag</a>
+      <a class="t1w2dd8x" href="/edge-cases" data-thor="Text">/edge-cases</a>
+      <a class="t1w2dd8x" href="/gestures" data-thor="Text">/gestures</a>
+      <a class="t1w2dd8x" href="/nested-watch" data-thor="Text">/nested-watch</a>
+      <a class="t1w2dd8x" href="/list-box" data-thor="Text">/list-box</a>
+      <a class="t1w2dd8x" href="/rows" data-thor="Text">/rows</a>
+      <a class="t1w2dd8x" href="/store-lists" data-thor="Text">/store-lists</a>
+      <a class="t1w2dd8x" href="/widgets" data-thor="Text">/widgets</a>
+    </div>
+  </body>
+</html>

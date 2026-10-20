@@ -1,0 +1,49 @@
+{
+  "name": "vscode-thor",
+  "displayName": "Thor",
+  "description": "Snippets and `thor add` commands for Thor apps (Dart web framework with Flutter's widget API).",
+  "version": "0.1.0",
+  "publisher": "thor",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FranciscoRdz2001/thor-framework",
+    "directory": "tools/vscode-thor"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "snippets": [
+      {
+        "language": "dart",
+        "path": "./snippets/dart.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "thor.addPage",
+        "title": "Add page",
+        "category": "Thor"
+      },
+      {
+        "command": "thor.addComponent",
+        "title": "Add component",
+        "category": "Thor"
+      },
+      {
+        "command": "thor.addState",
+        "title": "Add state",
+        "category": "Thor"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node test/validate_snippets.mjs"
+  }
+}

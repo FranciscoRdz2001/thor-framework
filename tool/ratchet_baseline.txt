@@ -1,0 +1,15 @@
+# Escape hatches per package or app (tool/thor ratchet): `ignores` are
+# `// ignore: thor_lints/…` comments, `raw` are `raw:` arguments.
+# These counts only go down. After removing some, lower them with
+# `tool/thor ratchet --update`; never edit a number up by hand.
+packages/thor_engine	raw	1
+packages/thor_studio	ignores	4
+packages/thor_studio	raw	4
+packages/thor_ui	ignores	3
+packages/thor_ui	raw	13
+test/fixtures/apps/lab	ignores	2
+test/fixtures/apps/landing	ignores	3
+test/fixtures/apps/landing	raw	24
+test/fixtures/apps/realworld	ignores	3
+test/fixtures/apps/realworld	raw	36
+test/fixtures/apps/server_query	ignores	1

@@ -1,0 +1,23 @@
+name: server_query
+description: query() and command() on the server — server state in a ThorState, with a sqlite3 repository the browser never sees.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  sqlite3: ^3.6.0
+  thor_engine:
+    path: ../../../../packages/thor_engine
+  thor_server:
+    path: ../../../../packages/thor_server
+  thor_ui:
+    path: ../../../../packages/thor_ui
+
+dev_dependencies:
+  test: ^1.25.0
+  thor_builder:
+    path: ../../../../packages/thor_builder
+  thor_test:
+    path: ../../../../packages/thor_test

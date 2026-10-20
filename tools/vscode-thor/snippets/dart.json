@@ -1,0 +1,194 @@
+{
+  "Thor component": {
+    "prefix": "tstless",
+    "description": "A StatelessWidget that builds one thor element (implements ThorElementWidget, so a Padding or an Expanded around it fuses into its element).",
+    "body": [
+      "/// ${1:MyWidget}.",
+      "class ${1:MyWidget} extends StatelessWidget implements ThorElementWidget {",
+      "  /// Creates a ${1:MyWidget}.",
+      "  const ${1:MyWidget}({super.key});",
+      "",
+      "  @override",
+      "  Widget build(BuildContext context) => ${0:const Text('${1:MyWidget}')};",
+      "}"
+    ]
+  },
+  "Thor page": {
+    "prefix": "tpage",
+    "description": "A page without data: ThorPage<void>, one const instance per route.",
+    "body": [
+      "/// The page `${2:/about}`.",
+      "class ${1:About}Page extends ThorPage<void> {",
+      "  /// The one instance the table holds and every request shares.",
+      "  const ${1:About}Page();",
+      "",
+      "  @override",
+      "  PageMeta meta(PageState<void> state) => const PageMeta(title: '${3:About}');",
+      "",
+      "  @override",
+      "  Widget build(BuildContext context, PageState<void> state) =>",
+      "      ${0:const Text('${3:About}')};",
+      "}"
+    ]
+  },
+  "Thor page with data": {
+    "prefix": "tpaged",
+    "description": "A page whose load reads the request before it renders: ThorPage<T> with its data class.",
+    "body": [
+      "/// What `${2:/products/:id}` shows, loaded before it renders.",
+      "class ${1:Product}Data {",
+      "  /// The data of one page.",
+      "  const ${1:Product}Data(this.${3:id});",
+      "",
+      "  /// `:${3:id}` of the URL.",
+      "  final String ${3:id};",
+      "}",
+      "",
+      "/// The page `${2:/products/:id}`.",
+      "class ${1:Product}Page extends ThorPage<${1:Product}Data> {",
+      "  /// The one instance the table holds and every request shares.",
+      "  const ${1:Product}Page();",
+      "",
+      "  /// Reads the URL (and your data source). Throw `NotFound()` for a",
+      "  /// missing item: the error page answers 404.",
+      "  @override",
+      "  ${1:Product}Data load(PageRequest request) =>",
+      "      ${1:Product}Data(request.param('${3:id}'));",
+      "",
+      "  @override",
+      "  PageMeta meta(PageState<${1:Product}Data> state) =>",
+      "      PageMeta(title: state.data.${3:id});",
+      "",
+      "  @override",
+      "  Widget build(BuildContext context, PageState<${1:Product}Data> state) =>",
+      "      ${0:Text(state.data.${3:id})};",
+      "}"
+    ]
+  },
+  "Thor layout": {
+    "prefix": "tlayout",
+    "description": "The frame a Group puts around its pages: ThorLayout<void>.",
+    "body": [
+      "/// The frame around the pages of its group",
+      "/// (`Group(layout: const ${1:Main}Layout(), children: […])`).",
+      "class ${1:Main}Layout extends ThorLayout<void> {",
+      "  /// The one instance the table holds and every request shares.",
+      "  const ${1:Main}Layout();",
+      "",
+      "  @override",
+      "  Widget build(BuildContext context, PageState<void> state, Widget child) =>",
+      "      ${0:Padding(padding: const EdgeInsets.all(24), child: child)};",
+      "}"
+    ]
+  },
+  "Thor error page": {
+    "prefix": "terror",
+    "description": "What a Group shows for an error or a URL without a page: ErrorPage.",
+    "body": [
+      "/// A missing page (or an error).",
+      "class ${1:App}ErrorPage extends ErrorPage {",
+      "  /// The one instance the table holds.",
+      "  const ${1:App}ErrorPage();",
+      "",
+      "  @override",
+      "  Widget build(BuildContext context, ErrorState state) => Text(",
+      "    state.status == 404 ? '${2:Page not found}' : '${3:Something went wrong}',",
+      "  );",
+      "}"
+    ]
+  },
+  "Thor state": {
+    "prefix": "tstate",
+    "description": "A ViewModel (ThorState, runs in the browser): state(...) fields, methods, and its top-level instance.",
+    "body": [
+      "/// A ViewModel that runs in the browser: the widgets that read it",
+      "/// (`Watch(${1/^(.)/${1:/downcase}/}.label)`) follow its changes.",
+      "class ${1:Counter}ViewModel extends ThorState {",
+      "  /// ${2:count}.",
+      "  final ${2:count} = state(${3:0});",
+      "",
+      "  /// What the page shows.",
+      "  String label() => '\\${${2:count}.value}';",
+      "",
+      "  /// Changes ${2:count}.",
+      "  void ${4:increment}() => ${2:count}.value++;$0",
+      "}",
+      "",
+      "/// The one ${1:Counter}ViewModel: ViewModels are top-level variables.",
+      "final ${1/^(.)/${1:/downcase}/} = ${1:Counter}ViewModel();"
+    ]
+  },
+  "Thor Watch": {
+    "prefix": "twatch",
+    "description": "The part of the page that follows a ViewModel's method: Watch(viewModel.method).",
+    "body": [
+      "Watch(${1:counter}.${2:label})$0"
+    ]
+  },
+  "Thor Watch with builder": {
+    "prefix": "twatchb",
+    "description": "Watch(viewModel.method, builder: (value) => …): a widget per value.",
+    "body": [
+      "Watch(${1:counter}.${2:label}, builder: (value) => ${0:Text(value)})"
+    ]
+  },
+  "Thor route": {
+    "prefix": "troute",
+    "description": "A route: its URL and its page. Link to it with <name>Route.link().",
+    "body": [
+      "final ${1:about}Route = ThorRoute('/${2:about}', const ${3:About}Page());$0"
+    ]
+  },
+  "Thor group": {
+    "prefix": "tgroup",
+    "description": "A module's routes and what they share (layout, middleware, styles).",
+    "body": [
+      "/// The ${1:shop} module: its routes and what they share.",
+      "final ${1:shop}Module = Group(",
+      "  children: [$0],",
+      ");"
+    ]
+  },
+  "Thor form schema": {
+    "prefix": "tform",
+    "description": "A FormSchema declared once: the page takes each field's rules from it and the server checks them again before the action runs.",
+    "body": [
+      "/// The ${1:SignUp} form: the same rules in the browser and in the action.",
+      "final class ${1:SignUp} extends FormSchema {",
+      "  const ${1:SignUp}._() : super(const [${2:email}$0]);",
+      "",
+      "  /// The whole form.",
+      "  static const schema = ${1:SignUp}._();",
+      "",
+      "  /// ${2:email}.",
+      "  static const ${2:email} = TextSchemaField(",
+      "    '${2:email}',",
+      "    validators: [Validator.required('${3:Enter your email.}')],",
+      "  );",
+      "}"
+    ]
+  },
+  "Thor schema field": {
+    "prefix": "tfield",
+    "description": "One field of a FormSchema class.",
+    "body": [
+      "/// ${1:name}.",
+      "static const ${1:name} = ${2|TextSchemaField,IntSchemaField,CheckboxSchemaField|}(",
+      "  '${1:name}',",
+      "  validators: [Validator.required('${3:This field is required.}')],",
+      ");$0"
+    ]
+  },
+  "Thor middleware": {
+    "prefix": "tmw",
+    "description": "Runs around every request to the pages of a group: Group(middleware: [name]).",
+    "body": [
+      "/// Runs around every request to the pages of its group.",
+      "Future<ThorResponse> ${1:auth}(PageRequest request, Next next) async {",
+      "  $0",
+      "  final response = await next();",
+      "  return response;",
+      "}"
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+# Publishes the docs site (apps/docs) to Vercel production when master
+# changes it: https://thor-docs.vercel.app (tool/deploy_docs.sh).
+#
+# Needs three repository secrets (Settings > Secrets and variables > Actions):
+#   VERCEL_TOKEN       a token from https://vercel.com/account/tokens
+#   VERCEL_ORG_ID      `orgId` of .vercel/project.json after `vercel link`
+#   VERCEL_PROJECT_ID  `projectId` of the same file (project `thor-docs`)
+# Without them the job ends green and says it skipped.
+name: Docs deploy
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - apps/docs/**
+      - docs/**
+      - packages/**
+      - tool/deploy_docs.sh
+      - tool/docs_index.sh
+      - .github/workflows/docs-deploy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Production deploys one at a time.
+concurrency:
+  group: docs-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      # Secrets can't be read in `if:`; the job env can.
+      - name: Secrets present?
+        id: gate
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::notice::Docs deploy skipped: set the VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID secrets (see the header of this workflow)."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+      - uses: dart-lang/setup-dart@v1
+        if: steps.gate.outputs.run == 'true'
+        with:
+          sdk: stable
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: 22
+      - name: Dependencies
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          dart pub get
+          npm install --global vercel@latest
+      - name: WebP encoder (the build's image variants)
+        if: steps.gate.outputs.run == 'true'
+        run: sudo apt-get install -y --no-install-recommends webp
+      - name: Export and deploy
+        if: steps.gate.outputs.run == 'true'
+        run: tool/deploy_docs.sh

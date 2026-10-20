@@ -1,0 +1,4 @@
+.dart_tool/
+build/
+# The engine compiled by `thor dev` (thor build writes the release one).
+web/engine.dart.js*

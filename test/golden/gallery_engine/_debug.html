@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base href="/"/>
+    <meta charset="utf-8"/>
+    <link href="data:," rel="icon"/>
+    <title>Controles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="Galería de controles nativos de thor_ui sobre thor_engine."/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t-gallery{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; justify-content: center}.t-gallery__column{min-width: 0; flex: 0 1 auto; max-width: 480px; align-self: center; box-sizing: border-box; width: 100%; display: flex; flex-direction: column; min-height: 0; align-items: stretch; padding: 16px}.t-gallery__text{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 28px; font-weight: 700; flex: 0 0 auto}.t-gallery__column-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch}.t-gallery__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 18px; font-weight: 600; flex: 0 0 auto; padding: 16px 0px 4px}.t-gallery__checkbox-list-tile{flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 8px 24px 8px 16px; box-sizing: border-box; color: var(--t-on-surface, #1d1b20); cursor: pointer; font-size: 16px; line-height: 24px; overflow-wrap: anywhere}.t-gallery__checkbox{appearance: none; margin: 0; flex: 0 0 auto; box-sizing: border-box; cursor: pointer; background-repeat: no-repeat; background-position: center; width: 18px; height: 18px; border: 2px solid var(--t-on-surface-variant, #49454f); border-radius: 2px; transition-property: background-color, border-color; transition-duration: 150ms}.t-gallery__checkbox:checked{background-color: var(--t-primary, #6750a4); border-color: var(--t-primary, #6750a4); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20d%3D%22M4%209.4l3.2%203.2L14%205.8%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E")}.t-gallery__checkbox[aria-checked="mixed"]:not(:checked){background-color: var(--t-primary, #6750a4); border-color: var(--t-primary, #6750a4); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20d%3D%22M4%209h10%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E")}.t-gallery__checkbox:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-gallery__checkbox:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-gallery__checkbox-list-tile-2{flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 8px 24px 8px 16px; box-sizing: border-box; color: var(--t-on-surface, #1d1b20); cursor: default; opacity: 0.38; font-size: 16px; line-height: 24px; overflow-wrap: anywhere}.t-gallery__switch-list-tile{flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 8px 24px 8px 16px; box-sizing: border-box; color: var(--t-on-surface, #1d1b20); cursor: pointer; justify-content: space-between; font-size: 16px; line-height: 24px; overflow-wrap: anywhere}.t-gallery__switch{appearance: none; margin: 0px 4px; flex: 0 0 auto; box-sizing: border-box; cursor: pointer; background-repeat: no-repeat; background-position: left 6px center; width: 52px; height: 32px; border: 2px solid var(--t-outline, #79747e); border-radius: 16px; background-color: var(--t-surface-container-highest, #e6e0e9); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Ccircle%20cx%3D%229%22%20cy%3D%229%22%20r%3D%229%22%20fill%3D%22%2379747e%22%2F%3E%3C%2Fsvg%3E"); background-size: 16px 16px; transition-property: background-color, border-color, background-size, background-position; transition-duration: 200ms; transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1)}.t-gallery__switch:checked{background-color: var(--t-primary, #6750a4); border-color: var(--t-primary, #6750a4); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Ccircle%20cx%3D%229%22%20cy%3D%229%22%20r%3D%229%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E"); background-size: 24px 24px; background-position: right 2px center}.t-gallery__switch:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-gallery__switch:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-gallery__column-3{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center}.t-gallery__radio-list-tile{flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; gap: 16px; min-height: 56px; padding: 8px 24px 8px 16px; box-sizing: border-box; color: var(--t-on-surface, #1d1b20); cursor: pointer; font-size: 16px; line-height: 24px; overflow-wrap: anywhere}.t-gallery__radio{appearance: none; margin: 0; flex: 0 0 auto; box-sizing: border-box; cursor: pointer; background-repeat: no-repeat; background-position: center; width: 20px; height: 20px; border: 2px solid var(--t-on-surface-variant, #49454f); border-radius: 50%; transition-property: border-color; transition-duration: 150ms}.t-gallery__radio:checked{border-color: var(--t-primary, #6750a4); background-image: radial-gradient(circle, var(--t-primary, #6750a4) 0 5px, transparent 5.5px)}.t-gallery__radio:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-gallery__radio:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-gallery__slider{margin: 0; box-sizing: border-box; flex: 0 0 auto; align-self: stretch; min-width: 0; height: 44px; accent-color: var(--t-primary, #6750a4); cursor: pointer}.t-gallery__slider:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-gallery__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; white-space: pre-wrap}.t-gallery__dropdown-button{margin: 0; font: inherit; color: inherit; flex: 0 0 auto; align-self: stretch; box-sizing: border-box; min-height: 48px; padding: 0 36px 0 16px; border: 1px solid var(--t-outline, #79747e); border-radius: 4px; background-color: transparent; min-width: 0; cursor: pointer; accent-color: var(--t-primary, #6750a4)}.t-gallery__dropdown-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: -1px}.t-gallery__dropdown-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-gallery__padding{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 16px 0px 0px}.t-gallery__text-4{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0; white-space: pre-wrap}@media (hover: hover){.t-gallery__checkbox-list-tile:hover{background-color: color-mix(in srgb, var(--t-on-surface, #1d1b20) 8%, transparent)}.t-gallery__switch-list-tile:hover{background-color: color-mix(in srgb, var(--t-on-surface, #1d1b20) 8%, transparent)}.t-gallery__radio-list-tile:hover{background-color: color-mix(in srgb, var(--t-on-surface, #1d1b20) 8%, transparent)}}@media (forced-colors: active){.t-gallery__checkbox{appearance: auto; background-image: none !important; background-color: revert !important; border: revert !important; border-radius: revert; box-shadow: none}.t-gallery__switch{forced-color-adjust: none; border-color: CanvasText !important; background-color: Canvas !important; background-image: radial-gradient(closest-side, CanvasText 94%, transparent 100%) !important; box-shadow: none}.t-gallery__switch:checked{border-color: Highlight !important; background-color: Highlight !important; background-image: radial-gradient(closest-side, HighlightText 94%, transparent 100%) !important}.t-gallery__radio{appearance: auto; background-image: none !important; background-color: revert !important; border: revert !important; border-radius: revert; box-shadow: none}}}</style>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <div class="t-gallery" data-thor="Center">
+      <main class="t-gallery__column" data-thor="Column">
+        <h1 class="t-gallery__text" data-thor="Text">Controles</h1>
+        <section class="t-gallery__column-2" data-thor="Column">
+          <h2 class="t-gallery__text-2" data-thor="Text">Checkbox</h2>
+          <label class="t-gallery__checkbox-list-tile" data-thor="CheckboxListTile">
+            <input class="t-gallery__checkbox" type="checkbox" checked data-t-on="change:GalleryState.setTicket" data-thor="Checkbox"/>Imprimir ticket
+          </label>
+          <label class="t-gallery__checkbox-list-tile" data-thor="CheckboxListTile">
+            <input class="t-gallery__checkbox" type="checkbox" data-t-on="change:GalleryState.setEmail" data-thor="Checkbox"/>Enviar por correo
+          </label>
+          <label class="t-gallery__checkbox-list-tile-2" data-thor="CheckboxListTile"><input class="t-gallery__checkbox" type="checkbox" disabled data-thor="Checkbox"/>Factura</label>
+          <label class="t-gallery__checkbox-list-tile" data-tv="GalleryState.allState" data-thor="CheckboxListTile" data-tp-1="0|aria-checked|-;0|checked|=" data-tp-2="0|aria-checked|-">
+            <input class="t-gallery__checkbox" type="checkbox" aria-checked="mixed" data-t-on="change:GalleryState.cycleAll" data-thor="Checkbox"/>Todos
+          </label>
+        </section>
+        <section class="t-gallery__column-2" data-thor="Column">
+          <h2 class="t-gallery__text-2" data-thor="Text">Switch</h2>
+          <label class="t-gallery__switch-list-tile" data-thor="SwitchListTile">
+            Modo oscuro<input class="t-gallery__switch" type="checkbox" role="switch" data-t-on="change:GalleryState.setDark" data-thor="Switch"/>
+          </label>
+          <label class="t-gallery__switch-list-tile" data-thor="SwitchListTile">
+            Sonido<input class="t-gallery__switch" type="checkbox" role="switch" checked data-t-on="change:GalleryState.setSound" data-thor="Switch"/>
+          </label>
+        </section>
+        <section class="t-gallery__column-2" data-thor="Column">
+          <h2 class="t-gallery__text-2" data-thor="Text">Método de pago</h2>
+          <div class="t-gallery__column-3" data-thor="Column">
+            <label class="t-gallery__radio-list-tile" data-thor="RadioListTile">
+              <input class="t-gallery__radio" type="radio" checked name="payment" value="Efectivo" data-t-on="change:GalleryState.setPayment" data-thor="Radio"/>Efectivo
+            </label>
+            <label class="t-gallery__radio-list-tile" data-thor="RadioListTile">
+              <input class="t-gallery__radio" type="radio" name="payment" value="Tarjeta" data-t-on="change:GalleryState.setPayment" data-thor="Radio"/>Tarjeta
+            </label>
+            <label class="t-gallery__radio-list-tile" data-thor="RadioListTile">
+              <input class="t-gallery__radio" type="radio" name="payment" value="Transferencia" data-t-on="change:GalleryState.setPayment" data-thor="Radio"/>Transferencia
+            </label>
+          </div>
+        </section>
+        <section class="t-gallery__column-2" data-thor="Column">
+          <h2 class="t-gallery__text-2" data-thor="Text">Propina</h2>
+          <input class="t-gallery__slider" type="range" min="0" max="100" step="5" value="10" aria-label="Propina" data-t-on="input:GalleryState.setTip" data-thor="Slider"/>
+          <span class="t-gallery__text-3" data-tt="GalleryState.tipLabel" data-thor="Text">Propina: 10%</span>
+        </section>
+        <section class="t-gallery__column-2" data-thor="Column">
+          <h2 class="t-gallery__text-2" data-thor="Text">Sucursal</h2>
+          <select class="t-gallery__dropdown-button" aria-label="Sucursal" data-t-on="change:GalleryState.setBranch" data-thor="DropdownButton">
+            <option value disabled selected>Elige una sucursal</option>
+            <option value="Centro">Centro</option>
+            <option value="Norte">Norte</option>
+            <option value="Sur">Sur</option>
+          </select>
+        </section>
+        <div class="t-gallery__padding" data-thor="Padding">
+          <span class="t-gallery__text-4" data-tt="GalleryState.summary" data-thor="Text">Ticket: sí · Correo: no · Oscuro: no · Sonido: sí · Pago: Efectivo · Propina: 10% · Sucursal: —</span>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

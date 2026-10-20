@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base href="/"/>
+    <meta charset="utf-8"/>
+    <link href="data:," rel="icon"/>
+    <title>Lista</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="Lista con claves"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t-list-page{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; font-family: system-ui; padding: 16px}.t-list-page__text{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 28px; font-weight: 700; flex: 0 0 auto}.t-list-page__wrap{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; flex-wrap: wrap; align-items: flex-start; column-gap: 8px; row-gap: 8px; padding: 0px 0px 12px}.t-list-page__container{appearance: none; border: 1px solid #cccccc; margin: 0; padding: 6px 12px; font: inherit; color: inherit; background: none; text-align: inherit; cursor: pointer; flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; border-radius: 4px; overflow-wrap: anywhere}.t-list-page__column{list-style: none; margin: 0; padding: 0; flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch}.t-list-page__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 32px; align-items: center; gap: 8px; padding: 0px 8px; border-bottom: 1px solid #eeeeee}.t-list-page__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: none; color: #666666; width: 48px}.t-list-page__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 0%}.t-list-page__container-2{appearance: none; border: 0; margin: 0; padding: 0; font: inherit; color: inherit; background: none; text-align: inherit; cursor: pointer; flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; overflow-wrap: anywhere}.t-list-page__row-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 32px; align-items: center; gap: 8px; padding: 0px 8px; background-color: #ffe9a8; border-bottom: 1px solid #eeeeee}}</style>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <main class="t-list-page" data-thor="Column">
+      <h1 class="t-list-page__text" data-thor="Text">Lista</h1>
+      <div class="t-list-page__wrap" data-thor="Wrap">
+        <button class="t-list-page__container" data-t-on="click:ListState.create" type="button" data-thor="Container">Crear 1,000</button>
+        <button class="t-list-page__container" data-t-on="click:ListState.createMany" type="button" data-thor="Container">Crear 10,000</button>
+        <button class="t-list-page__container" data-t-on="click:ListState.append" type="button" data-thor="Container">Agregar 1,000</button>
+        <button class="t-list-page__container" data-t-on="click:ListState.update" type="button" data-thor="Container">Actualizar cada 10ª</button>
+        <button class="t-list-page__container" data-t-on="click:ListState.swap" type="button" data-thor="Container">Intercambiar</button>
+        <button class="t-list-page__container" data-t-on="click:ListState.removeFirst" type="button" data-thor="Container">Quitar primera</button>
+        <button class="t-list-page__container" data-t-on="click:ListState.clear" type="button" data-thor="Container">Limpiar</button>
+      </div>
+      <ul class="t-list-page__column" data-tl="ListState.rows" data-tlk="ListState.rowKey" data-thor="Column">
+        <template data-tlt="ListState.rows">
+          <li class="t-list-page__row" data-tvf="ListState.isSelected" data-tvi="0" data-thor="Row" data-tp-1="|class|=t-list-page__row-2">
+            <span class="t-list-page__text-2" data-tf="ListState.rowId" data-thor="Text"></span><span class="t-list-page__text-3" data-t-on="click:ListState.select" data-tx="{{key}}" data-tf="ListState.rowLabel" data-thor-flex-item="Expanded" data-thor="Text"></span><button class="t-list-page__container-2" data-t-on="click:ListState.remove" data-tx="{{key}}" aria-label="Quitar" type="button" data-thor="Container">×</button>
+          </li>
+        </template>
+      </ul>
+    </main>
+  </body>
+</html>

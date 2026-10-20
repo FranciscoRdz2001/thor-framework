@@ -1,0 +1,19 @@
+name: fixture_lab
+description: The widget behaviours the browser checks drive, one page each (AnimatedList, animations, controllers, date pickers, drag, gestures, list rows, hover and focus, nested Watch and store lists, edge cases), exported as one static site so a check builds one app instead of ten.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  thor_engine:
+    path: ../../../../packages/thor_engine
+  thor_server:
+    path: ../../../../packages/thor_server
+  thor_ui:
+    path: ../../../../packages/thor_ui
+
+dev_dependencies:
+  thor_builder:
+    path: ../../../../packages/thor_builder

@@ -1,0 +1,31 @@
+name: thor_ui
+description: "Flutter's widget API (Container, Row, Column, Stack, Text, Theme...) rendered to semantic HTML with generated CSS. Layout, animation and controls run natively in the browser."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_ui
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - web
+  - flutter
+  - ui
+  - ssr
+  - html
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  intl: ^0.20.2
+  meta: ^1.15.0
+  thor_style:
+    path: ../thor_style
+  thor_engine:
+    path: ../thor_engine
+  thor_server:
+    path: ../thor_server
+
+dev_dependencies:
+  crypto: ^3.0.3
+  test: ^1.25.0
+  web: ^1.1.0

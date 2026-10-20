@@ -1,0 +1,24 @@
+name: thor_server
+description: "thor's server over dart:io: routes declared in code, data loading before render, form actions, cookies and sessions, static files and a page cache. Pure Dart."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_server
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - server
+  - web
+  - ssr
+  - http
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  crypto: ^3.0.3
+  # `thorError`: the one copy of the error codes' URL.
+  thor_style:
+    path: ../thor_style
+
+dev_dependencies:
+  test: ^1.25.0

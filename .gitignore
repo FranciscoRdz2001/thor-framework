@@ -1,0 +1,17 @@
+.dart_tool/
+build/
+pubspec_overrides.yaml
+*.g.dart.js
+.DS_Store
+node_modules/
+dist/
+
+# The engine each app compiles (thor dev / thor build).
+apps/*/web/engine.dart.js*
+test/fixtures/apps/*/web/engine.dart.js*
+
+# thor_lints is a package, not an app: its lock is not versioned.
+packages/thor_lints/pubspec.lock
+
+# Temporary canary of `tool/thor analyze` (proves the thor_lints plugin is alive).
+packages/thor_studio/test/zz_lint_canary.dart

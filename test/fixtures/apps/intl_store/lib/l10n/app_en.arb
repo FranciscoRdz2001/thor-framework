@@ -1,0 +1,33 @@
+{
+  "@@locale": "en",
+  "storeTitle": "Corner shop",
+  "@storeTitle": {"description": "Name of the shop, in the header and the <title>."},
+  "tagline": "Small things, carefully chosen.",
+  "welcome": "Welcome, {name}!",
+  "@welcome": {
+    "description": "Greets the visitor by the name in ?name=.",
+    "placeholders": {"name": {"type": "String", "example": "Ana"}}
+  },
+  "price": "{amount}",
+  "@price": {
+    "description": "A product price, in euros.",
+    "placeholders": {
+      "amount": {"type": "double", "format": "simpleCurrency", "optionalParameters": {"name": "EUR"}}
+    }
+  },
+  "stock": "{count, plural, =0{Sold out} =1{Last one!} other{{count} in stock}}",
+  "@stock": {"placeholders": {"count": {"type": "int"}}},
+  "cartItems": "{count, plural, =0{Your cart is empty} one{# item in your cart} other{# items in your cart}}",
+  "@cartItems": {
+    "description": "Cart summary; computed in the browser as the count changes.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "addToCart": "Add to cart",
+  "emptyCart": "Empty cart",
+  "details": "Details",
+  "since": "In the shop since {date}",
+  "@since": {"placeholders": {"date": {"type": "DateTime", "format": "yMMMd"}}},
+  "back": "Back to the shop",
+  "language": "Language",
+  "notFound": "This page doesn't exist."
+}

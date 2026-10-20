@@ -1,0 +1,6 @@
+# Not part of the published package.
+.dart_tool/
+build/
+tool/
+test/fixtures/
+pubspec.lock

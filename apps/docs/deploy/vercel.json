@@ -1,0 +1,1665 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/guia/que-es-thor",
+      "destination": "/en/get-started/what-is-thor",
+      "permanent": true
+    },
+    {
+      "source": "/guia/que-es-thor.md",
+      "destination": "/en/get-started/what-is-thor.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/instalacion",
+      "destination": "/en/get-started/installation",
+      "permanent": true
+    },
+    {
+      "source": "/guia/instalacion.md",
+      "destination": "/en/get-started/installation.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/entorno",
+      "destination": "/en/data-and-state/session-and-security#environment-and-secrets",
+      "permanent": true
+    },
+    {
+      "source": "/guia/entorno.md",
+      "destination": "/en/data-and-state/session-and-security#environment-and-secrets",
+      "permanent": true
+    },
+    {
+      "source": "/guia/tutorial",
+      "destination": "/en/get-started/first-app",
+      "permanent": true
+    },
+    {
+      "source": "/guia/tutorial.md",
+      "destination": "/en/get-started/first-app.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/desde-flutter",
+      "destination": "/en/get-started/from-flutter",
+      "permanent": true
+    },
+    {
+      "source": "/guia/desde-flutter.md",
+      "destination": "/en/get-started/from-flutter.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/widgets-y-layout",
+      "destination": "/en/fundamentals/layout",
+      "permanent": true
+    },
+    {
+      "source": "/guia/widgets-y-layout.md",
+      "destination": "/en/fundamentals/layout.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/layout",
+      "destination": "/en/fundamentals/layout",
+      "permanent": true
+    },
+    {
+      "source": "/guia/layout.md",
+      "destination": "/en/fundamentals/layout.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/interactividad",
+      "destination": "/en/fundamentals/interactivity",
+      "permanent": true
+    },
+    {
+      "source": "/guia/interactividad.md",
+      "destination": "/en/fundamentals/interactivity.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/rutas",
+      "destination": "/en/fundamentals/navigation",
+      "permanent": true
+    },
+    {
+      "source": "/guia/rutas.md",
+      "destination": "/en/fundamentals/navigation.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/rutas-y-datos",
+      "destination": "/en/fundamentals/navigation",
+      "permanent": true
+    },
+    {
+      "source": "/guia/rutas-y-datos.md",
+      "destination": "/en/fundamentals/navigation.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estructura",
+      "destination": "/en/architecture/project-structure",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estructura.md",
+      "destination": "/en/architecture/project-structure.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/arquitectura",
+      "destination": "/en/architecture/how-it-works",
+      "permanent": true
+    },
+    {
+      "source": "/guia/arquitectura.md",
+      "destination": "/en/architecture/how-it-works.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estilos-y-tema",
+      "destination": "/en/interface/theme-and-styles",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estilos-y-tema.md",
+      "destination": "/en/interface/theme-and-styles.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/animaciones",
+      "destination": "/en/interface/animations",
+      "permanent": true
+    },
+    {
+      "source": "/guia/animaciones.md",
+      "destination": "/en/interface/animations.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/transiciones",
+      "destination": "/en/interface/animations",
+      "permanent": true
+    },
+    {
+      "source": "/guia/transiciones.md",
+      "destination": "/en/interface/animations.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/gestos",
+      "destination": "/en/interface/gestures",
+      "permanent": true
+    },
+    {
+      "source": "/guia/gestos.md",
+      "destination": "/en/interface/gestures.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/dialogos-y-menus",
+      "destination": "/en/interface/dialogs-and-menus",
+      "permanent": true
+    },
+    {
+      "source": "/guia/dialogos-y-menus.md",
+      "destination": "/en/interface/dialogs-and-menus.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/i18n",
+      "destination": "/en/interface/localization",
+      "permanent": true
+    },
+    {
+      "source": "/guia/i18n.md",
+      "destination": "/en/interface/localization.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/flutter-embebido",
+      "destination": "/en/interface/embedded-flutter",
+      "permanent": true
+    },
+    {
+      "source": "/guia/flutter-embebido.md",
+      "destination": "/en/interface/embedded-flutter.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estado",
+      "destination": "/en/data-and-state/state",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estado.md",
+      "destination": "/en/data-and-state/state.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/datos",
+      "destination": "/en/data-and-state/server-and-actions",
+      "permanent": true
+    },
+    {
+      "source": "/guia/datos.md",
+      "destination": "/en/data-and-state/server-and-actions.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/formularios",
+      "destination": "/en/data-and-state/forms",
+      "permanent": true
+    },
+    {
+      "source": "/guia/formularios.md",
+      "destination": "/en/data-and-state/forms.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/listas-largas",
+      "destination": "/en/data-and-state/long-lists",
+      "permanent": true
+    },
+    {
+      "source": "/guia/listas-largas.md",
+      "destination": "/en/data-and-state/long-lists.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/sesiones-y-seguridad",
+      "destination": "/en/data-and-state/session-and-security",
+      "permanent": true
+    },
+    {
+      "source": "/guia/sesiones-y-seguridad.md",
+      "destination": "/en/data-and-state/session-and-security.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/paquetes",
+      "destination": "/en/data-and-state/pub-packages",
+      "permanent": true
+    },
+    {
+      "source": "/guia/paquetes.md",
+      "destination": "/en/data-and-state/pub-packages.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/testing",
+      "destination": "/en/test-and-deploy/testing",
+      "permanent": true
+    },
+    {
+      "source": "/guia/testing.md",
+      "destination": "/en/test-and-deploy/testing.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/cli",
+      "destination": "/en/test-and-deploy/cli",
+      "permanent": true
+    },
+    {
+      "source": "/guia/cli.md",
+      "destination": "/en/test-and-deploy/cli.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/herramientas",
+      "destination": "/en/test-and-deploy/cli",
+      "permanent": true
+    },
+    {
+      "source": "/guia/herramientas.md",
+      "destination": "/en/test-and-deploy/cli.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estatico-o-servidor",
+      "destination": "/en/test-and-deploy/build-and-deploy",
+      "permanent": true
+    },
+    {
+      "source": "/guia/estatico-o-servidor.md",
+      "destination": "/en/test-and-deploy/build-and-deploy.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/deploy",
+      "destination": "/en/test-and-deploy/build-and-deploy",
+      "permanent": true
+    },
+    {
+      "source": "/guia/deploy.md",
+      "destination": "/en/test-and-deploy/build-and-deploy.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/seo",
+      "destination": "/en/test-and-deploy/seo",
+      "permanent": true
+    },
+    {
+      "source": "/guia/seo.md",
+      "destination": "/en/test-and-deploy/seo.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/catalogo",
+      "destination": "/en/components/components",
+      "permanent": true
+    },
+    {
+      "source": "/guia/catalogo.md",
+      "destination": "/en/components/components.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes",
+      "destination": "/en/components/components",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes.md",
+      "destination": "/en/components/components.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-botones",
+      "destination": "/en/components/components-buttons",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-botones.md",
+      "destination": "/en/components/components-buttons.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-entradas",
+      "destination": "/en/components/components-inputs",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-entradas.md",
+      "destination": "/en/components/components-inputs.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-seleccion",
+      "destination": "/en/components/components-selection",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-seleccion.md",
+      "destination": "/en/components/components-selection.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-contenido",
+      "destination": "/en/components/components-content",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-contenido.md",
+      "destination": "/en/components/components-content.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-navegacion",
+      "destination": "/en/components/components-navigation",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-navegacion.md",
+      "destination": "/en/components/components-navigation.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-avisos",
+      "destination": "/en/components/components-feedback",
+      "permanent": true
+    },
+    {
+      "source": "/guia/componentes-avisos.md",
+      "destination": "/en/components/components-feedback.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/iconos",
+      "destination": "/en/components/components-content#icon",
+      "permanent": true
+    },
+    {
+      "source": "/guia/iconos.md",
+      "destination": "/en/components/components-content#icon",
+      "permanent": true
+    },
+    {
+      "source": "/guia/7guis",
+      "destination": "/en/examples/examples",
+      "permanent": true
+    },
+    {
+      "source": "/guia/7guis.md",
+      "destination": "/en/examples/examples.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/paginas-de-contenido",
+      "destination": "/en/examples/content-page",
+      "permanent": true
+    },
+    {
+      "source": "/guia/paginas-de-contenido.md",
+      "destination": "/en/examples/content-page.md",
+      "permanent": true
+    },
+    {
+      "source": "/guia/capa-web",
+      "destination": "/en/fundamentals/widgets",
+      "permanent": true
+    },
+    {
+      "source": "/guia/capa-web.md",
+      "destination": "/en/fundamentals/widgets.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/widgets",
+      "destination": "/es/fundamentos/widgets",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/widgets.md",
+      "destination": "/es/fundamentos/widgets.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/layout",
+      "destination": "/es/fundamentos/layout",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/layout.md",
+      "destination": "/es/fundamentos/layout.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/interactividad",
+      "destination": "/es/fundamentos/interactividad",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/interactividad.md",
+      "destination": "/es/fundamentos/interactividad.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/navegacion",
+      "destination": "/es/fundamentos/navegacion",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/navegacion.md",
+      "destination": "/es/fundamentos/navegacion.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/leer-datos",
+      "destination": "/es/fundamentos/leer-datos",
+      "permanent": true
+    },
+    {
+      "source": "/es/aprender/leer-datos.md",
+      "destination": "/es/fundamentos/leer-datos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/arquitectura/recomendaciones",
+      "destination": "/es/arquitectura/arquitectura",
+      "permanent": true
+    },
+    {
+      "source": "/es/arquitectura/recomendaciones.md",
+      "destination": "/es/arquitectura/arquitectura.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/tema-y-estilos",
+      "destination": "/es/interfaz/tema-y-estilos",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/tema-y-estilos.md",
+      "destination": "/es/interfaz/tema-y-estilos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/animaciones",
+      "destination": "/es/interfaz/animaciones",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/animaciones.md",
+      "destination": "/es/interfaz/animaciones.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/gestos",
+      "destination": "/es/interfaz/gestos",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/gestos.md",
+      "destination": "/es/interfaz/gestos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/dialogos-y-menus",
+      "destination": "/es/interfaz/dialogos-y-menus",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/dialogos-y-menus.md",
+      "destination": "/es/interfaz/dialogos-y-menus.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/accesibilidad",
+      "destination": "/es/interfaz/accesibilidad",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/accesibilidad.md",
+      "destination": "/es/interfaz/accesibilidad.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/idiomas",
+      "destination": "/es/interfaz/idiomas",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/idiomas.md",
+      "destination": "/es/interfaz/idiomas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/listas-largas",
+      "destination": "/es/datos-y-estado/listas-largas",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/listas-largas.md",
+      "destination": "/es/datos-y-estado/listas-largas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/iconos",
+      "destination": "/es/componentes/componentes-contenido#icon",
+      "permanent": true
+    },
+    {
+      "source": "/es/ui/iconos.md",
+      "destination": "/es/componentes/componentes-contenido.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/pruebas-y-herramientas/pruebas",
+      "destination": "/es/publicar/pruebas",
+      "permanent": true
+    },
+    {
+      "source": "/es/pruebas-y-herramientas/pruebas.md",
+      "destination": "/es/publicar/pruebas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/pruebas-y-herramientas/cli",
+      "destination": "/es/publicar/cli",
+      "permanent": true
+    },
+    {
+      "source": "/es/pruebas-y-herramientas/cli.md",
+      "destination": "/es/publicar/cli.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/desplegar/estatico-o-servidor",
+      "destination": "/es/publicar/publicar",
+      "permanent": true
+    },
+    {
+      "source": "/es/desplegar/estatico-o-servidor.md",
+      "destination": "/es/publicar/publicar.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/desplegar/desplegar",
+      "destination": "/es/publicar/publicar",
+      "permanent": true
+    },
+    {
+      "source": "/es/desplegar/desplegar.md",
+      "destination": "/es/publicar/publicar.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/desplegar/seo",
+      "destination": "/es/publicar/seo",
+      "permanent": true
+    },
+    {
+      "source": "/es/desplegar/seo.md",
+      "destination": "/es/publicar/seo.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/recetas",
+      "destination": "/es/ejemplos/ejemplos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/recetas.md",
+      "destination": "/es/ejemplos/ejemplos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/contador",
+      "destination": "/es/ejemplos/contador",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/contador.md",
+      "destination": "/es/ejemplos/contador.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/temperatura",
+      "destination": "/es/ejemplos/temperatura",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/temperatura.md",
+      "destination": "/es/ejemplos/temperatura.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/vuelos",
+      "destination": "/es/ejemplos/vuelos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/vuelos.md",
+      "destination": "/es/ejemplos/vuelos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/temporizador",
+      "destination": "/es/ejemplos/temporizador",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/temporizador.md",
+      "destination": "/es/ejemplos/temporizador.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/crud",
+      "destination": "/es/ejemplos/crud",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/crud.md",
+      "destination": "/es/ejemplos/crud.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/circulos",
+      "destination": "/es/ejemplos/circulos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/circulos.md",
+      "destination": "/es/ejemplos/circulos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/celdas",
+      "destination": "/es/ejemplos/celdas",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/celdas.md",
+      "destination": "/es/ejemplos/celdas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/pagina-de-contenido",
+      "destination": "/es/ejemplos/pagina-de-contenido",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/pagina-de-contenido.md",
+      "destination": "/es/ejemplos/pagina-de-contenido.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/deslizar-confirmar",
+      "destination": "/es/ejemplos/deslizar-confirmar",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/deslizar-confirmar.md",
+      "destination": "/es/ejemplos/deslizar-confirmar.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/copiar",
+      "destination": "/es/ejemplos/copiar",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/copiar.md",
+      "destination": "/es/ejemplos/copiar.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/pestanas",
+      "destination": "/es/ejemplos/pestanas",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/pestanas.md",
+      "destination": "/es/ejemplos/pestanas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/avisos",
+      "destination": "/es/ejemplos/avisos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/avisos.md",
+      "destination": "/es/ejemplos/avisos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/recetas",
+      "destination": "/es/ejemplos/ejemplos",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/recetas.md",
+      "destination": "/es/ejemplos/ejemplos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/contador",
+      "destination": "/es/ejemplos/contador",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/contador.md",
+      "destination": "/es/ejemplos/contador.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/temperatura",
+      "destination": "/es/ejemplos/temperatura",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/temperatura.md",
+      "destination": "/es/ejemplos/temperatura.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/vuelos",
+      "destination": "/es/ejemplos/vuelos",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/vuelos.md",
+      "destination": "/es/ejemplos/vuelos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/temporizador",
+      "destination": "/es/ejemplos/temporizador",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/temporizador.md",
+      "destination": "/es/ejemplos/temporizador.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/crud",
+      "destination": "/es/ejemplos/crud",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/crud.md",
+      "destination": "/es/ejemplos/crud.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/circulos",
+      "destination": "/es/ejemplos/circulos",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/circulos.md",
+      "destination": "/es/ejemplos/circulos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/celdas",
+      "destination": "/es/ejemplos/celdas",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/celdas.md",
+      "destination": "/es/ejemplos/celdas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/pagina-de-contenido",
+      "destination": "/es/ejemplos/pagina-de-contenido",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/pagina-de-contenido.md",
+      "destination": "/es/ejemplos/pagina-de-contenido.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/deslizar-confirmar",
+      "destination": "/es/ejemplos/deslizar-confirmar",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/deslizar-confirmar.md",
+      "destination": "/es/ejemplos/deslizar-confirmar.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/copiar",
+      "destination": "/es/ejemplos/copiar",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/copiar.md",
+      "destination": "/es/ejemplos/copiar.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/pestanas",
+      "destination": "/es/ejemplos/pestanas",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/pestanas.md",
+      "destination": "/es/ejemplos/pestanas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/avisos",
+      "destination": "/es/ejemplos/avisos",
+      "permanent": true
+    },
+    {
+      "source": "/es/recetas/avisos.md",
+      "destination": "/es/ejemplos/avisos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/me-gusta",
+      "destination": "/es/ejemplos/ejemplos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/me-gusta.md",
+      "destination": "/es/ejemplos/ejemplos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/contador-animado",
+      "destination": "/es/ejemplos/ejemplos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/contador-animado.md",
+      "destination": "/es/ejemplos/ejemplos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/interruptor",
+      "destination": "/es/ejemplos/ejemplos",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbook/interruptor.md",
+      "destination": "/es/ejemplos/ejemplos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes",
+      "destination": "/es/componentes/componentes",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes.md",
+      "destination": "/es/componentes/componentes.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-botones",
+      "destination": "/es/componentes/componentes-botones",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-botones.md",
+      "destination": "/es/componentes/componentes-botones.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-entradas",
+      "destination": "/es/componentes/componentes-entradas",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-entradas.md",
+      "destination": "/es/componentes/componentes-entradas.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-seleccion",
+      "destination": "/es/componentes/componentes-seleccion",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-seleccion.md",
+      "destination": "/es/componentes/componentes-seleccion.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-contenido",
+      "destination": "/es/componentes/componentes-contenido",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-contenido.md",
+      "destination": "/es/componentes/componentes-contenido.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-navegacion",
+      "destination": "/es/componentes/componentes-navegacion",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-navegacion.md",
+      "destination": "/es/componentes/componentes-navegacion.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-avisos",
+      "destination": "/es/componentes/componentes-avisos",
+      "permanent": true
+    },
+    {
+      "source": "/es/catalogo/componentes-avisos.md",
+      "destination": "/es/componentes/componentes-avisos.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/como-funciona/como-funciona",
+      "destination": "/es/arquitectura/como-funciona",
+      "permanent": true
+    },
+    {
+      "source": "/es/como-funciona/como-funciona.md",
+      "destination": "/es/arquitectura/como-funciona.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/como-funciona/flutter-embebido",
+      "destination": "/es/interfaz/flutter-embebido",
+      "permanent": true
+    },
+    {
+      "source": "/es/como-funciona/flutter-embebido.md",
+      "destination": "/es/interfaz/flutter-embebido.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/widgets",
+      "destination": "/en/fundamentals/widgets",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/widgets.md",
+      "destination": "/en/fundamentals/widgets.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/layout",
+      "destination": "/en/fundamentals/layout",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/layout.md",
+      "destination": "/en/fundamentals/layout.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/interactividad",
+      "destination": "/en/fundamentals/interactivity",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/interactividad.md",
+      "destination": "/en/fundamentals/interactivity.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/navegacion",
+      "destination": "/en/fundamentals/navigation",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/navegacion.md",
+      "destination": "/en/fundamentals/navigation.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/leer-datos",
+      "destination": "/en/fundamentals/reading-data",
+      "permanent": true
+    },
+    {
+      "source": "/en/aprender/leer-datos.md",
+      "destination": "/en/fundamentals/reading-data.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/arquitectura/recomendaciones",
+      "destination": "/en/architecture/app-architecture",
+      "permanent": true
+    },
+    {
+      "source": "/en/arquitectura/recomendaciones.md",
+      "destination": "/en/architecture/app-architecture.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/tema-y-estilos",
+      "destination": "/en/interface/theme-and-styles",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/tema-y-estilos.md",
+      "destination": "/en/interface/theme-and-styles.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/animaciones",
+      "destination": "/en/interface/animations",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/animaciones.md",
+      "destination": "/en/interface/animations.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/gestos",
+      "destination": "/en/interface/gestures",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/gestos.md",
+      "destination": "/en/interface/gestures.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/dialogos-y-menus",
+      "destination": "/en/interface/dialogs-and-menus",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/dialogos-y-menus.md",
+      "destination": "/en/interface/dialogs-and-menus.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/accesibilidad",
+      "destination": "/en/interface/accessibility",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/accesibilidad.md",
+      "destination": "/en/interface/accessibility.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/idiomas",
+      "destination": "/en/interface/localization",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/idiomas.md",
+      "destination": "/en/interface/localization.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/listas-largas",
+      "destination": "/en/data-and-state/long-lists",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/listas-largas.md",
+      "destination": "/en/data-and-state/long-lists.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/iconos",
+      "destination": "/en/components/components-content#icon",
+      "permanent": true
+    },
+    {
+      "source": "/en/ui/iconos.md",
+      "destination": "/en/components/components-content.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/pruebas-y-herramientas/pruebas",
+      "destination": "/en/test-and-deploy/testing",
+      "permanent": true
+    },
+    {
+      "source": "/en/pruebas-y-herramientas/pruebas.md",
+      "destination": "/en/test-and-deploy/testing.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/pruebas-y-herramientas/cli",
+      "destination": "/en/test-and-deploy/cli",
+      "permanent": true
+    },
+    {
+      "source": "/en/pruebas-y-herramientas/cli.md",
+      "destination": "/en/test-and-deploy/cli.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/desplegar/estatico-o-servidor",
+      "destination": "/en/test-and-deploy/build-and-deploy",
+      "permanent": true
+    },
+    {
+      "source": "/en/desplegar/estatico-o-servidor.md",
+      "destination": "/en/test-and-deploy/build-and-deploy.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/desplegar/desplegar",
+      "destination": "/en/test-and-deploy/build-and-deploy",
+      "permanent": true
+    },
+    {
+      "source": "/en/desplegar/desplegar.md",
+      "destination": "/en/test-and-deploy/build-and-deploy.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/desplegar/seo",
+      "destination": "/en/test-and-deploy/seo",
+      "permanent": true
+    },
+    {
+      "source": "/en/desplegar/seo.md",
+      "destination": "/en/test-and-deploy/seo.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/recetas",
+      "destination": "/en/examples/examples",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/recetas.md",
+      "destination": "/en/examples/examples.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/contador",
+      "destination": "/en/examples/counter",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/contador.md",
+      "destination": "/en/examples/counter.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/temperatura",
+      "destination": "/en/examples/temperature",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/temperatura.md",
+      "destination": "/en/examples/temperature.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/vuelos",
+      "destination": "/en/examples/flight-booker",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/vuelos.md",
+      "destination": "/en/examples/flight-booker.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/temporizador",
+      "destination": "/en/examples/timer",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/temporizador.md",
+      "destination": "/en/examples/timer.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/crud",
+      "destination": "/en/examples/crud",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/crud.md",
+      "destination": "/en/examples/crud.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/circulos",
+      "destination": "/en/examples/circle-drawer",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/circulos.md",
+      "destination": "/en/examples/circle-drawer.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/celdas",
+      "destination": "/en/examples/cells",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/celdas.md",
+      "destination": "/en/examples/cells.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/pagina-de-contenido",
+      "destination": "/en/examples/content-page",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/pagina-de-contenido.md",
+      "destination": "/en/examples/content-page.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/deslizar-confirmar",
+      "destination": "/en/examples/slide-to-confirm",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/deslizar-confirmar.md",
+      "destination": "/en/examples/slide-to-confirm.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/copiar",
+      "destination": "/en/examples/copy-button",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/copiar.md",
+      "destination": "/en/examples/copy-button.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/pestanas",
+      "destination": "/en/examples/tab-indicator",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/pestanas.md",
+      "destination": "/en/examples/tab-indicator.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/avisos",
+      "destination": "/en/examples/toast-stack",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/avisos.md",
+      "destination": "/en/examples/toast-stack.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/recetas",
+      "destination": "/en/examples/examples",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/recetas.md",
+      "destination": "/en/examples/examples.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/contador",
+      "destination": "/en/examples/counter",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/contador.md",
+      "destination": "/en/examples/counter.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/temperatura",
+      "destination": "/en/examples/temperature",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/temperatura.md",
+      "destination": "/en/examples/temperature.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/vuelos",
+      "destination": "/en/examples/flight-booker",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/vuelos.md",
+      "destination": "/en/examples/flight-booker.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/temporizador",
+      "destination": "/en/examples/timer",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/temporizador.md",
+      "destination": "/en/examples/timer.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/crud",
+      "destination": "/en/examples/crud",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/crud.md",
+      "destination": "/en/examples/crud.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/circulos",
+      "destination": "/en/examples/circle-drawer",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/circulos.md",
+      "destination": "/en/examples/circle-drawer.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/celdas",
+      "destination": "/en/examples/cells",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/celdas.md",
+      "destination": "/en/examples/cells.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/pagina-de-contenido",
+      "destination": "/en/examples/content-page",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/pagina-de-contenido.md",
+      "destination": "/en/examples/content-page.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/deslizar-confirmar",
+      "destination": "/en/examples/slide-to-confirm",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/deslizar-confirmar.md",
+      "destination": "/en/examples/slide-to-confirm.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/copiar",
+      "destination": "/en/examples/copy-button",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/copiar.md",
+      "destination": "/en/examples/copy-button.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/pestanas",
+      "destination": "/en/examples/tab-indicator",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/pestanas.md",
+      "destination": "/en/examples/tab-indicator.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/avisos",
+      "destination": "/en/examples/toast-stack",
+      "permanent": true
+    },
+    {
+      "source": "/en/recetas/avisos.md",
+      "destination": "/en/examples/toast-stack.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/me-gusta",
+      "destination": "/en/examples/examples",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/me-gusta.md",
+      "destination": "/en/examples/examples.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/contador-animado",
+      "destination": "/en/examples/examples",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/contador-animado.md",
+      "destination": "/en/examples/examples.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/interruptor",
+      "destination": "/en/examples/examples",
+      "permanent": true
+    },
+    {
+      "source": "/en/cookbook/interruptor.md",
+      "destination": "/en/examples/examples.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes",
+      "destination": "/en/components/components",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes.md",
+      "destination": "/en/components/components.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-botones",
+      "destination": "/en/components/components-buttons",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-botones.md",
+      "destination": "/en/components/components-buttons.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-entradas",
+      "destination": "/en/components/components-inputs",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-entradas.md",
+      "destination": "/en/components/components-inputs.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-seleccion",
+      "destination": "/en/components/components-selection",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-seleccion.md",
+      "destination": "/en/components/components-selection.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-contenido",
+      "destination": "/en/components/components-content",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-contenido.md",
+      "destination": "/en/components/components-content.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-navegacion",
+      "destination": "/en/components/components-navigation",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-navegacion.md",
+      "destination": "/en/components/components-navigation.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-avisos",
+      "destination": "/en/components/components-feedback",
+      "permanent": true
+    },
+    {
+      "source": "/en/catalogo/componentes-avisos.md",
+      "destination": "/en/components/components-feedback.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/como-funciona/como-funciona",
+      "destination": "/en/architecture/how-it-works",
+      "permanent": true
+    },
+    {
+      "source": "/en/como-funciona/como-funciona.md",
+      "destination": "/en/architecture/how-it-works.md",
+      "permanent": true
+    },
+    {
+      "source": "/en/como-funciona/flutter-embebido",
+      "destination": "/en/interface/embedded-flutter",
+      "permanent": true
+    },
+    {
+      "source": "/en/como-funciona/flutter-embebido.md",
+      "destination": "/en/interface/embedded-flutter.md",
+      "permanent": true
+    },
+    {
+      "source": "/es/api",
+      "destination": "/es/api/thor_ui",
+      "permanent": true
+    },
+    {
+      "source": "/en/api",
+      "destination": "/en/api/thor_ui",
+      "permanent": true
+    },
+    {
+      "source": "/api",
+      "destination": "/en/api/thor_ui",
+      "permanent": true
+    },
+    {
+      "source": "/api/thor_ui/texto/:path*",
+      "destination": "/en/api/thor_ui/text/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/api/thor_ui/controles/:path*",
+      "destination": "/en/api/thor_ui/controls/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/api/thor_ui/estilos/:path*",
+      "destination": "/en/api/thor_ui/styles/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/api/thor_ui/animacion/:path*",
+      "destination": "/en/api/thor_ui/animation/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/api/thor_ui/estado/:path*",
+      "destination": "/en/api/thor_ui/state/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/en/api/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/errores/:path*",
+      "destination": "/en/errors/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/cambios/:path*",
+      "destination": "/en/changes/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/buscar/:path*",
+      "destination": "/en/search/:path*",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)\\.md",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_thor/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

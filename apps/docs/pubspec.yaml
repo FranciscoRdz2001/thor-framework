@@ -1,0 +1,31 @@
+name: docs
+description: "thor's documentation site, built with thor: a route table on thor_server, the thor_studio design system, Markdown from docs/ rendered at build time, exported as a static site."
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  markdown: ^7.3.0
+  thor_server:
+    path: ../../packages/thor_server
+  thor_studio:
+    path: ../../packages/thor_studio
+  thor_ui:
+    path: ../../packages/thor_ui
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  thor_engine:
+    path: ../../packages/thor_engine
+  test: ^1.25.0
+  thor_builder:
+    path: ../../packages/thor_builder
+  thor_test:
+    path: ../../packages/thor_test
+
+# Long reading sessions: the styles most pages share go to one cached
+# stylesheet. `thor export` and tool/deploy_docs.sh read it.
+thor:
+  share_styles: true

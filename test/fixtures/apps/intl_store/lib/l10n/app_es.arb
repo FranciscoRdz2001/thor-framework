@@ -1,0 +1,16 @@
+{
+  "@@locale": "es",
+  "storeTitle": "La tiendita",
+  "tagline": "Cosas pequeñas, elegidas con cuidado.",
+  "welcome": "¡Hola, {name}!",
+  "price": "{amount}",
+  "stock": "{count, plural, =0{Agotado} =1{¡Queda uno!} other{Quedan {count}}}",
+  "cartItems": "{count, plural, =0{Tu carrito está vacío} one{# artículo en tu carrito} other{# artículos en tu carrito}}",
+  "addToCart": "Agregar al carrito",
+  "emptyCart": "Vaciar el carrito",
+  "details": "Detalles",
+  "since": "En la tienda desde el {date}",
+  "back": "Volver a la tienda",
+  "language": "Idioma",
+  "notFound": "Esta página no existe."
+}

@@ -1,0 +1,17 @@
+name: thor_engine_oracle
+description: "Internal comparison oracle: the Dart client engine (compiled by dart2js) that tests compare the lite engine against. Not shipped and never published."
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  thor_engine:
+    path: ../thor_engine
+  web: ^1.1.0
+
+dev_dependencies:
+  test: ^1.25.0
+  thor_ui:
+    path: ../thor_ui

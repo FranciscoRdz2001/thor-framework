@@ -1,0 +1,68 @@
+# thor — shared analysis options for every package and app of the monorepo.
+#
+# `tool/thor check` runs `dart analyze --fatal-infos`: any lint below fails
+# the check (and CI). Keep rules here, not per package.
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # thor passes a state field where a value source is expected
+    # (`Watch(counter.count)`): the implicit `.call` tear-off is the API.
+    implicit_call_tearoffs: ignore
+  exclude:
+    - "**/build/**"
+    - "**/.dart_tool/**"
+    - "**/node_modules/**"
+    # Flutter projects embedded by FlutterView: they need the Flutter SDK.
+    - test/fixtures/apps/hybrid/flutter_widgets/**
+
+linter:
+  rules:
+    # Performance: const widgets are canonicalized and skipped on rebuild.
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - unnecessary_const
+    # Correctness.
+    - avoid_dynamic_calls
+    - avoid_returning_null_for_void
+    - avoid_slow_async_io
+    - cancel_subscriptions
+    - close_sinks
+    - literal_only_boolean_expressions
+    - no_adjacent_strings_in_list
+    - test_types_in_equals
+    - throw_in_finally
+    - unawaited_futures
+    - unnecessary_statements
+    - unrelated_type_equality_checks
+    # Style / readability.
+    - always_declare_return_types
+    - avoid_unused_constructor_parameters
+    - directives_ordering
+    - prefer_final_fields
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - unnecessary_await_in_return
+    - unnecessary_lambdas
+    - unnecessary_parenthesis
+    - unnecessary_this
+    - use_super_parameters
+    # Public API docs of the libraries.
+    - comment_references
+    # Every public member of the packages is documented (docs/api is
+    # generated from these comments). Apps opt out in their own options.
+    - public_member_api_docs
+
+plugins:
+  thor_lints:
+    path: packages/thor_lints
+    diagnostics:
+      avoid_raw_css: true

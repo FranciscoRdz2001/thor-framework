@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base href="/"/>
+    <meta charset="utf-8"/>
+    <title>Contador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t1t7busf{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; justify-content: center}.t-counter{min-width: 0; flex: 0 1 auto; max-width: 100%; align-self: center; display: flex; flex-direction: column; box-sizing: border-box; min-height: 0; align-items: center; gap: 16px; height: fit-content}.t-counter__row{flex: 0 0 auto; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 12px; width: fit-content}.t-counter__outlined-button{appearance: none; border: 1px solid var(--t-outline, #79747e); margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 9px 23px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-counter__text{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 24px; white-space: pre-wrap}.t-counter__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-counter__sized-box{flex: 0 0 auto; width: 0px; height: 0px}.t-counter__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; color: #b45309; white-space: pre-wrap}@media (hover: hover){.t-counter__outlined-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-counter__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}}.t-counter__outlined-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-counter__outlined-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-counter__outlined-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-counter__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-counter__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-counter__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}@media (prefers-reduced-motion: reduce){.t-counter__outlined-button{transition-duration: 1ms}.t-counter__text-button{transition-duration: 1ms}}}</style>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <div class="t1t7busf" data-thor="Center">
+      <div class="t-counter" data-thor="Column">
+        <div class="t-counter__row" data-thor="Row">
+          <button class="t-counter__outlined-button" type="button" data-t-on="click:CounterState.dec" data-thor="OutlinedButton">−</button>
+          <span class="t-counter__text" data-tt="CounterState.label" data-thor="Text">0</span>
+          <button class="t-counter__outlined-button" type="button" data-t-on="click:CounterState.inc" data-thor="OutlinedButton">+</button>
+          <button class="t-counter__text-button" data-tv="CounterState.isZero" type="button" disabled data-thor="TextButton" data-tp-0="|disabled|-;|data-t-on|=click:CounterState.reset">Reiniciar</button>
+        </div>
+        <div class="t-counter__sized-box" data-tv="CounterState.isHigh" data-thor="SizedBox"></div>
+        <template data-tvt="CounterState.isHigh" data-i="1"><span class="t-counter__text-2" data-tt="CounterState.highLabel" data-thor="Text">¡Ya van 0!</span></template>
+      </div>
+    </div>
+  </body>
+</html>

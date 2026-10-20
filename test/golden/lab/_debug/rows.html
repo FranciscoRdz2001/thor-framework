@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <style>@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;</style>
+    <style>@layer thor.reset {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}</style>
+    <title>Tareas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t-rows-page{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; justify-content: center}.t-rows-page__column{min-width: 0; flex: 0 1 auto; max-width: 560px; align-self: center; box-sizing: border-box; width: 100%; display: flex; flex-direction: column; min-height: 0; align-items: stretch; gap: 16px; padding: 16px}.t-rows-page__text{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 22px; font-weight: 700}.t-rows-page__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; white-space: pre-wrap}.t-rows-page__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px}.t-rows-page__container{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 8px}.t-rows-page__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0; white-space: pre-wrap}.t-rows-page__wrap{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; flex-wrap: wrap; align-items: flex-start; column-gap: 8px; row-gap: 8px}.t-rows-page__outlined-button{appearance: none; border: 1px solid var(--t-outline, #79747e); margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 9px 23px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-rows-page__form{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0}.t-rows-page__form[data-pending]{cursor: progress}.t-rows-page__column-2{list-style: none; margin: 0; padding: 0; flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; box-sizing: border-box; align-items: stretch}.t-rows-page__row-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px; padding: 6px 8px; background-color: #ffffff}.t-rows-page__checkbox{appearance: none; margin: 0; flex: 0 0 auto; box-sizing: border-box; cursor: pointer; background-repeat: no-repeat; background-position: center; width: 18px; height: 18px; border: 2px solid var(--t-on-surface-variant, #49454f); border-radius: 2px; transition-property: background-color, border-color, box-shadow; transition-duration: 150ms}.t-rows-page__checkbox:checked{background-color: var(--t-primary, #6750a4); border-color: var(--t-primary, #6750a4); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20d%3D%22M4%209.4l3.2%203.2L14%205.8%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E")}.t-rows-page__checkbox[aria-checked="mixed"]:not(:checked){background-color: var(--t-primary, #6750a4); border-color: var(--t-primary, #6750a4); background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20d%3D%22M4%209h10%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E")}.t-rows-page__text-4{margin: 0; min-width: 0; overflow-wrap: break-word; text-decoration: none; color: inherit; flex: 1 1 0%; text-decoration-line: none}.t-rows-page__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-rows-page__text-5{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; color: #666666; font-size: 13px}.t-rows-page__row-3{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px; padding: 6px 8px; background-color: #eff7ee}.t-rows-page__text-6{margin: 0; min-width: 0; overflow-wrap: break-word; text-decoration: none; color: inherit; flex: 1 1 0%; text-decoration-line: line-through}.t-rows-page__text-field{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; gap: 4px}.t-rows-page__text-7{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 14px; line-height: 20px; font-weight: 500; padding: 0 4px}.t-rows-page__text-field-2{flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; box-sizing: border-box; min-width: 0; box-shadow: inset 0 -1px 0 0 var(--t-on-surface-variant, #49454f), var(--t-field-ring, 0 0 #0000); transition-property: box-shadow; transition-duration: 150ms}.t-rows-page__text-field-2:focus-within{box-shadow: inset 0 -2px 0 0 var(--t-primary, #6750a4), var(--t-field-ring, 0 0 #0000)}.t-rows-page__text-field-2:has(input[aria-invalid="true"]){box-shadow: inset 0 0 0 2px var(--t-error, #b3261e), var(--t-field-ring, 0 0 #0000)}.t-rows-page__input{flex: 1 1 0; min-width: 0; border: 0; outline: 0; margin: 0; background: transparent; font: inherit; color: inherit; box-sizing: border-box; padding: 16px 12px}.t-rows-page__input::placeholder{color: color-mix(in srgb, currentColor 60%, transparent); opacity: 1}.t-rows-page__form-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0}.t-rows-page__form-2[data-pending]{cursor: progress}.t-rows-page__column-3{flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; box-sizing: border-box; align-items: stretch; gap: 8px}.t-rows-page__text-form-field{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; gap: 4px}.t-rows-page__text-8{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; min-height: 16px; font-size: 12px; line-height: 16px; padding: 0 16px; color: var(--t-on-surface-variant, #49454f)}.t-rows-page__text-8[data-invalid]{color: var(--t-error, #b3261e)}.t-rows-page__row-4{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center}.t-rows-page__filled-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 24px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: var(--t-primary, #6750a4); color: var(--t-on-primary, #ffffff); overflow-wrap: anywhere}@media (hover: hover){.t-rows-page__outlined-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-rows-page__checkbox:hover:not(:disabled){box-shadow: 0 0 0 11px color-mix(in srgb, var(--t-on-surface, #1d1b20) 8%, transparent)}.t-rows-page__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-rows-page__filled-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 92%, var(--t-on-primary, #ffffff)); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3)}}.t-rows-page__outlined-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-rows-page__outlined-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-rows-page__outlined-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-rows-page__checkbox:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-rows-page__checkbox:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-rows-page__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-rows-page__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-rows-page__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-rows-page__filled-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-on-primary, #ffffff) 10%, var(--t-primary, #6750a4))}.t-rows-page__filled-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-rows-page__filled-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}@media (prefers-reduced-motion: reduce){.t-rows-page__outlined-button{transition-duration: 1ms}.t-rows-page__text-button{transition-duration: 1ms}.t-rows-page__filled-button{transition-duration: 1ms}}@media (forced-colors: active){.t-rows-page__checkbox{appearance: auto; background-image: none !important; background-color: revert !important; border: revert !important; border-radius: revert; box-shadow: none}}}</style>
+    <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"[data-no-prefetch],[rel~=nofollow],[download],[target]:not([target=_self])"}}]},"eagerness":"moderate"}]}</script>
+    <script data-thor-prefetch="/_thor/prefetch.5yhk6q.js">(()=>{var d=document,u=d.currentScript.getAttribute("data-thor-prefetch");HTMLScriptElement.supports&&HTMLScriptElement.supports("speculationrules")||addEventListener("load",()=>{var s=d.createElement("script");s.src=u;d.head.append(s)})})()</script>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="/engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="/engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <div class="t-rows-page" data-thor="Center">
+      <main class="t-rows-page__column" data-thor="Column">
+        <span class="t-rows-page__text" data-thor="Text">Tareas</span>
+        <span class="t-rows-page__text-2" data-tt="RowsState.summary" data-thor="Text">1 de 4 hechas</span>
+        <div class="t-rows-page__row" data-tks="m+k&gt;RowsState.ping;c+k&gt;RowsState.ping" data-thor="Row">
+          <span class="t-rows-page__text-2" data-tt="RowsState.pingsLabel" data-thor="Text">atajos: 0</span>
+          <div class="t-rows-page__container" role="button" tabindex="0" data-t-on="click:RowsState.tap" data-thor="Container"><span class="t-rows-page__text-3" data-tt="RowsState.tapsLabel" data-thor="Text">toques: 0</span></div>
+        </div>
+        <div class="t-rows-page__wrap" data-thor="Wrap">
+          <button class="t-rows-page__outlined-button" type="button" data-t-on="click:RowsState.reverse" data-thor="OutlinedButton">Invertir</button>
+          <button class="t-rows-page__outlined-button" type="button" data-t-on="click:RowsState.allDone" data-thor="OutlinedButton">Todas hechas</button>
+          <button class="t-rows-page__outlined-button" type="button" data-t-on="click:RowsState.clear" data-thor="OutlinedButton">Vaciar</button>
+          <button class="t-rows-page__outlined-button" type="button" data-t-on="click:RowsState.reset" data-thor="OutlinedButton">Restaurar</button>
+        </div>
+        <form class="t-rows-page__form" action="/tareas" method="post" data-thor="Form">
+          <ul class="t-rows-page__column-2" data-tl="RowsState.tasks" data-tlk="RowsState.taskKey" data-thor="Column">
+            <li class="t-rows-page__row-2" data-tk="t1" data-tvf="$Rows.done" data-tvi="0" data-thor="Row">
+              <input class="t-rows-page__checkbox" type="checkbox" data-t-on="change:RowsState.setDone" data-tx="t1" data-txv data-thor="Checkbox"/><a class="t-rows-page__text-4" data-tfa="href:RowsState.urlOf" href="/tareas/1" data-tf="$Rows.title" data-thor-flex-item="Expanded" data-thor="Text">Comprar pan</a><button class="t-rows-page__text-button" data-tfa="data-prio:RowsState.prioName" data-prio="low" data-tvf="$Rows.prio" data-tvi="0" type="button" data-t-on="click:RowsState.cycle" data-tx="t1" data-thor="TextButton">baja</button><button class="t-rows-page__text-button" data-tvf="RowsState.starCount" data-tvi="0" type="button" data-t-on="click:RowsState.star" data-tx="t1" data-thor="TextButton">0/3</button><span class="t-rows-page__text-5" data-tf="RowsState.starsOf" data-thor="Text">☆☆☆</span><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.rename" data-tx="t1" data-thor="TextButton">!</button><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.unsafe" data-tx="t1" data-thor="TextButton">js</button><button class="t-rows-page__text-button" data-tfa="aria-label:RowsState.labelOf" aria-label="Quitar «Comprar pan»" type="button" data-t-on="click:RowsState.remove" data-tx="t1" data-thor="TextButton">×</button><input type="hidden" name="tarea" value="Comprar pan" data-tf="RowsState.titleOf"/>
+            </li>
+            <li class="t-rows-page__row-3" data-tk="t2" data-tvf="$Rows.done" data-tvi="1" data-thor="Row">
+              <input class="t-rows-page__checkbox" type="checkbox" checked data-t-on="change:RowsState.setDone" data-tx="t2" data-txv data-thor="Checkbox"/><a class="t-rows-page__text-6" data-tfa="href:RowsState.urlOf" href="https://example.com/ana" data-tf="$Rows.title" data-thor-flex-item="Expanded" data-thor="Text">Llamar a Ana</a><button class="t-rows-page__text-button" data-tfa="data-prio:RowsState.prioName" data-prio="high" data-tvf="$Rows.prio" data-tvi="2" type="button" data-t-on="click:RowsState.cycle" data-tx="t2" data-thor="TextButton">alta</button><button class="t-rows-page__text-button" data-tvf="RowsState.starCount" data-tvi="2" type="button" data-t-on="click:RowsState.star" data-tx="t2" data-thor="TextButton">2/3</button><span class="t-rows-page__text-5" data-tf="RowsState.starsOf" data-thor="Text">★★☆</span><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.rename" data-tx="t2" data-thor="TextButton">!</button><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.unsafe" data-tx="t2" data-thor="TextButton">js</button><button class="t-rows-page__text-button" data-tfa="aria-label:RowsState.labelOf" aria-label="Quitar «Llamar a Ana»" type="button" data-t-on="click:RowsState.remove" data-tx="t2" data-thor="TextButton">×</button><input type="hidden" name="tarea" value="Llamar a Ana" data-tf="RowsState.titleOf"/>
+            </li>
+            <li class="t-rows-page__row-2" data-tk="t3" data-tvf="$Rows.done" data-tvi="0" data-thor="Row">
+              <input class="t-rows-page__checkbox" type="checkbox" data-t-on="change:RowsState.setDone" data-tx="t3" data-txv data-thor="Checkbox"/><a class="t-rows-page__text-4" data-tfa="href:RowsState.urlOf" href="mailto:luz@example.com" data-tf="$Rows.title" data-thor-flex-item="Expanded" data-thor="Text">Pagar la luz</a><button class="t-rows-page__text-button" data-tfa="data-prio:RowsState.prioName" data-prio="mid" data-tvf="$Rows.prio" data-tvi="1" type="button" data-t-on="click:RowsState.cycle" data-tx="t3" data-thor="TextButton">media</button><button class="t-rows-page__text-button" data-tvf="RowsState.starCount" data-tvi="1" type="button" data-t-on="click:RowsState.star" data-tx="t3" data-thor="TextButton">1/3</button><span class="t-rows-page__text-5" data-tf="RowsState.starsOf" data-thor="Text">★☆☆</span><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.rename" data-tx="t3" data-thor="TextButton">!</button><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.unsafe" data-tx="t3" data-thor="TextButton">js</button><button class="t-rows-page__text-button" data-tfa="aria-label:RowsState.labelOf" aria-label="Quitar «Pagar la luz»" type="button" data-t-on="click:RowsState.remove" data-tx="t3" data-thor="TextButton">×</button><input type="hidden" name="tarea" value="Pagar la luz" data-tf="RowsState.titleOf"/>
+            </li>
+            <li class="t-rows-page__row-2" data-tk="t4" data-tvf="$Rows.done" data-tvi="0" data-thor="Row">
+              <input class="t-rows-page__checkbox" type="checkbox" data-t-on="change:RowsState.setDone" data-tx="t4" data-txv data-thor="Checkbox"/><a class="t-rows-page__text-4" data-tfa="href:RowsState.urlOf" data-tf="$Rows.title" data-thor-flex-item="Expanded" data-thor="Text">Leer</a><button class="t-rows-page__text-button" data-tfa="data-prio:RowsState.prioName" data-prio="low" data-tvf="$Rows.prio" data-tvi="0" type="button" data-t-on="click:RowsState.cycle" data-tx="t4" data-thor="TextButton">baja</button><button class="t-rows-page__text-button" data-tvf="RowsState.starCount" data-tvi="3" type="button" data-t-on="click:RowsState.star" data-tx="t4" data-thor="TextButton">3/3</button><span class="t-rows-page__text-5" data-tf="RowsState.starsOf" data-thor="Text">★★★</span><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.rename" data-tx="t4" data-thor="TextButton">!</button><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.unsafe" data-tx="t4" data-thor="TextButton">js</button><button class="t-rows-page__text-button" data-tfa="aria-label:RowsState.labelOf" aria-label="Quitar «Leer»" type="button" data-t-on="click:RowsState.remove" data-tx="t4" data-thor="TextButton">×</button><input type="hidden" name="tarea" value="Leer" data-tf="RowsState.titleOf"/>
+            </li>
+            <template data-tlt="RowsState.tasks">
+              <li class="t-rows-page__row-2" data-tvf="$Rows.done" data-tvi="0" data-thor="Row" data-tp-1="|class|=t-rows-page__row-3;0|checked|=;1|class|=t-rows-page__text-6">
+                <input class="t-rows-page__checkbox" type="checkbox" data-t-on="change:RowsState.setDone" data-tx="{{key}}" data-txv data-thor="Checkbox"/><a class="t-rows-page__text-4" data-tfa="href:RowsState.urlOf" data-tf="$Rows.title" data-thor-flex-item="Expanded" data-thor="Text"></a><button class="t-rows-page__text-button" data-tfa="data-prio:RowsState.prioName" data-prio data-tvf="$Rows.prio" data-tvi="0" type="button" data-t-on="click:RowsState.cycle" data-tx="{{key}}" data-thor="TextButton" data-tp-1="|#|=media" data-tp-2="|#|=alta">baja</button><button class="t-rows-page__text-button" data-tvf="RowsState.starCount" data-tvi="0" type="button" data-t-on="click:RowsState.star" data-tx="{{key}}" data-thor="TextButton" data-tp-1="|#|=1/3" data-tp-2="|#|=2/3" data-tp-3="|#|=3/3">0/3</button><span class="t-rows-page__text-5" data-tf="RowsState.starsOf" data-thor="Text"></span><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.rename" data-tx="{{key}}" data-thor="TextButton">!</button><button class="t-rows-page__text-button" type="button" data-t-on="click:RowsState.unsafe" data-tx="{{key}}" data-thor="TextButton">js</button><button class="t-rows-page__text-button" data-tfa="aria-label:RowsState.labelOf" aria-label type="button" data-t-on="click:RowsState.remove" data-tx="{{key}}" data-thor="TextButton">×</button><input type="hidden" name="tarea" value data-tf="RowsState.titleOf"/>
+              </li>
+            </template>
+          </ul>
+        </form>
+        <div class="t-rows-page__text-field" data-thor="TextField">
+          <label class="t-rows-page__text-7" for="f-quick" data-thor="Text">Agregar rápido (Enter)</label>
+          <div class="t-rows-page__text-field-2" data-thor="TextField">
+            <input id="f-quick" class="t-rows-page__input" type="text" name="quick" data-t-on="enter:RowsState.add" data-t-clear/>
+          </div>
+        </div>
+        <form class="t-rows-page__form-2" action="/nueva" method="post" data-t-on="submit:RowsState.submit" data-thor="Form">
+          <div class="t-rows-page__column-3" data-thor="Column">
+            <div class="t-rows-page__text-form-field" data-thor="TextFormField">
+              <label class="t-rows-page__text-7" for="f-title" data-thor="Text">Nueva tarea</label>
+              <div class="t-rows-page__text-field-2" data-thor="TextField">
+                <input id="f-title" class="t-rows-page__input" type="text" name="title" required minlength="3" data-msg-valuemissing="Escribe la tarea" data-msg-tooshort="Mínimo 3 letras" data-t-validate aria-describedby="f-title-msg" data-t-on="input:RowsState.setDraft"/>
+              </div>
+              <span class="t-rows-page__text-8" id="f-title-msg" aria-live="polite" data-helper="Al menos 3 letras" data-thor="Text">Al menos 3 letras</span>
+            </div>
+            <div class="t-rows-page__row-4" data-thor="Row"><button class="t-rows-page__filled-button" type="submit" data-thor="FilledButton">Guardar</button></div>
+          </div>
+        </form>
+      </main>
+    </div>
+    <script>((D)=>{const a=new Map();const k=(f,j,i)=>{f.toggleAttribute('data-pending',i);i?f.setAttribute('aria-busy',true):f.removeAttribute('aria-busy');for(const b of j)b.disabled=i;};const K='thor:keep';const g=(()=>{try{return sessionStorage;}catch{}})();const P=(p)=>{try{p=decodeURI(p);}catch{}
+return p.replace(/(.)\/$/,'$1');};const Z=(b)=>b.getAttribute('formaction')?.replace(/\?(?:[^&]*&)*(?=\/)|\?.*/,'?')+b.value;const h='button:not([type=button],[type=reset]),input[type=submit],input[type=image]';const d=(f)=>{sub=0;k(f,a.get(f),false);a.delete(f);};let sub;D.addEventListener('submit',(e)=>{const f=e.target,s=e.submitter,t=s?.formTarget||f.target;if(a.has(f))return e.preventDefault();sub=0;if(!f.elements||f.hasAttribute('data-t-nopending')||(s?.formMethod||f.method)==='dialog'||!/^https?:/.test(s?.hasAttribute('formaction')?s.formAction:f.action)||(t&&t!=='_self'))return;a.set(f,[]);if((s?.formMethod||f.method)==='post'){const n=(1+Math.random()).toString(36).slice(2,10);try{D.cookie=`thor-tab=${n};Path=/;Max-Age=60;SameSite=Lax${location.protocol==='https:'?';Secure':''}`;}catch{}
+if(!f.hasAttribute('data-t-reset'))sub=[P(location.pathname),scrollY|0,[...D.querySelectorAll(h)].indexOf(s),0,s?Z(s):'',n];}
+setTimeout(()=>{if(e.defaultPrevented)return(sub=0),a.delete(f);const i=[...f.elements,...f.querySelectorAll('input[type=image]')].filter((b)=>/^(submit|image)$/.test(b.type)&&!b.disabled);k(f,i,true);a.set(f,i);setTimeout(()=>a.get(f)===i&&d(f),15e3);});});D.addEventListener('click',(e)=>e.target.closest?.('a[href]')&&(sub=0));D.defaultView.addEventListener('pagehide',()=>{if(sub)try{sub[3]=Date.now();g[K]=JSON.stringify(sub);}catch{}});D.defaultView.addEventListener('pageshow',(e)=>e.persisted&&((sub=0),a.forEach((_,f)=>d(f))));const c=D.querySelector('[autofocus][aria-invalid=true]');for(let p=c;(p=p?.parentElement);){if(p.matches('details:not([open])'))p.open=true;if(p.matches('[role=group][id]'))D.querySelector(`input[type=radio]:not(:checked)[aria-controls="${CSS.escape(p.id)}"]`)?.click();}
+c?.focus();try{const r=JSON.parse(g[K]);g.removeItem(K);let reset;try{reset=r[5]&&/(?:^|; )thor-scroll=([^;]*)/.exec(D.cookie)?.[1]===r[5];if(reset)D.cookie='thor-scroll=;Max-Age=0;Path=/';}catch{}
+const l=P(location.pathname),i=D.referrer&&new URL(D.referrer);if(!c&&!reset&&!D.prerendering&&!location.hash&&Date.now()-r[3]<2e4&&l===r[0]&&(!i||(i.origin===location.origin&&P(i.pathname)===r[0]))&&performance.getEntriesByType('navigation')[0]?.type==='navigate'){let j,q;const o=D.documentElement.style;const m=()=>(o.overflowAnchor='');const v=()=>((j=1),m());const u=()=>{const b=[...D.querySelectorAll(h)][r[2]];scrollTo({top:r[1],behavior:'instant'});q=scrollY;if(b&&Z(b)===r[4])b.focus({preventScroll:true});};o.overflowAnchor='none';u();for(const n of['wheel','keydown','pointerdown'])addEventListener(n,v,{once:true,passive:true});addEventListener('DOMContentLoaded',()=>j||scrollY!==q||u(),{once:true});addEventListener('load',()=>(j||scrollY!==q||u(),m()),{once:true});}}catch{}})(document);</script>
+  </body>
+</html>

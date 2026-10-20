@@ -1,0 +1,31 @@
+name: thor_lints
+description: Analyzer plugin with thor's own lint rules, enabled in an app's analysis_options.yaml.
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_lints
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - lints
+  - analyzer
+  - web
+  - flutter
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+# Not a workspace member: the analysis server resolves plugins in their own
+# synthetic package. analysis_server_plugin pins the analyzer version, so
+# keep it in sync with the workspace's analyzer (^12.1.0).
+dependencies:
+  analysis_server_plugin: ^0.3.14
+  analyzer: ^12.1.0
+  analyzer_plugin: ^0.14.8
+  # The CSS easing of a constant `Curve` in the lite translator (lib/lite/)
+  # and the error codes' links. Pure Dart, no dependencies.
+  thor_style:
+    path: ../thor_style
+
+dev_dependencies:
+  analyzer_testing: 0.2.5
+  test: ^1.25.0
+  test_reflective_loader: ^0.4.0

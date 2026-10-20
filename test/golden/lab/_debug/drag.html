@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <style>@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;</style>
+    <style>@layer thor.reset {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+}</style>
+    <title>Arrastrar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style id="thor-styles">@layer thor.reset,thor.tokens,thor.components,thor.props,thor.overrides;@layer thor.props{.t-drag-page{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; justify-content: center}.t-drag-page__column{min-width: 0; flex: 0 1 auto; max-width: 480px; align-self: center; box-sizing: border-box; width: 100%; display: flex; flex-direction: column; min-height: 0; align-items: stretch; gap: 16px; padding: 16px}.t-drag-page__text{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 28px; font-weight: 800; flex: 0 0 auto}.t-dismiss-section{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; gap: 8px}.t-dismiss-section__text{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 18px; font-weight: 700}.t-dismiss-section__container{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px; background-color: #eef2ff; border-radius: 12px}.t-dismiss-section__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0; white-space: pre-wrap}.t-dismiss-section__column{list-style: none; margin: 0; padding: 0; flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; gap: 8px}.t-dismiss-section__dismissible{flex: 0 0 auto; display: grid; grid-template-rows: 1fr; overflow: clip; transition: grid-template-rows 300ms ease-in-out}.t-dismiss-section__dismissible[data-t-dm-gone]{grid-template-rows: 0fr}.t-dismiss-section__dismissible background{display: grid; grid-area: 1 / 1; min-width: 0; min-height: 0; visibility: hidden}.t-dismiss-section__dismissible background[data-t-dm-on]{visibility: visible}.t-dismiss-section__container-2{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 0px 16px; background-color: #16a34a; justify-content: center}.t-dismiss-section__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 1 auto; max-width: 100%; margin-left: 0; margin-right: auto; color: #ffffff}.t-dismiss-section__container-3{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 0px 16px; background-color: #dc2626; justify-content: center}.t-dismiss-section__text-4{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 1 auto; max-width: 100%; margin-left: auto; margin-right: 0; color: #ffffff}.t-dismiss-section__container-4{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 16px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102); grid-area: 1 / 1; translate: var(--t-dm-x, 0px) var(--t-dm-y, 0px); touch-action: pan-y}.t-dismiss-section__container-4[data-t-dm-out]{transition: translate 200ms ease-out}.t-dismiss-section__container-4[data-t-dm-drag]{transition: none; user-select: none; cursor: grabbing}.t-dismiss-section__text-5{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0}.t-dismiss-section__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center}.t-dismiss-section__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-dismiss-section__text-6{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; white-space: pre-wrap}.t-dismiss-section__dismissible-2{flex: 0 0 auto; display: grid; grid-template-columns: 1fr; overflow: clip}.t-dismiss-section__dismissible-2[data-t-dm-gone]{grid-template-columns: 0fr}.t-dismiss-section__container-5{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; height: 64px; padding: 16px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102); grid-area: 1 / 1; translate: var(--t-dm-x, 0px) var(--t-dm-y, 0px); touch-action: pan-x}.t-dismiss-section__container-5[data-t-dm-out]{transition: translate 200ms ease-out}.t-dismiss-section__container-5[data-t-dm-drag]{transition: none; user-select: none; cursor: grabbing}.t-drop-section{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; gap: 8px}.t-drop-section__text{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 18px; font-weight: 700}.t-drop-section__column{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: flex-start; padding: 12px; background-color: #eef2ff; border-radius: 12px}.t-drop-section__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; white-space: pre-wrap}.t-_column{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; gap: 4px}.t-_column__text{margin: 0; min-width: 0; overflow-wrap: break-word; font-size: 18px; font-weight: 700; flex: 0 0 auto}.t-_column__column{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 72px; align-items: stretch; gap: 8px; padding: 8px; background-color: #f1f5f9; border-radius: 12px}.t-_column__column[data-t-dt-over]{background-color: #dbeafe; border-radius: 12px}.t-_column__column[data-t-dt-reject]{background-color: #fee2e2; border-radius: 12px}.t-_column__container{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102); cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none}.t-_column__container[data-t-dg-active]{cursor: grabbing}.t-_column__container[data-t-dg-gone]{display: none}.t-_column__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0}.t-_column__container-2{margin: 0; border: 0; padding: 12px; overflow: visible; background-color: #ffffff; color: inherit; width: 180px; height: auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; border-radius: 12px; box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.333); position: fixed; inset: 0 auto auto 0; z-index: 2147483647; pointer-events: none; translate: var(--t-dg-x, 0px) var(--t-dg-y, 0px)}.t-_column__container-3{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px; background-color: #e2e8f0; border-radius: 12px; overflow-wrap: anywhere}.t-_column__container-4{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102); cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation}.t-_column__container-4[data-t-dg-active]{cursor: grabbing}.t-_column__container-4[data-t-dg-gone]{display: none}.t-drop-section__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center}.t-drop-section__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-drop-section__row-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px}.t-drop-section__container{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102); overflow-wrap: anywhere; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none}.t-drop-section__container[data-t-dg-active]{cursor: grabbing}.t-drop-section__container[data-t-dg-gone]{display: none}.t-drop-section__container-2{margin: 0; border: 0; padding: 12px; overflow: visible; background-color: #ffffff; color: inherit; width: max-content; height: auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; border-radius: 12px; box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.333); overflow-wrap: anywhere; position: fixed; inset: 0 auto auto 0; z-index: 2147483647; pointer-events: none; translate: var(--t-dg-x, 0px) var(--t-dg-y, 0px)}.t-drop-section__container-3{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px; background-color: #fef3c7; border-radius: 12px}.t-drop-section__container-3[data-t-dt-over]{opacity: 0.6}.t-drop-section__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0; white-space: pre-wrap}.t-reorder-section{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; gap: 8px}.t-reorder-section__text{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; font-size: 18px; font-weight: 700}.t-reorder-section__column{flex: 0 0 auto; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: flex-start; padding: 12px; background-color: #eef2ff; border-radius: 12px}.t-reorder-section__text-2{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto; white-space: pre-wrap}.t-reorder-section__reorderable-list-view ends{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; overflow: auto; align-items: stretch}.t-reorder-section__text-3{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 0 0 auto}.t-reorder-section__reorderable-list-view{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; align-items: stretch; position: relative}.t-reorder-section__reorderable-list-view item{flex: 0 0 auto; position: relative; translate: var(--t-ro-x, 0px) var(--t-ro-y, 0px); touch-action: manipulation; -webkit-touch-callout: none}.t-reorder-section__reorderable-list-view item[data-t-ro-shift]{transition: translate 200ms ease}.t-reorder-section__reorderable-list-view item[data-t-ro-settle]{transition: translate 200ms ease; z-index: 1}.t-reorder-section__reorderable-list-view item[data-t-ro-drag]{z-index: 1; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28); cursor: grabbing}.t-reorder-section__container{display: flex; flex-direction: column; box-sizing: border-box; min-width: 0; min-height: 0; padding: 12px 52px 12px 12px; margin: 8px 0px 0px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102)}.t-reorder-section__text-4{margin: 0; min-width: 0; overflow-wrap: break-word; flex: 1 1 auto; min-height: 0}.t-reorder-section__reorderable-list-view handle{appearance: none; border: 0; margin: 0; padding: 0; font: inherit; color: var(--t-on-surface-variant, #49454f); background: none; text-align: inherit; cursor: grab; position: absolute; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 40px; height: 40px; inset-inline-end: 4px; top: 50%; margin-top: -20px; border-radius: 8px; touch-action: none}.t-reorder-section__icon{display: block; flex: none; overflow: visible; fill: currentColor}.t-reorder-section__row{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center}.t-reorder-section__text-button{appearance: none; border: 0; margin: 0; font: inherit; font-size: var(--t-label-large-size, 14px); font-weight: var(--t-label-large-weight, 500); letter-spacing: var(--t-label-large-tracking, 0.1px); line-height: var(--t-label-large-line, 20px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; min-height: 40px; padding: 10px 12px; border-radius: 20px; cursor: pointer; transition-property: background-color, box-shadow; transition-duration: 150ms; flex: 0 0 auto; background-color: transparent; color: var(--t-primary, #6750a4); overflow-wrap: anywhere}.t-reorder-section__reorderable-list-view-2{flex: 0 0 auto; align-self: stretch; display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; overflow: auto; align-items: stretch; overflow-y: hidden; position: relative}.t-reorder-section__reorderable-list-view item-2{flex: 0 0 auto; position: relative; translate: var(--t-ro-x, 0px) var(--t-ro-y, 0px); -webkit-touch-callout: none}.t-reorder-section__reorderable-list-view item-2[data-t-ro-shift]{transition: translate 200ms ease}.t-reorder-section__reorderable-list-view item-2[data-t-ro-settle]{transition: translate 200ms ease; z-index: 1}.t-reorder-section__reorderable-list-view item-2[data-t-ro-drag]{z-index: 1; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28); cursor: grabbing}.t-reorder-section__row-2{display: flex; flex-direction: row; box-sizing: border-box; min-width: 0; min-height: 0; align-items: center; gap: 8px; padding: 8px; margin: 0px 8px 0px 0px; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.102)}.t-reorder-section__icon-2{flex: none; display: block; overflow: visible; fill: currentColor; cursor: grab; touch-action: none}@media (prefers-reduced-motion: reduce){.t-dismiss-section__dismissible{transition-duration: 1ms}.t-dismiss-section__container-4{transition-duration: 1ms}.t-dismiss-section__dismissible-2{transition-duration: 1ms}.t-dismiss-section__container-5{transition-duration: 1ms}.t-reorder-section__reorderable-list-view item{transition-duration: 1ms}.t-reorder-section__reorderable-list-view item-2{transition-duration: 1ms}}@media (hover: hover){.t-dismiss-section__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-drop-section__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}.t-reorder-section__reorderable-list-view handle:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: rgba(0, 0, 0, 0.08)}.t-reorder-section__text-button:hover:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 8%, transparent)}}.t-dismiss-section__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-dismiss-section__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-dismiss-section__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-drop-section__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-drop-section__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-drop-section__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-reorder-section__reorderable-list-view handle:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}.t-reorder-section__text-button:active:not(:is(:disabled,[aria-disabled="true"])){background-color: color-mix(in srgb, var(--t-primary, #6750a4) 10%, transparent)}.t-reorder-section__text-button:is(:disabled,[aria-disabled="true"]){cursor: default; opacity: 0.38}.t-reorder-section__text-button:focus-visible{outline: 2px solid var(--t-primary, #6750a4); outline-offset: 2px}@media (prefers-reduced-motion: reduce){.t-dismiss-section__text-button{transition-duration: 1ms}.t-drop-section__text-button{transition-duration: 1ms}.t-reorder-section__text-button{transition-duration: 1ms}}}@property --t-dm-x{syntax:'<length>';inherits:false;initial-value:0px}@property --t-dm-y{syntax:'<length>';inherits:false;initial-value:0px}@property --t-dg-x{syntax:'<length>';inherits:false;initial-value:0px}@property --t-dg-y{syntax:'<length>';inherits:false;initial-value:0px}@property --t-ro-x{syntax:'<length>';inherits:false;initial-value:0px}@property --t-ro-y{syntax:'<length>';inherits:false;initial-value:0px}</style>
+    <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"[data-no-prefetch],[rel~=nofollow],[download],[target]:not([target=_self])"}}]},"eagerness":"moderate"}]}</script>
+    <script data-thor-prefetch="/_thor/prefetch.5yhk6q.js">(()=>{var d=document,u=d.currentScript.getAttribute("data-thor-prefetch");HTMLScriptElement.supports&&HTMLScriptElement.supports("speculationrules")||addEventListener("load",()=>{var s=d.createElement("script");s.src=u;d.head.append(s)})})()</script>
+    <script id="thor-debug-inspector">(() => {
+  const mark = 'data-thor-warning';
+  const run = () => {
+    for (const e of document.querySelectorAll('[' + mark + ']')) {
+      e.style.outline = ''; e.removeAttribute(mark);
+    }
+    const px = (v) => parseFloat(v) || 0;
+    const boxes = (e) => [...e.children].flatMap((k) => {
+      const ks = getComputedStyle(k);
+      if (ks.display === 'contents') return boxes(k);
+      if (ks.display === 'none' || ks.position === 'absolute' || ks.position === 'fixed') return [];
+      return [[k, ks]];
+    });
+    // The layout box, in the same frame for the flex and its children: the
+    // offset chain ignores every transform (translate, rotate, scale), which
+    // moves the paint and not the layout (a Flutter Transform, a spinning
+    // CircularProgressIndicator, a SlideTransition mid-entrance). An SVG has
+    // no offsets: its box goes relative to the flex's painted one.
+    const at = (n) => {
+      let x = n.offsetLeft, y = n.offsetTop;
+      for (let p = n.offsetParent; p; p = p.offsetParent) {
+        x += p.offsetLeft + p.clientLeft; y += p.offsetTop + p.clientTop;
+      }
+      return { left: x, top: y, right: x + n.offsetWidth, bottom: y + n.offsetHeight };
+    };
+    const laid = (e, k) => {
+      const f = at(e);
+      if (k.offsetWidth !== undefined) return at(k);
+      const [q, r] = [k.getBoundingClientRect(), e.getBoundingClientRect()];
+      return { left: f.left + q.left - r.left, top: f.top + q.top - r.top,
+        right: f.left + q.right - r.left, bottom: f.top + q.bottom - r.top };
+    };
+    const overflow = (e, cs, row) => {
+      const r = at(e);
+      const start = row
+        ? r.left + px(cs.borderLeftWidth) + px(cs.paddingLeft)
+        : r.top + px(cs.borderTopWidth) + px(cs.paddingTop);
+      const end = row
+        ? r.right - px(cs.borderRightWidth) - px(cs.paddingRight)
+        : r.bottom - px(cs.borderBottomWidth) - px(cs.paddingBottom);
+      let over = 0;
+      for (const [k, ks] of boxes(e)) {
+        const q = laid(e, k);
+        const near = row ? q.left - px(ks.marginLeft) : q.top - px(ks.marginTop);
+        const far = row ? q.right + px(ks.marginRight) : q.bottom + px(ks.marginBottom);
+        over = Math.max(over, far - end, start - near);
+      }
+      return Math.round(over);
+    };
+    const warn = (e, msg) => {
+      if (e.hasAttribute(mark)) return;
+      console.warn('thor: ' + msg, e);
+      e.style.outline = '2px dashed #e11d48';
+      e.setAttribute(mark, msg);
+    };
+    for (const e of document.querySelectorAll('[data-thor=Row], [data-thor=Column], [data-thor=Flex]')) {
+      // Not laid out (a closed dialog, a hidden breakpoint): its empty
+      // box minus its padding would read as an overflow.
+      if (!e.getClientRects().length) continue;
+      const cs = getComputedStyle(e);
+      const row = cs.flexDirection.startsWith('row');
+      // A flex that scrolls on its own (ListView, a pinned sidebar) holds
+      // more than it shows on purpose: not an overflow.
+      if (/auto|scroll/.test(row ? cs.overflowX : cs.overflowY)) continue;
+      const over = overflow(e, cs, row);
+      if (over > 1) warn(e, 'A ' + (row ? 'Row' : 'Column') + ' overflowed by ' + over + 'px. Wrap the long child in Expanded or Flexible. (THOR-L001)');
+    }
+    for (const e of document.querySelectorAll('[data-thor-flex-item]')) {
+      const p = e.parentElement;
+      // Hidden (a breakpoint's ResponsiveVisibility): nothing is laid out.
+      if (p && p.offsetParent === null && getComputedStyle(p).position !== 'fixed') continue;
+      if (p && !getComputedStyle(p).display.includes('flex')) warn(e, 'Expanded/Flexible is not a direct child of a Row, Column or Flex (incorrect use of ParentDataWidget). (THOR-L002)');
+    }
+    // A text field a screen reader announces with no name: thor wraps the
+    // input in an empty label element, so just `aria-label` (labelText,
+    // hintText, Semantics), a label with text (`for` or around it),
+    // `aria-labelledby` or `title` name it. A Text written beside the field
+    // names nothing.
+    const bare = new Set(['hidden', 'submit', 'button', 'reset', 'image', 'checkbox', 'radio', 'file', 'range', 'color']);
+    const said = (l) => {
+      if ((l.getAttribute('aria-label') || '').trim()) return true;
+      // thor's own wrapper holds prefix/suffix text ('$ ', 'kg'), no name.
+      if (l.getAttribute('data-thor') === 'TextField') return false;
+      const c = l.cloneNode(true);
+      for (const k of c.querySelectorAll('input, textarea, select')) k.remove();
+      return c.textContent.trim() !== '';
+    };
+    for (const e of document.querySelectorAll('[data-thor=TextField] input, [data-thor=TextField] textarea')) {
+      if (bare.has(e.type)) continue;
+      const attr = (n) => (e.getAttribute(n) || '').trim();
+      if (attr('aria-label') || attr('aria-labelledby') || attr('title')) continue;
+      if ([...(e.labels || [])].some(said)) continue;
+      warn(e, 'A text field has no accessible name: a screen reader announces just "edit text". Give it InputDecoration(labelText:) or hintText:, or wrap it in Semantics(label:). A Text beside it names nothing. (THOR-L004)');
+    }
+    for (const e of document.querySelectorAll('[data-thor=LayoutScope]')) {
+      if (e.getBoundingClientRect().width === 0 && e.offsetParent) warn(e, 'LayoutScope has zero width: it needs a bounded width (e.g. inside Expanded). (THOR-L003)');
+    }
+  };
+  let timer;
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 150); };
+  addEventListener('load', () => document.fonts.ready.then(run));
+  addEventListener('resize', schedule);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['class'],
+  });
+})();
+</script>
+    <link rel="preload" as="script" href="/engine.dart.js" fetchpriority="low"/>
+    <script data-thor-engine="/engine.dart.js">(()=>{var d=document,w=window,c=d.currentScript,u=c.getAttribute("data-thor-engine"),q=[],P=new Map,s=0,k="thor-reload:"+location.pathname,G=f=>{try{return f(w.sessionStorage)}catch(x){}},T=["pointerdown","keydown","focusin","touchstart"],M="[data-tks],[data-tsi],[data-tke]",E=["click","input","change","submit","keydown"],X=()=>E.forEach(t=>d.removeEventListener(t,Q,!0)),H=(n,t)=>{for(;n&&!(";"+n.getAttribute("data-t-on")).includes(";"+t+":");)n=n.parentElement?.closest("[data-t-on]");return n},L=x=>{if(s)return;s=1;T.forEach(t=>w.removeEventListener(t,L,!0));if([].some.call(d.scripts,y=>y.getAttribute("src")==u)&&!d._tf){d.addEventListener("thor-failed",()=>{s=0;L()},{once:!0});return}var e=d.createElement("script");e.src=u;x&&x.type&&(e.fetchPriority="high");e.onerror=()=>G(S=>{if(!S.getItem(k)){S.setItem(k,1);location.reload();return 1}})||X();d.head.append(e)},Q=e=>{var y=e.type,k=e.key,K=y=="keydown",Z=e.target,n=Z.closest?.("[data-t-on]"),h=H(n,K?"enter":y),B=Z==d.body||Z==d.documentElement,p=K?k=="Enter"&&h||n==Z&&(k=="Enter"||k==" ")&&n.getAttribute("data-t-on")&&n.getAttribute("role")=="button":h;if(K&&e.isComposing)return;if(p||K&&(Z.closest?.(M)||B&&d.querySelector(M))){if(p&&(K||y=="submit"||y=="click"&&h.tagName=="A"&&h.hasAttribute("href")&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(!h.target||h.target=="_self")&&!h.hasAttribute("download")))e.preventDefault();var r=k=="Enter"?Z.value:null,f=r;if(r!=null&&Z.hasAttribute("data-t-clear")){f=r.startsWith(P.get(Z)||"")?r.slice((P.get(Z)||"").length):r;P.set(Z,r)}q.push([e,Z,r,f])}};E.forEach(t=>d.addEventListener(t,Q,!0));T.forEach(t=>w.addEventListener(t,L,{capture:!0,passive:!0}));d.addEventListener("thor:hydrated",()=>{G(S=>S.removeItem(k));X();var W=new Map;q.forEach(([e,n,v,f])=>{if(v!=null){W.has(n)||W.set(n,[n.value]);W.get(n)[1]=v;n.value=f}n.dispatchEvent(e.type=="keydown"?new e.constructor(e.type,e):new Event(e.type,{bubbles:!0,cancelable:!0}))});W.forEach(([l,c],n)=>n.value=n.value==c?l:l.startsWith(c)?l.slice(c.length):l);q=[]},{once:!0});var I=()=>w.requestIdleCallback?requestIdleCallback(L,{timeout:2e3}):setTimeout(L,200);d.readyState=="complete"?I():w.addEventListener("load",I,{once:!0})})()</script>
+  </head>
+  <body>
+    <div class="t-drag-page" data-thor="Center">
+      <main class="t-drag-page__column" data-thor="Column">
+        <h1 class="t-drag-page__text" data-thor="Text">Arrastrar</h1>
+        <div class="t-dismiss-section" data-thor="Column">
+          <span class="t-dismiss-section__text" data-thor="Text">Bandeja: desliza para descartar</span>
+          <div class="t-dismiss-section__container" data-thor="Container">
+            <span class="t-dismiss-section__text-2" data-tt="InboxState.status" data-thor="Text">Desliza una fila</span>
+          </div>
+          <ul class="t-dismiss-section__column" data-tl="InboxState.messages" data-tlk="InboxState.rowKey" data-thor="Column">
+            <li class="t-dismiss-section__dismissible" data-tk="m1" data-t-dm="dismissed:InboxState.dismissed;confirm:InboxState.confirm" data-tx="m1" data-t-dm-cfg="h|0.4|0.4|-|-|200|300" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="startToEnd" data-thor="Dismissible background"><div class="t-dismiss-section__container-2" data-thor="Container"><span class="t-dismiss-section__text-3" data-thor="Text">Archivar</span></div></div><div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="endToStart" data-thor="Dismissible background"><div class="t-dismiss-section__container-3" data-thor="Container"><span class="t-dismiss-section__text-4" data-thor="Text">Borrar</span></div></div><div class="t-dismiss-section__container-4" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="InboxState.subject" data-thor="Text">Pedido #1042 listo</span></div>
+            </li>
+            <li class="t-dismiss-section__dismissible" data-tk="m2" data-t-dm="dismissed:InboxState.dismissed;confirm:InboxState.confirm" data-tx="m2" data-t-dm-cfg="h|0.4|0.4|-|-|200|300" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="startToEnd" data-thor="Dismissible background"><div class="t-dismiss-section__container-2" data-thor="Container"><span class="t-dismiss-section__text-3" data-thor="Text">Archivar</span></div></div><div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="endToStart" data-thor="Dismissible background"><div class="t-dismiss-section__container-3" data-thor="Container"><span class="t-dismiss-section__text-4" data-thor="Text">Borrar</span></div></div><div class="t-dismiss-section__container-4" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="InboxState.subject" data-thor="Text">Corte de caja (pide confirmar)</span></div>
+            </li>
+            <li class="t-dismiss-section__dismissible" data-tk="m3" data-t-dm="dismissed:InboxState.dismissed;confirm:InboxState.confirm" data-tx="m3" data-t-dm-cfg="h|0.4|0.4|-|-|200|300" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="startToEnd" data-thor="Dismissible background"><div class="t-dismiss-section__container-2" data-thor="Container"><span class="t-dismiss-section__text-3" data-thor="Text">Archivar</span></div></div><div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="endToStart" data-thor="Dismissible background"><div class="t-dismiss-section__container-3" data-thor="Container"><span class="t-dismiss-section__text-4" data-thor="Text">Borrar</span></div></div><div class="t-dismiss-section__container-4" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="InboxState.subject" data-thor="Text">Nuevo proveedor: Café Altura</span></div>
+            </li>
+            <li class="t-dismiss-section__dismissible" data-tk="m4" data-t-dm="dismissed:InboxState.dismissed;confirm:InboxState.confirm" data-tx="m4" data-t-dm-cfg="h|0.4|0.4|-|-|200|300" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="startToEnd" data-thor="Dismissible background"><div class="t-dismiss-section__container-2" data-thor="Container"><span class="t-dismiss-section__text-3" data-thor="Text">Archivar</span></div></div><div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="endToStart" data-thor="Dismissible background"><div class="t-dismiss-section__container-3" data-thor="Container"><span class="t-dismiss-section__text-4" data-thor="Text">Borrar</span></div></div><div class="t-dismiss-section__container-4" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="InboxState.subject" data-thor="Text">Recordatorio: inventario</span></div>
+            </li>
+            <template data-tlt="InboxState.messages">
+              <li class="t-dismiss-section__dismissible" data-t-dm="dismissed:InboxState.dismissed;confirm:InboxState.confirm" data-tx="{{key}}" data-t-dm-cfg="h|0.4|0.4|-|-|200|300" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+                <div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="startToEnd" data-thor="Dismissible background"><div class="t-dismiss-section__container-2" data-thor="Container"><span class="t-dismiss-section__text-3" data-thor="Text">Archivar</span></div></div><div class="t-dismiss-section__dismissible background" aria-hidden="true" data-t-dm-bg="endToStart" data-thor="Dismissible background"><div class="t-dismiss-section__container-3" data-thor="Container"><span class="t-dismiss-section__text-4" data-thor="Text">Borrar</span></div></div><div class="t-dismiss-section__container-4" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="InboxState.subject" data-thor="Text"></span></div>
+              </li>
+            </template>
+          </ul>
+          <div class="t-dismiss-section__row" data-thor="Row">
+            <button class="t-dismiss-section__text-button" type="button" data-t-on="click:InboxState.restore" data-thor="TextButton">Restaurar bandeja</button>
+          </div>
+          <span class="t-dismiss-section__text" data-thor="Text">Cartas: hacia arriba (vertical)</span>
+          <span class="t-dismiss-section__text-6" data-tt="CardsState.status" data-thor="Text">Sin cartas descartadas</span>
+          <ul class="t-dismiss-section__column" data-tl="CardsState.cards" data-tlk="CardsState.rowKey" data-thor="Column">
+            <li class="t-dismiss-section__dismissible-2" data-tk="c1" data-t-dm="dismissed:CardsState.dismissed" data-tx="c1" data-t-dm-cfg="v|-|-|0.4|-|200|0" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__container-5" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="CardsState.label" data-thor="Text">Carta 1</span></div>
+            </li>
+            <li class="t-dismiss-section__dismissible-2" data-tk="c2" data-t-dm="dismissed:CardsState.dismissed" data-tx="c2" data-t-dm-cfg="v|-|-|0.4|-|200|0" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__container-5" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="CardsState.label" data-thor="Text">Carta 2</span></div>
+            </li>
+            <li class="t-dismiss-section__dismissible-2" data-tk="c3" data-t-dm="dismissed:CardsState.dismissed" data-tx="c3" data-t-dm-cfg="v|-|-|0.4|-|200|0" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+              <div class="t-dismiss-section__container-5" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="CardsState.label" data-thor="Text">Carta 3</span></div>
+            </li>
+            <template data-tlt="CardsState.cards">
+              <li class="t-dismiss-section__dismissible-2" data-t-dm="dismissed:CardsState.dismissed" data-tx="{{key}}" data-t-dm-cfg="v|-|-|0.4|-|200|0" tabindex="0" aria-keyshortcuts="Delete" data-thor="Dismissible">
+                <div class="t-dismiss-section__container-5" data-t-dm-body data-thor="Container"><span class="t-dismiss-section__text-5" data-tf="CardsState.label" data-thor="Text"></span></div>
+              </li>
+            </template>
+          </ul>
+        </div>
+        <div class="t-drop-section" data-thor="Column">
+          <span class="t-drop-section__text" data-thor="Text">Tablero: arrastra tarjetas</span>
+          <div class="t-drop-section__column" data-thor="Column">
+            <span class="t-drop-section__text-2" data-tt="BoardState.status" data-thor="Text">Arrastra una tarjeta</span>
+            <span class="t-drop-section__text-2" data-tt="BoardState.whereLabel" data-thor="Text"></span>
+            <span class="t-drop-section__text-2" data-tt="BoardState.startsLabel" data-thor="Text">Inicios: 0</span>
+          </div>
+          <div class="t-_column" data-thor="Column">
+            <h3 class="t-_column__text" data-thor="Text">Por hacer</h3>
+            <div class="t-_column__column" data-tl="BoardState.todo" data-tlk="BoardState.taskKey" aria-label="Por hacer" data-t-dt="accept:BoardState.canDrop;drop:BoardState.moveTo;leave:BoardState.left;move:BoardState.moved" data-tx="todo" data-t-dg-type="String" data-thor="Column">
+              <div class="t-_column__container" data-tk="t1" data-t-dg="start:BoardState.started;cancel:BoardState.canceled;end:BoardState.ended;done:BoardState.completed" data-t-dg-data="t1" data-t-dg-type="String" data-t-dg-cfg="f|0|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" data-thor="Container">
+                <span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text">Pedir café</span>
+                <template data-t-dg-fb>
+                  <div class="t-_column__container-2" data-t-dg-ghost data-thor="Container"><span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text">Pedir café</span></div>
+                </template>
+                <template data-t-dg-ph><div class="t-_column__container-3" data-thor="Container">…</div></template>
+              </div>
+              <div class="t-_column__container" data-tk="t2" data-t-dg="start:BoardState.started;cancel:BoardState.canceled;end:BoardState.ended;done:BoardState.completed" data-t-dg-data="t2" data-t-dg-type="String" data-t-dg-cfg="f|0|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" data-thor="Container">
+                <span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text">Contar caja</span>
+                <template data-t-dg-fb>
+                  <div class="t-_column__container-2" data-t-dg-ghost data-thor="Container"><span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text">Contar caja</span></div>
+                </template>
+                <template data-t-dg-ph><div class="t-_column__container-3" data-thor="Container">…</div></template>
+              </div>
+              <template data-tlt="BoardState.todo">
+                <div class="t-_column__container" data-t-dg="start:BoardState.started;cancel:BoardState.canceled;end:BoardState.ended;done:BoardState.completed" data-t-dg-data="{{key}}" data-t-dg-type="String" data-t-dg-cfg="f|0|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" data-thor="Container">
+                  <span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text"></span>
+                  <template data-t-dg-fb>
+                    <div class="t-_column__container-2" data-t-dg-ghost data-thor="Container"><span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text"></span></div>
+                  </template>
+                  <template data-t-dg-ph><div class="t-_column__container-3" data-thor="Container">…</div></template>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="t-_column" data-thor="Column">
+            <h3 class="t-_column__text" data-thor="Text">En curso (mantén pulsado)</h3>
+            <div class="t-_column__column" data-tl="BoardState.doing" data-tlk="BoardState.taskKey" aria-label="En curso (mantén pulsado)" data-t-dt="accept:BoardState.canDrop;drop:BoardState.moveTo;leave:BoardState.left;move:BoardState.moved" data-tx="doing" data-t-dg-type="String" data-thor="Column">
+              <div class="t-_column__container-4" data-tk="t3" data-t-dg data-t-dg-data="t3" data-t-dg-type="String" data-t-dg-cfg="f|200|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" data-thor="Container">
+                <span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text">Armar pedido</span>
+                <template data-t-dg-fb>
+                  <div class="t-_column__container-2" data-t-dg-ghost data-thor="Container"><span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text">Armar pedido</span></div>
+                </template>
+              </div>
+              <template data-tlt="BoardState.doing">
+                <div class="t-_column__container-4" data-t-dg data-t-dg-data="{{key}}" data-t-dg-type="String" data-t-dg-cfg="f|200|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" data-thor="Container">
+                  <span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text"></span>
+                  <template data-t-dg-fb>
+                    <div class="t-_column__container-2" data-t-dg-ghost data-thor="Container"><span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text"></span></div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="t-_column" data-thor="Column">
+            <h3 class="t-_column__text" data-thor="Text">Hecho (solo lo que está en curso)</h3>
+            <div class="t-_column__column" data-tl="BoardState.done" data-tlk="BoardState.taskKey" aria-label="Hecho (solo lo que está en curso)" data-t-dt="accept:BoardState.canDrop;drop:BoardState.moveTo;leave:BoardState.left;move:BoardState.moved" data-tx="done" data-t-dg-type="String" data-thor="Column">
+              <template data-tlt="BoardState.done">
+                <div class="t-_column__container" data-t-dg="start:BoardState.started;cancel:BoardState.canceled;end:BoardState.ended;done:BoardState.completed" data-t-dg-data="{{key}}" data-t-dg-type="String" data-t-dg-cfg="f|0|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" data-thor="Container">
+                  <span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text"></span>
+                  <template data-t-dg-fb>
+                    <div class="t-_column__container-2" data-t-dg-ghost data-thor="Container"><span class="t-_column__text-2" data-tf="BoardState.taskTitle" data-thor="Text"></span></div>
+                  </template>
+                  <template data-t-dg-ph><div class="t-_column__container-3" data-thor="Container">…</div></template>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="t-drop-section__row" data-thor="Row">
+            <button class="t-drop-section__text-button" type="button" data-t-on="click:BoardState.add" data-thor="TextButton">Añadir tarjeta</button>
+          </div>
+          <span class="t-drop-section__text" data-thor="Text">Números: el objetivo solo suma números</span>
+          <div class="t-drop-section__row-2" data-thor="Row">
+            <div class="t-drop-section__container" data-t-dg data-t-dg-data="3" data-t-dg-type="int" data-t-dg-cfg="f|0|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" aria-label="Número 3" data-thor="Container">
+              3
+              <template data-t-dg-fb><div class="t-drop-section__container-2" data-t-dg-ghost data-thor="Container">3</div></template>
+            </div>
+            <div class="t-drop-section__container" data-t-dg data-t-dg-data="5" data-t-dg-type="int" data-t-dg-cfg="f|0|c|1|0|0" tabindex="0" role="button" aria-roledescription="draggable" aria-label="Número 5" data-thor="Container">
+              5
+              <template data-t-dg-fb><div class="t-drop-section__container-2" data-t-dg-ghost data-thor="Container">5</div></template>
+            </div>
+            <div class="t-drop-section__container-3" data-t-dt="drop:BoardState.addNumber" data-t-dg-type="int" aria-label="Sumador" data-thor="Container">
+              <span class="t-drop-section__text-3" data-tt="BoardState.totalLabel" data-thor="Text">Total: 0</span>
+            </div>
+          </div>
+        </div>
+        <div class="t-reorder-section" data-thor="Column">
+          <span class="t-reorder-section__text" data-thor="Text">Pendientes: reordena arrastrando</span>
+          <div class="t-reorder-section__column" data-thor="Column">
+            <span class="t-reorder-section__text-2" data-tt="ReorderState.status" data-thor="Text">Reordena la lista</span>
+            <span class="t-reorder-section__text-2" data-tt="ReorderState.order" data-thor="Text">Orden: a,b,c,d</span>
+            <span class="t-reorder-section__text-2" data-tt="ReorderState.eventsLabel" data-thor="Text"></span>
+          </div>
+          <div class="t-reorder-section__reorderable-list-view ends" data-thor="ReorderableListView ends">
+            <span class="t-reorder-section__text-3" data-thor="Text">Lista</span>
+            <div class="t-reorder-section__reorderable-list-view" role="list" data-t-ro="reorder:ReorderState.reorder;start:ReorderState.started;end:ReorderState.ended" data-t-ro-cfg="v|1" data-tl="ReorderState.todos" data-tlk="ReorderState.todoKey" data-thor="ReorderableListView">
+              <div class="t-reorder-section__reorderable-list-view item" data-tk="a" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+                <div class="t-reorder-section__container" data-thor="Container">
+                  <span class="t-reorder-section__text-4" data-tf="ReorderState.todoTitle" data-thor="Text">Pedir café</span>
+                </div>
+                <button class="t-reorder-section__reorderable-list-view handle" type="button" data-t-ro-h aria-label="Reorder" aria-roledescription="drag handle" aria-keyshortcuts="Space Alt+ArrowUp Alt+ArrowDown" data-thor="ReorderableListView handle">
+                  <svg class="t-reorder-section__icon" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+                </button>
+              </div>
+              <div class="t-reorder-section__reorderable-list-view item" data-tk="b" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+                <div class="t-reorder-section__container" data-thor="Container">
+                  <span class="t-reorder-section__text-4" data-tf="ReorderState.todoTitle" data-thor="Text">Contar caja</span>
+                </div>
+                <button class="t-reorder-section__reorderable-list-view handle" type="button" data-t-ro-h aria-label="Reorder" aria-roledescription="drag handle" aria-keyshortcuts="Space Alt+ArrowUp Alt+ArrowDown" data-thor="ReorderableListView handle">
+                  <svg class="t-reorder-section__icon" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+                </button>
+              </div>
+              <div class="t-reorder-section__reorderable-list-view item" data-tk="c" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+                <div class="t-reorder-section__container" data-thor="Container">
+                  <span class="t-reorder-section__text-4" data-tf="ReorderState.todoTitle" data-thor="Text">Armar pedido</span>
+                </div>
+                <button class="t-reorder-section__reorderable-list-view handle" type="button" data-t-ro-h aria-label="Reorder" aria-roledescription="drag handle" aria-keyshortcuts="Space Alt+ArrowUp Alt+ArrowDown" data-thor="ReorderableListView handle">
+                  <svg class="t-reorder-section__icon" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+                </button>
+              </div>
+              <div class="t-reorder-section__reorderable-list-view item" data-tk="d" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+                <div class="t-reorder-section__container" data-thor="Container">
+                  <span class="t-reorder-section__text-4" data-tf="ReorderState.todoTitle" data-thor="Text">Cerrar turno</span>
+                </div>
+                <button class="t-reorder-section__reorderable-list-view handle" type="button" data-t-ro-h aria-label="Reorder" aria-roledescription="drag handle" aria-keyshortcuts="Space Alt+ArrowUp Alt+ArrowDown" data-thor="ReorderableListView handle">
+                  <svg class="t-reorder-section__icon" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+                </button>
+              </div>
+              <template data-tlt="ReorderState.todos">
+                <div class="t-reorder-section__reorderable-list-view item" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+                  <div class="t-reorder-section__container" data-thor="Container"><span class="t-reorder-section__text-4" data-tf="ReorderState.todoTitle" data-thor="Text"></span></div>
+                  <button class="t-reorder-section__reorderable-list-view handle" type="button" data-t-ro-h aria-label="Reorder" aria-roledescription="drag handle" aria-keyshortcuts="Space Alt+ArrowUp Alt+ArrowDown" data-thor="ReorderableListView handle">
+                    <svg class="t-reorder-section__icon" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+                  </button>
+                </div>
+              </template>
+            </div>
+            <span class="t-reorder-section__text-3" data-thor="Text">Fin de la lista</span>
+          </div>
+          <div class="t-reorder-section__row" data-thor="Row">
+            <button class="t-reorder-section__text-button" type="button" data-t-on="click:ReorderState.add" data-thor="TextButton">Añadir pendiente</button>
+          </div>
+          <span class="t-reorder-section__text" data-thor="Text">Fichas: con tu propio asa</span>
+          <span class="t-reorder-section__text-2" data-tt="ReorderState.chipOrder" data-thor="Text">Fichas: uno,dos,tres</span>
+          <div class="t-reorder-section__reorderable-list-view-2" role="list" data-t-ro="reorder:ReorderState.reorderChips" data-t-ro-cfg="h|0" data-thor="ReorderableListView">
+            <div class="t-reorder-section__reorderable-list-view item-2" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+              <div class="t-reorder-section__row-2" data-thor="Row">
+                <span class="t-reorder-section__text-3" data-thor="Text">uno</span>
+                <svg class="t-reorder-section__icon-2" data-t-ro-h tabindex="0" role="button" aria-roledescription="drag handle" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+              </div>
+            </div>
+            <div class="t-reorder-section__reorderable-list-view item-2" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+              <div class="t-reorder-section__row-2" data-thor="Row">
+                <span class="t-reorder-section__text-3" data-thor="Text">dos</span>
+                <svg class="t-reorder-section__icon-2" data-t-ro-h tabindex="0" role="button" aria-roledescription="drag handle" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+              </div>
+            </div>
+            <div class="t-reorder-section__reorderable-list-view item-2" role="listitem" data-t-ro-item data-thor="ReorderableListView item">
+              <div class="t-reorder-section__row-2" data-thor="Row">
+                <span class="t-reorder-section__text-3" data-thor="Text">tres</span>
+                <svg class="t-reorder-section__icon-2" data-t-ro-h tabindex="0" role="button" aria-roledescription="drag handle" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" data-thor="Icon"><use href="#material-drag-handle"></use></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <svg id="thor-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+      <symbol id="material-drag-handle" viewBox="0 0 24 24"><g><rect fill="none" height="24" width="24"/></g><g><g><g><path d="M20,9H4v2h16V9z M4,15h16v-2H4V15z"/></g></g></g></symbol>
+    </svg>
+  </body>
+</html>

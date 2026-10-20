@@ -1,0 +1,710 @@
+#!/usr/bin/env bash
+# thor — monorepo command line.
+#
+#   tool/thor setup                 install toolchain deps (thor CLI, Playwright for the browser checks)
+#   tool/thor check                 format + analyze (fatal infos) + public API + dart2js
+#                                   oracle build + all tests
+#   tool/thor dart2js               one app built with the dart2js oracle engine (~8 s)
+#   tool/thor docs                  API reference and public API snapshot (docs/api)
+#   tool/thor tutorial-check [--keep]  docs/guia/es/primera-app.md end to end: thor create outside the repo, its
+#                                   files and commands, thor test/build, the built server (~30 s)
+#   tool/thor docs-check [page.md]  the ```dart blocks of docs/guia/es compile (```dart no-check: partial)
+#   tool/thor api                   public API against its snapshot (deprecation policy)
+#   tool/thor ratchet [--update]    `thor_lints` ignores and `raw:` per package against tool/ratchet_baseline.txt
+#   tool/thor test [--browser]      tests of every package and app (VM; + Chrome)
+#   tool/thor build <app> [...] [--<option>...]  release build of apps (thor build;
+#                                   options pass through)
+#   tool/thor serve <app>           dev server, rebuilt on every change (thor dev)
+#   tool/thor build-server <app>    a server app's release (thor build)
+#   tool/thor export <app> [url]    server app as a static site (thor export)
+#
+# App commands run the thor CLI (packages/thor_cli), which also works
+# outside this repository: thor create|dev|add|build|export|preview|doctor.
+#   tool/thor e2e [check...] [--no-build] [--browsers[=firefox,webkit]]
+#                                   browser checks (pass/fail): build, serve, run;
+#                                   --browsers: the cross-browser-sensitive ones again
+#                                   in Firefox and WebKit (E2E_BROWSER)
+#   tool/thor visual [check|record|build] [--base <ref>] [--no-build]
+#                                   screenshots of real pages vs refs (build/visual)
+#   tool/thor a11y [--no-build]     axe-core on the same pages (serious/critical fail)
+#   tool/thor examples-audit [...]  every live example of the docs export in headless
+#                                   Chrome (tool/docs_examples_audit.mjs → build/examples_audit)
+#   tool/thor hooks                 install the git pre-commit hook
+#
+# Every command runs from the repo root, whatever the current directory.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+PACKAGES=(packages/thor_style packages/thor_engine packages/thor_engine_oracle packages/thor_ui packages/thor_builder packages/thor_server packages/thor_studio packages/thor_test packages/thor_cli packages/thor_lints)
+
+say() { printf '\033[1;36m▸ %s\033[0m\n' "$*"; }
+fail() { printf '\033[1;31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
+
+# Where an app lives, by name: the site (apps/) or the fixtures of the
+# framework checks (test/fixtures/apps/).
+app_dir() {
+  local root
+  for root in apps test/fixtures/apps; do
+    [[ -f "$root/$1/pubspec.yaml" ]] && { echo "$root/$1"; return 0; }
+  done
+  return 1
+}
+
+# `dart pub global run` re-resolves a path-activated package on every run and
+# prints pub's "Resolving dependencies… N packages have newer versions" before
+# the command's own output (even `thor --help`, ~1 s). Replace pub's script
+# with a shim that runs a JIT snapshot of the CLI (~30 ms) and rebuilds it
+# when a source, pubspec.lock or the Dart binary is newer. Skip with
+# THOR_SETUP_SHIM=0 (pub's own script stays).
+install_cli_shim() {
+  [ "${THOR_SETUP_SHIM:-1}" = 0 ] && return 0
+  local bin="${PUB_CACHE:-$HOME/.pub-cache}/bin"
+  [ -d "$bin" ] || return 0
+  say "thor shim (no pub output on each run)"
+  write_cli_shim "$ROOT" "$bin/thor"
+}
+
+# The shim's body is tool/cli_shim.sh; only the checkout path goes in front,
+# single-quoted (a path may hold spaces, quotes, `$`…).
+write_cli_shim() {
+  local root="$1" file="$2" quoted tmp
+  quoted="'$(printf '%s' "$root" | sed "s/'/'\\\\''/g")'"
+  tmp="$file.tmp.$$"
+  { printf '#!/usr/bin/env sh\nROOT=%s\n' "$quoted"; cat "$ROOT/tool/cli_shim.sh"; } >"$tmp"
+  chmod +x "$tmp"
+  mv -f "$tmp" "$file"
+}
+
+cmd_setup() {
+  say "Dart dependencies"
+  dart pub get
+  (cd packages/thor_lints && dart pub get) # analyzer plugin: own resolution
+  say "thor CLI (thor create, thor dev…)"
+  dart pub global activate --source path packages/thor_cli >/dev/null
+  install_cli_shim
+  say "Browser checks runner (Playwright)"
+  (cd test/e2e/runner && npm install && npx playwright install chromium)
+}
+
+cmd_format() {
+  say "Format"
+  dart format --output=none --set-exit-if-changed packages apps test/fixtures tool
+}
+
+cmd_analyze() {
+  say "Analyze (infos are fatal)"
+  # From the workspace root, in one pass: the analyzer plugin (thor_lints)
+  # only loads there; a per-package `dart analyze` skips its rules.
+  #
+  # `dart analyze` exits 0 when the plugin crashes or never starts, so the
+  # gate would pass with no thor_lints rule run. Two guards: (1) the output
+  # must not mention a plugin error; (2) a canary file that must trigger
+  # `avoid_raw_css` rides in the same run (no second analyze) and is
+  # filtered out of the report; if its diagnostic is missing, the plugin
+  # is not alive. The canary is gitignored and removed on exit.
+  local canary="packages/thor_studio/test/zz_lint_canary.dart"
+  local out status=0
+  out="$(mktemp)"
+  # shellcheck disable=SC2064
+  trap "rm -f '$canary' '$out'" EXIT
+  printf "import 'package:thor_ui/thor_ui.dart';\n\nfinal canary = StyleProps(raw: {'color': 'red'});\n" >"$canary"
+  dart analyze --fatal-infos >"$out" 2>&1 || status=$?
+  rm -f "$canary"
+  if grep -qiE 'error occurred while executing an analyzer plugin|PluginServer' "$out"; then
+    cat "$out" >&2
+    fail "analyze: the thor_lints analyzer plugin failed (its rules did not run)"
+  fi
+  if ! grep -q 'zz_lint_canary.dart.*avoid_raw_css' "$out"; then
+    cat "$out" >&2
+    fail "analyze: the thor_lints canary (avoid_raw_css) did not fire: the plugin is not running"
+  fi
+  # Report everything except the canary and the counts that included it.
+  grep -v 'zz_lint_canary.dart' "$out" | grep -vE '^[0-9]+ issues? found\.$' || true
+  if grep -v 'zz_lint_canary.dart' "$out" | grep -qE '^\s*(info|warning|error) - '; then
+    fail "analyze"
+  fi
+  # Failure with no issue line besides the canary (crash, bad options)?
+  if [ "$status" -ne 0 ] && [ "$(grep -cE '^\s*(info|warning|error) - ' "$out")" -le 1 ]; then
+    if ! grep -qE '^[0-9]+ issues? found\.$' "$out" || grep -qE '^(Error|Unhandled)' "$out"; then
+      fail "analyze (exit $status)"
+    fi
+  fi
+  trap - EXIT
+  rm -f "$out"
+}
+
+# Tests and the gates run as tasks of a bounded pool (tool/check.mjs):
+# `--jobs N`, `--changed [base]`, `--serial`, `--bail`, `--verbose`.
+run_check() {
+  command -v node >/dev/null || fail "node is needed (tool/check.mjs)"
+  THOR_PACKAGES="${PACKAGES[*]}" \
+    node tool/check.mjs "$@"
+}
+
+cmd_test() { run_check test "$@"; }
+
+cmd_docs_check() {
+  say "Guide code blocks (docs/guia) against the workspace"
+  dart run tool/docs_check.dart "$@" || fail "docs-check"
+}
+
+cmd_tutorial_check() {
+  say "Tutorial end to end (docs/guia/es/primera-app.md)"
+  dart run tool/tutorial_check.dart "$@" || fail "tutorial-check"
+}
+
+cmd_api() {
+  say "Public API"
+  dart run tool/gen_api_docs.dart --check || fail "public API"
+}
+
+# The CSS escape hatches never go up (tool/ratchet.dart): `--update` lowers the
+# baseline once a count fell.
+cmd_ratchet() {
+  say "Escape hatches (ignores and raw: per package)"
+  dart run tool/ratchet.dart "$@" || fail "ratchet"
+}
+
+# The dart2js oracle engine (THOR_INTERNAL_ENGINE=dart, internal: thor ships
+# lite only) of the smallest app: the golden and the VM tests only see the
+# lite engine, so a dart2js-only break (a 64-bit literal reached from
+# thor_ui.dart) would go unnoticed.
+cmd_dart2js() {
+  say "dart2js oracle engine (test/fixtures/apps/counter)"
+  local log
+  log="$(mktemp)"
+  THOR_INTERNAL_ENGINE=dart thor_cli build test/fixtures/apps/counter >"$log" 2>&1 || {
+    cat "$log" >&2
+    rm -f "$log"
+    fail "dart2js engine build"
+  }
+  rm -f "$log"
+}
+
+cmd_check() { run_check check "$@"; }
+
+# The thor CLI of this checkout.
+thor_cli() { dart run thor_cli:thor "$@"; }
+
+cmd_build() {
+  [[ $# -gt 0 ]] || fail "usage: tool/thor build <app> [<app>...] [options]"
+  local app dir apps=() opts=()
+  for app in "$@"; do
+    if [[ "$app" == --* ]]; then opts+=("$app"); else apps+=("$app"); fi
+  done
+  for app in "${apps[@]}"; do
+    dir="$(app_dir "$app")" || fail "no such app: $app (apps/, test/fixtures/apps/)"
+    say "Build $app"
+    thor_cli build "$dir" ${opts[@]+"${opts[@]}"}
+  done
+}
+
+cmd_build_server() {
+  [[ $# -eq 1 ]] || fail "usage: tool/thor build-server <app>"
+  thor_cli build "$(app_dir "$1")"
+}
+
+cmd_serve() {
+  [[ $# -eq 1 ]] || fail "usage: tool/thor serve <app>"
+  thor_cli dev "$(app_dir "$1")"
+}
+
+# Browser checks: name → app(s) it builds (`a+b`) → script in
+# test/e2e/checks → what it needs (a comma list: flutter; dart, the
+# dart2js engine instead of the default lite one; lite, the conformance's
+# dart2js builds plus their lite copies). Each script serves the app's
+# build/site on a free port (navigation: the app's build/server against
+# test/e2e/mock_api), runs with and without JavaScript where it applies,
+# and exits non-zero on any failure.
+E2E_CHECKS=(
+  "landing:landing:landing_check.mjs"
+  "engine-redeploy:counter:engine_redeploy_check.mjs"
+  "gestures:lab:gestures_check.mjs"
+  # Dismissible on test/fixtures/apps/lab (/drag), with either engine: drag a row away (backgrounds, threshold, confirm that
+  # says no, collapse), Delete / Shift+arrow and the focus moving on, a vertical one, cloned rows, RTL,
+  # reduced motion, a touch swipe and the page with no JavaScript.
+  "dismissible:lab:dismissible_check.mjs"
+  "dismissible-dart:lab:dismissible_check.mjs:dart"
+  # Draggable, LongPressDraggable and DragTarget on test/fixtures/apps/lab (/drag), with either engine: cards between columns
+  # (feedback, childWhenDragging, a target that says no, the type that decides, cloned rows), a hold, the
+  # page scrolling at its edge, the keyboard way and its live region, a touch drag, RTL and no JavaScript.
+  "draggable:lab:draggable_check.mjs"
+  "draggable-dart:lab:draggable_check.mjs:dart"
+  # The same drag cases on a page made in memory from the lite parts (no app), to compare with the
+  # dart2js feature's browser test: Chromium, Firefox and WebKit.
+  "lite-drag::lite_drag_check.mjs"
+  # ReorderableListView on test/fixtures/apps/lab (/drag), with either engine: a live list (cloned rows) reordered by its handles,
+  # a held finger and the keyboard (the state and the page agree), a horizontal row with handles of its own,
+  # the page scrolling at its edge, RTL, reduced motion and no JavaScript.
+  "reorderable:lab:reorderable_check.mjs"
+  "reorderable-dart:lab:reorderable_check.mjs:dart"
+  # The same cases for the reorderable lite parts on a page made in memory (no app).
+  "lite-reorder::lite_reorder_check.mjs"
+  # MouseRegion / Focus / ExpansionTile callbacks and the size widgets, on test/fixtures/apps/lab (/widgets).
+  "widgets:lab:widgets_check.mjs"
+  # Theme.of(context).colorScheme follows the dark mode with no reload, with and
+  # without JS, and Watch.field reacts, on test/fixtures/apps/lab (/widgets).
+  "theme-follows:lab:theme_follows_check.mjs"
+  # Every Material button kind in a real browser: focus ring, disabled, a named icon
+  # link, RTL icon flip, 320 px, reduced motion, dark tokens. Renders its own page.
+  "material-buttons::material_buttons_check.mjs"
+  # MenuAnchor (with and without JS: popover, anchoring, submenu, links, Esc) and the chips that
+  # navigate or delete (named delete controls, never nested, focus ring, RTL). Renders its own page.
+  "menu-chips::menu_chips_check.mjs"
+  # Expanded in a Column of an indefinite height (a phone, a FlexLayout that is a row only from lg) keeps its
+  # content; in a definite one it still takes its exact share; scroll areas and rows unchanged. Renders its own page.
+  "expanded::expanded_check.mjs"
+  "animations:lab:animations_check.mjs"
+  # AnimatedList (test/fixtures/apps/lab, /animated-list): the rows the browser adds enter (@starting-style), a removed
+  # row stays inert until its transition ends, reduced motion does neither; both engines.
+  "animated-list:lab:animated_list_check.mjs"
+  "studio:studio_gallery:studio_check.mjs"
+  "navigation:realworld:navigation_check.mjs"
+  # query() and command() on test/fixtures/apps/server_query's /lab (build/server): runs that
+  # queue, aborts and timeouts, the errors' texts and kinds.
+  "server-data:server_query:server_data_check.mjs"
+  # Actions with arguments (`onPost: delete.bind(id)`, typed, with no JS), `confirm:`
+  # on a submit button, `confirm()`/`toast()` from a state method (queued asks, a
+  # flood, an ask before the engine loads), `Redirect.flash` (cleared, escaped, kept
+  # through a redirect, not shared, not taken by a prefetch), `toggle()`, a set
+  # field and `withArgs`, on test/fixtures/apps/server_query's /acts.
+  "acts:server_query:acts_check.mjs"
+  # A form action that answers the page it came from keeps the scroll and the pressed button (same
+  # page, a 422, streamed content; another page starts at the top, no JS too), on test/fixtures/apps/server_query's /scroll.
+  "scroll:server_query:scroll_check.mjs"
+  # QueryBuilder over a query that answers null, fails while its argument moves,
+  # nested, twice on one query and inside list rows.
+  "qb-break:server_query:query_builder_break_check.mjs"
+  # Streaming SSR on test/fixtures/apps/server_query's /defer: a slow page goes out with its
+  # skeletons and the values replace them as they arrive, a failed one shows its error
+  # state, a state works inside late content, no JS shows the data at the end of the page,
+  # a link is followed while the data is on its way, and TTFB/FCP against the page that waits.
+  "defer:server_query:defer_check.mjs"
+  # LazyPiece on test/fixtures/apps/server_query's /piece: parts of the page the browser asks for when an
+  # accordion tile, a dialog or a far block shows; one request each, the engine binds what came (also
+  # when only the piece brings the engine), a failed request keeps the fallback and retries, no JS keeps
+  # the link, a strict CSP with the one hashed script, and the fragment itself (alone, noindex, 404).
+  "lazy-piece:server_query:lazy_piece_check.mjs"
+  # The same on test/fixtures/apps/lazy_pieces (no query(), so it builds with either engine) plus a piece inside a
+  # piece and a FutureBuilder's late content: the dart2js engine binds what arrives after hydration.
+  "lazy-pieces:lazy_pieces:lazy_pieces_check.mjs"
+  "lazy-pieces-dart:lazy_pieces:lazy_pieces_check.mjs:dart"
+  # Queries the browser runs (`ssr: false`) and QueryBuilder states the server never drew: no
+  # wait, one request each, two-root states, a list in a wrapped container and in a two-root
+  # one, the same builder drawn twice, on test/fixtures/apps/server_query's /lazy.
+  "lazy-query:server_query:lazy_query_check.mjs"
+  "grid:grid:grid_check.mjs"
+  # 7GUIs Cells (test/fixtures/apps/cells): each cell follows the cells it reads (one map entry
+  # per reader in lite): A1 with 100 dependents, a formula written later, an emptied cell, Escape.
+  "cells:cells:cells_check.mjs:export"
+  "dates:lab:dates_check.mjs"
+  # Five Watch and layout cases (a nested Watch, a container wrapper, and three layout cases), on test/fixtures/apps/lab (/nested-watch).
+  "nested-watch:lab:nested_watch_check.mjs"
+  # The same page on the dart2js engine.
+  "nested-watch-dart:lab:nested_watch_check.mjs:dart"
+  # Store-page cases on test/fixtures/apps/lab (/store-lists), in both engines: a list per instance (`Watch.list(s.m.withArg(x))`), a Link with
+  # no href under row.attribute (server and cloned rows), the accordion's close-then-open toggles, the list container.
+  "store-lists:lab:store_lists_check.mjs"
+  "store-lists-dart:lab:store_lists_check.mjs:dart"
+  "dropdown:lab:dropdown_check.mjs"
+  # ListBox (`<select size>`, `multiple`) on test/fixtures/apps/lab (/list-box): 7GUIs' CRUD over ListBox.list (filter, select,
+  # create, update, delete, keyboard), the static lists reporting to their state, axe-core, and the form with no JS.
+  "list-box:lab:list_box_check.mjs"
+  # Autocomplete and RawAutocomplete on test/fixtures/apps/lab (/edge-cases): the options panel on a manual popover under the field (top layer, above a clipping box and a later sibling), narrowing, arrows, Enter/click picks, Esc/outside close, a state's list in the panel; no JS.
+  "autocomplete:lab:autocomplete_check.mjs"
+  # A field inside a Watch whose variant swaps while typing keeps its focus, caret and text,
+  # on test/fixtures/apps/lab (/edge-cases).
+  "focus-swap:lab:focus_swap_check.mjs"
+  # Adversarial cases of the same: other value on purpose, vanished or inserted fields, input types, fast typing, nested, rows, ids.
+  "focus-edge:lab:focus_edge_check.mjs"
+  "transitions:realworld:view_transitions_check.mjs"
+  # The prefetch for browsers without Speculation Rules (Firefox, Safari): the fallback file loads only
+  # there, <link rel=prefetch> on hover/focus/press with the rules' exclusions, three in flight, no Save-Data.
+  # E2E_BROWSER=firefox|webkit runs the unsupported side; Chromium checks it is never loaded. test/fixtures/apps/server_query: an engine page carries the test, a page with no JS none.
+  "prefetch-fallback:server_query:prefetch_fallback_check.mjs"
+  "sidebar:docs:sidebar_scroll_check.mjs:export"
+  # A CheckboxListTile with an IconButton secondary in a Watch.list, rows added in the browser: the
+  # secondary sits outside the label (the checkbox keeps its exact name), toggle, strike, delete.
+  "tile-secondary:lab:tile_secondary_check.mjs"
+  "early-keys:lab:early_keys_check.mjs"
+  "early-keys-break:lab:early_keys_break_check.mjs"
+  # No app to build: pages made in memory from the lite runtime.
+  "lite-adversarial::lite_adversarial_check.mjs"
+  # No app either: TabBar as the ARIA tabs pattern and the menus' keyboard (the `tabs` and `menu`
+  # parts): roles, roving tabindex, arrows/Home/End, type-ahead, submenus, Esc and focus;
+  # and CallbackShortcuts on non-Latin layouts (the `shortcuts` part falls back to `e.code`).
+  "lite-keyboard::lite_keyboard_check.mjs"
+  # No app either: Shortcuts + Actions and Focus(onKeyEvent:) (the `key_actions` part):
+  # nearest Actions from the focus, DoNothingAction, KeyEventResult, nothing focused, other
+  # layouts; E2E_BROWSER=firefox|webkit for the other two.
+  "lite-key-actions::lite_key_actions_check.mjs"
+  # No app either: keyed lists reordered with moveBefore (the focused row
+  # keeps its focus), without it, and the reconciliation's edge cases.
+  "lite-list::lite_list_check.mjs"
+  # No app either: the parts split out of the core (keyed lists, an AnimatedSwitcher's view
+  # transitions), with and without them: the core alone leaves what the server drew, no errors.
+  "lite-split-parts::lite_split_parts_check.mjs"
+  # App names that are JS globals (class Date/Promise, a top-level document) in a lite state, in the
+  # real runtime and three browsers: no app to build (the bundle comes from thor_builder's dump).
+  "lite-shadow::lite_shadow_check.mjs"
+  # A list per instance (`Watch.list(state.m.withArg(x), …)`) in the lite runtime: each id calls
+  # the method with its argument (server rows and cloned ones, one change touches one list).
+  "lite-list-family::lite_list_family_check.mjs"
+  # What a bound text and `row.bind` attributes do in rows the browser clones from the
+  # template (row state look, escaped values, reorder, removal): in memory, no app.
+  "lite-row-bound::lite_row_bound_check.mjs"
+  # `state(…, local:)` persistence in the lite engine: restore, write coalescing, cross-tab sync
+  # (the storage event), blocked storage: in memory, no app.
+  "lite-local-storage::lite_local_storage_check.mjs"
+  # A row state that replaces a child subtree keeps the row's key in its attributes.
+  "lite-row-variant-key::lite_row_variant_key_check.mjs"
+  # Keyed rows whose row state reads another state's field (starred keys), variants of
+  # another structure, kept and cloned rows, and an <svg> row template: in memory.
+  "lite-row-reads::lite_row_reads_check.mjs"
+  # A keyed list that only lives in another state's variant, with row states, and a
+  # container with widgets after the rows: in memory.
+  "lite-nested-bindings::lite_nested_bindings_check.mjs"
+  # The bindings of other states in rows the browser clones, broken on purpose (Chromium
+  # and WebKit): moved rows, dialogs, keyed and disposed states, 10k rows in and out.
+  "lite-rows-break::lite_rows_break_check.mjs"
+  # The life of a state: onHydrated at idle, dispose when a keyed list removes
+  # its row or the page unloads, timers and effects stopped, 1000 rows in and out.
+  "lite-lifecycle::lite_lifecycle_check.mjs"
+  # The same where the page is not polite (Chromium, Firefox, WebKit): reorders and
+  # a dialog are not disposals, 2000 rows leave in linear time, no idle callback.
+  "lite-lifecycle-adversarial::lite_lifecycle_adversarial_check.mjs"
+  # The engine's low-priority preload in Chromium, WebKit and Firefox: one request per
+  # load whatever the headers, the origin or the tap.
+  "engine-preload:counter:engine_preload_check.mjs"
+  # Flutter-feel widgets: MouseRegion/Focus/ExpansionTile events,
+  # AnimatedSize, AnimatedCrossFade, SizeTransition and the Gesture fixes, on pages
+  # made in memory from the real runtime and parts, no app to build.
+  "lite-widgets::lite_widgets_check.mjs"
+  # The lite date picker with another locale's names, template, first weekday and digits (fr, hu, ar): in memory.
+  "lite-date-locale::lite_date_locale_check.mjs"
+  # The same widgets, broken on purpose: replaced regions, tiles that
+  # arrive open, hidden tabs, held keys, editable gestures, cross-fade forms.
+  "lite-widgets-adversarial::lite_widgets_adversarial_check.mjs"
+  # WatchVariables/WatchAttributes pairs that only a late part, a replaced subtree or a cloned
+  # row brings are followed, and released when their elements leave (pages in memory).
+  "lite-late-bindings::lite_late_bindings_check.mjs"
+  # The same, attacked: 10,000 unrelated nodes, a list of 2,000 rows re-rendered, moved / detached
+  # elements, the sweep, odd names, a method that throws, and the views of a late part.
+  "lite-late-bindings-adversarial::lite_late_bindings_adversarial_check.mjs"
+  # `thor dev` on a new app: an error of the code (THOR-S011) covers the page with its file,
+  # line, fix and page, fixed it goes by itself; a warning is a dismissible badge; hostile
+  # text; a restart; and 0 bytes of the overlay in `thor build`. Makes its own app.
+  "dev-overlay::dev_overlay_check.mjs"
+  # A lite engine that does not build in `thor dev` covers the page with THOR-B012, file:line and
+  # "runs WITHOUT its engine" (first start, stale, two states, with a warning), console.error, a
+  # terminal banner; a good build clears it; `thor build` still fails. Makes its own app.
+  "dev-engine-failure::dev_engine_failure_check.mjs"
+  # The form's «sending» state and the first error's focus: pages made
+  # in memory around the real inline script, no app to build.
+  "forms::forms_check.mjs"
+  # Upload progress of a Form with files (LinearProgressIndicator.upload): an XMLHttpRequest, the
+  # bar rising while a server reads slowly, the answer replacing the page, a dropped send, and
+  # the plain post (no JS, no bar, no file). In-memory pages, no app to build.
+  "forms-upload::forms_upload_check.mjs"
+  # The upload goes to the form's action (or the submitter's formaction), not the page URL.
+  "lite-form-upload-action::lite_form_upload_action_check.mjs"
+  # Scaffold(drawer:, endDrawer:) with the AppBar's implicit buttons and ids nobody wrote:
+  # native <dialog>s with and without JS, mouse and keyboard, Esc, backdrop, DialogClose() and
+  # focus back; a page rendered in memory (packages/thor_ui/tool/e2e_pages.dart), no app.
+  "drawer::drawer_check.mjs"
+  # One product grid with fixed 260 px tracks from md and two fluid columns on a phone, and one
+  # Drawer(permanentFrom:) that is a modal on a phone and an inline panel on a desktop (390 and
+  # 1280 px, with and without JS); pages rendered in memory (packages/thor_ui/tool/e2e_pages.dart).
+  "adaptive-layout::adaptive_layout_check.mjs"
+  # Store-page layout: Drawer(permanentWidth:, permanentPadding:) (320 px modal, 200 px panel) and
+  # ExpansionTile(permanentFrom:) (accordion on a phone, open block on a desktop), with and
+  # without JS; a page rendered in memory (packages/thor_ui/tool/e2e_pages.dart).
+  "store-gaps::store_gaps_check.mjs"
+  # The remembered light/dark choice: chosen once it holds across reloads and navigation with no
+  # flash (the scheme at DOMContentLoaded), the system rules with no choice, blocked storage and a
+  # foreign stored value are harmless, no JS keeps the per-view switch; pages made in memory.
+  "theme-persist::theme_persist_check.mjs"
+  # CarouselView: arrows inside the box, no sideways page scroll at 390/320 px, arrows move a page,
+  # dots follow and jump, with and without JS; autoplay pauses and respects reduced motion; a page
+  # rendered in memory (packages/thor_ui/tool/e2e_pages.dart), no app.
+  "carousel::carousel_check.mjs"
+  # PageView (arrows snap, locked ignores the wheel, Tab into a page), AutofillGroup (Enter submits
+  # without navigating, no form in a dialog, valid autocomplete tokens), with and without JS; pages
+  # rendered in memory (packages/thor_ui/tool/e2e_pages.dart), no app.
+  "catalog::catalog_check.mjs"
+  # The snack bar over modals: toast() with a drawer, a dialog or the confirm open shows on
+  # top (top layer + inside the open dialog), floods, stacking, Esc, RTL, reduced motion, no JS;
+  # a page rendered in memory (packages/thor_ui/tool/e2e_pages.dart), no app.
+  "toast-modal::toast_modal_check.mjs"
+  # Lists in the URL, forms that refill and keep the query, a class as the argument of a
+  # query, with and without JS, on test/fixtures/apps/server_query's /orders and /edit.
+  "query-forms:server_query:query_forms_check.mjs"
+  # The animations page on the default (lite) engine under a burst of clicks.
+  "animations-burst:lab:animations_burst_check.mjs"
+  # ScrollController.animateTo/jumpTo/initialScrollOffset (RTL, reduced motion,
+  # interruptions, two views) and TextEditingController.selection: pages
+  # made in memory around the real runtime and controller parts.
+  "controllers::controllers_check.mjs"
+  # A cookie-persisted field (test/fixtures/apps/lab's /controls, «compacto») is written once per frame,
+  # not per change, and the last value survives a reload right after a burst
+  # (flushed on pagehide), on both engines.
+  "persist:lab:persist_check.mjs"
+  "persist-dart:lab:persist_check.mjs:dart"
+  # PageNavigator.pop/canPop/reload: new tab, reload, hash entries, no
+  # Navigation API, fallback (both engines).
+  "nav-pop:lab:nav_pop_check.mjs"
+  "nav-pop-dart:lab:nav_pop_check.mjs:dart"
+  # The same in Chromium, WebKit and Firefox pushed further: a view that can't
+  # scroll, is hidden, removed or replaced; 100 calls in a row; no `scrollend`;
+  # NaN; emoji, textareas, two fields on one controller.
+  "controllers-break::controllers_break_check.mjs"
+  # The controllers pushed further (lite, pages in memory): identical values, IME, FocusNode listeners
+  # (order, doubles, removal during a dispatch, dispose), hideToast/clearToasts, fractional and
+  # unsnapped pages, nested PageViews, arrow keys, resizes, hidden views and the curves.
+  "controllers-edge::controllers_edge_check.mjs"
+  # Finite states that switch between structures binding other members (a
+  # template with another `data-tt` in the same place).
+  "lite-states::lite_states_break_check.mjs"
+  # The lite engine (the default) against dart2js: the apps'
+  # dart2js builds, their lite copies (tool/thor_lite.mjs), then the same
+  # scenarios on both with DOM snapshots compared after every step.
+  "lite:counter+list_engine+lab+content_engine+gallery_engine+realworld+grid+intl_store:lite_conformance.mjs:lite"
+  # The hostile-input battery: hostile text, URLs
+  # and HTML rendered by the server (nothing runs, a code URL is inert, the sanitizer cleans), and the
+  # lite runtime against broken and hostile #thor-state (__proto__ at any depth, wrong types, 10 MB),
+  # forged data-t-on ids, hostile row keys and oversized arguments and lists; pages made in memory
+  # (packages/thor_ui/tool/security_pages.dart), no app.
+  "security::security_check.mjs"
+  # The runtime half of that battery on the dart2js engine: hostile #thor-state (wrong types,
+  # __proto__ at any depth, 10 MB), forged data-t-on ids and hostile row data against real builds
+  # of test/fixtures/apps/counter and test/fixtures/apps/lab (/rows).
+  "security-dart:counter+lab:security_dart_check.mjs:dart"
+  # Parity of the two engines: gestures, autocomplete and confirm()/toast() from a state on
+  # the dart2js and the lite build of the same page, the DOM compared after every step (the
+  # counter, lists, forms, controllers and dialogs are the `lite` conformance above).
+  "parity:lab:parity_check.mjs:lite"
+  # The same app checks on the dart2js oracle engine, so the lite engine
+  # keeps matching it.
+  "engine-redeploy-dart:counter:engine_redeploy_check.mjs:dart"
+  "navigation-dart:realworld:navigation_check.mjs:dart"
+  "grid-dart:grid:grid_check.mjs:dart"
+  "cells-dart:cells:cells_check.mjs:export,dart"
+  "dates-dart:lab:dates_check.mjs:dart"
+  "dropdown-dart:lab:dropdown_check.mjs:dart"
+  "autocomplete-dart:lab:autocomplete_check.mjs:dart"
+  "focus-swap-dart:lab:focus_swap_check.mjs:dart"
+  "focus-edge-dart:lab:focus_edge_check.mjs:dart"
+  "animations-dart:lab:animations_check.mjs:dart"
+  "animated-list-dart:lab:animated_list_check.mjs:dart"
+  "gestures-dart:lab:gestures_check.mjs:dart"
+  "early-keys-dart:lab:early_keys_check.mjs:dart"
+  "early-keys-break-dart:lab:early_keys_break_check.mjs:dart"
+  # Need the Flutter SDK (test/fixtures/apps/hybrid embeds a Flutter build): skipped
+  # with a note where there is none, like CI.
+  "hybrid:hybrid:hybrid_check.mjs:flutter"
+  "hybrid-dart:hybrid:hybrid_check.mjs:flutter,dart"
+)
+
+# The checks whose result depends on the browser (focus and Tab, popovers and top
+# layer, CSS animation and transition, dialogs, scroll snapping): `--browsers` runs
+# them again in Firefox and WebKit through E2E_BROWSER. All render their pages in
+# memory (no app to build; engine-preload serves test/fixtures/apps/counter). The ones that launch their own browsers (engine-preload,
+# controllers-break, lite-list, lite-rows-break, lite-lifecycle*) take E2E_BROWSER
+# too (lib/e2e.mjs browsersFor): without it each runs its own set (the plain run),
+# with it only that browser. The Chromium-only ones (parity: touch by CDP) are not here.
+CROSS_BROWSER_CHECKS=(
+  drawer carousel catalog adaptive-layout expanded theme-persist toast-modal
+  material-buttons menu-chips forms forms-upload security lite-adversarial lite-shadow lite-row-bound lite-local-storage
+  lite-nested-bindings lite-widgets lite-widgets-adversarial lite-late-bindings lite-late-bindings-adversarial controllers lite-states
+  engine-preload controllers-break lite-list lite-rows-break lite-lifecycle lite-lifecycle-adversarial
+  dismissible dismissible-dart draggable draggable-dart lite-drag reorderable reorderable-dart lite-reorder
+)
+
+# Whether the Flutter SDK is available (FLUTTER_ROOT or flutter on PATH).
+has_flutter() {
+  [[ -n "${FLUTTER_ROOT:-}" && -x "$FLUTTER_ROOT/bin/flutter" ]] || command -v flutter >/dev/null
+}
+
+cmd_e2e() {
+  [[ -d test/e2e/runner/node_modules/playwright ]] ||
+    fail "Playwright missing: (cd test/e2e/runner && npm ci && npx playwright install chromium)"
+  local names=() opts=() arg entry browsers=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-build | --bail | --verbose | --list) opts+=("$1") ;;
+      --browsers) browsers="firefox,webkit" ;;
+      --browsers=*) browsers="${1#--browsers=}" ;;
+      --jobs) opts+=("$1" "${2:?--jobs needs a number}"); shift ;;
+      -*) fail "unknown option: $1 (tool/thor e2e [check...] [--no-build] [--browsers[=list]] [--jobs N] [--bail] [--verbose])" ;;
+      *) names+=("$1") ;;
+    esac
+    shift
+  done
+  local selected=()
+  if [[ -n "$browsers" ]]; then
+    # Only the cross-browser ones; a name given must be one of them.
+    local want
+    for want in ${names[@]+"${names[@]}"}; do
+      [[ " ${CROSS_BROWSER_CHECKS[*]} " == *" $want "* ]] ||
+        fail "$want is not a cross-browser check (one of: ${CROSS_BROWSER_CHECKS[*]})"
+    done
+    for entry in "${E2E_CHECKS[@]}"; do
+      want="${entry%%:*}"
+      if [[ ${#names[@]} -gt 0 ]]; then
+        [[ " ${names[*]} " == *" $want "* ]] && selected+=("$entry")
+      else
+        [[ " ${CROSS_BROWSER_CHECKS[*]} " == *" $want "* ]] && selected+=("$entry")
+      fi
+    done
+  elif [[ ${#names[@]} -eq 0 ]]; then
+    selected=("${E2E_CHECKS[@]}")
+  else
+    local name found
+    for name in "${names[@]}"; do
+      found=
+      for entry in "${E2E_CHECKS[@]}"; do
+        [[ "${entry%%:*}" == "$name" ]] && { selected+=("$entry"); found=1; }
+      done
+      [[ -n "$found" ]] || fail "unknown check: $name (one of: $(printf '%s ' "${E2E_CHECKS[@]%%:*}"))"
+    done
+  fi
+  # The Flutter ones are skipped where there is no SDK, like CI.
+  local runnable=()
+  for entry in "${selected[@]}"; do
+    IFS=: read -r name _ _ needs <<<"$entry"
+    if [[ ",$needs," == *,flutter,* ]] && ! has_flutter; then
+      say "Skip $name (no Flutter SDK: set FLUTTER_ROOT or put flutter on PATH)"
+      continue
+    fi
+    runnable+=("$entry")
+  done
+  if [[ -n "$browsers" ]]; then
+    local b failed=()
+    for b in ${browsers//,/ }; do
+      say "E2E in $b (${#runnable[@]} cross-browser checks, in parallel; --jobs N)"
+      E2E_BROWSER="$b" node tool/e2e.mjs --no-harness ${opts[@]+"${opts[@]}"} -- "${runnable[@]}" || failed+=("$b")
+    done
+    [[ ${#failed[@]} -eq 0 ]] || fail "E2E failed in: ${failed[*]}"
+    return
+  fi
+  say "E2E (each app built once per engine, checks in parallel; --jobs N)"
+  node tool/e2e.mjs ${opts[@]+"${opts[@]}"} -- "${runnable[@]}" || fail "E2E failed"
+}
+
+# The pages of the visual and a11y checks (test/e2e/checks/visual_check.mjs).
+VISUAL_APPS=(landing grid realworld recipes)
+
+visual_build() {
+  local one
+  for one in "${VISUAL_APPS[@]}"; do
+    say "Build $one"
+    thor_cli build "$(app_dir "$one")" >/dev/null || fail "build $one"
+  done
+  say "Export docs"
+  thor_cli export apps/docs >/dev/null || fail "export docs"
+}
+
+need_playwright() {
+  [[ -d test/e2e/runner/node_modules/playwright && -d test/e2e/runner/node_modules/pixelmatch ]] ||
+    fail "browser deps missing: (cd test/e2e/runner && npm ci && npx playwright install chromium webkit)"
+}
+
+cmd_visual() {
+  need_playwright
+  local mode=check build=1 base="" arg
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      check | record | build) mode="$1" ;;
+      --no-build) build=0 ;;
+      --base) shift; base="${1:?--base needs a git ref}" ;;
+      *) fail "usage: tool/thor visual [check|record|build] [--base <ref>] [--no-build]" ;;
+    esac
+    shift
+  done
+  if [[ -n "$base" ]]; then
+    [[ "$mode" == check ]] || fail "--base goes with check"
+    # The refs from <ref>'s pages, built in a throwaway checkout; the
+    # screenshots use this checkout's script and browsers.
+    local tmp
+    tmp="$(mktemp -d)/base"
+    git worktree add --detach "$tmp" "$base" >/dev/null || fail "no such ref: $base"
+    trap 'git worktree remove --force "'"$tmp"'" >/dev/null 2>&1 || true' EXIT
+    say "Refs from $base ($(git rev-parse --short "$base"))"
+    (cd "$tmp" && dart pub get >/dev/null &&
+      for one in "${VISUAL_APPS[@]}"; do dart run thor_cli:thor build "$(app_dir "$one")" >/dev/null || exit 1; done &&
+      dart run thor_cli:thor export apps/docs >/dev/null) || fail "build of $base"
+    VISUAL_APPS_ROOT="$tmp" node test/e2e/checks/visual_check.mjs record || fail "refs of $base"
+  fi
+  ((build)) && visual_build
+  [[ "$mode" == build ]] && return
+  say "Visual $mode"
+  node test/e2e/checks/visual_check.mjs "$mode"
+}
+
+cmd_a11y() {
+  need_playwright
+  case "${1:-}" in
+    "") visual_build ;;
+    --no-build) ;;
+    *) fail "usage: tool/thor a11y [--no-build]" ;;
+  esac
+  say "Accessibility (axe-core)"
+  node test/e2e/checks/visual_check.mjs a11y
+}
+
+cmd_export() {
+  [[ $# -ge 1 ]] || fail "usage: tool/thor export <app> [base-url]"
+  thor_cli export "$(app_dir "$1")" ${2:+--base-url "$2"}
+  # The docs site's search page reads a Pagefind index next to the pages:
+  # without it /buscar finds nothing (DOCS_INDEX=0 skips it).
+  if [[ "$1" == docs && "${DOCS_INDEX:-1}" != 0 ]]; then
+    say "Search index (Pagefind)"
+    tool/docs_index.sh apps/docs/build/site || fail "docs search index"
+  fi
+}
+
+cmd_docs() {
+  say "API reference and public API → docs/api"
+  dart run tool/gen_api_docs.dart
+}
+
+cmd_hooks() {
+  local hook=.git/hooks/pre-commit
+  cat >"$hook" <<'HOOK'
+#!/usr/bin/env bash
+# Installed by tool/thor hooks: fast checks before every commit.
+set -e
+tool/thor format-check
+tool/thor analyze
+HOOK
+  chmod +x "$hook"
+  say "pre-commit hook installed ($hook)"
+}
+
+case "${1:-help}" in
+  setup) cmd_setup ;;
+  check) shift; cmd_check "$@" ;;
+  format-check) cmd_format ;;
+  analyze) cmd_analyze ;;
+  test) shift; cmd_test "$@" ;;
+  build) shift; cmd_build "$@" ;;
+  serve) shift; cmd_serve "$@" ;;
+  build-server) shift; cmd_build_server "$@" ;;
+  export) shift; cmd_export "$@" ;;
+  e2e) shift; cmd_e2e "$@" ;;
+  visual) shift; cmd_visual "$@" ;;
+  a11y) shift; cmd_a11y "$@" ;;
+  examples-audit) shift; node tool/docs_examples_audit.mjs "$@" ;;
+  docs) cmd_docs ;;
+  tutorial-check) shift; cmd_tutorial_check "$@" ;;
+  docs-check) shift; cmd_docs_check "$@" ;;
+  api) cmd_api ;;
+  ratchet) shift; cmd_ratchet "$@" ;;
+  dart2js) cmd_dart2js ;;
+  hooks) cmd_hooks ;;
+  shim) shift; write_cli_shim "${1:?root}" "${2:?file}" ;;
+  help | -h | --help) awk 'NR > 1 && /^#/ { sub(/^# ?/, ""); print; next } NR > 1 { exit }' "$0" ;;
+  *) fail "unknown command: $1 (tool/thor help)" ;;
+esac

@@ -1,0 +1,7 @@
+builders:
+  thor_l10n:
+    import: "package:thor_builder/builder.dart"
+    builder_factories: ["thorL10nBuilder"]
+    build_extensions: {"$package$": ["lib/l10n/app_localizations.thor.dart"]}
+    auto_apply: root_package
+    build_to: source

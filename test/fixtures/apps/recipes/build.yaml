@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      thor_builder:thor_l10n:
+        options:
+          # Spanish is the complete one; English translates it.
+          template_arb_file: app_es.arb
+          missing_translations: error

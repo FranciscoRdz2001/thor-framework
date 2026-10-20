@@ -1,0 +1,38 @@
+name: thor_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+workspace:
+  - packages/thor_style
+  - packages/thor_engine
+  - packages/thor_engine_oracle
+  - packages/thor_ui
+  - packages/thor_builder
+  - packages/thor_server
+  - packages/thor_studio
+  - packages/thor_test
+  - packages/thor_cli
+  - apps/docs
+  - test/fixtures/apps/list_engine
+  - test/fixtures/apps/cells
+  - test/fixtures/apps/gallery_engine
+  - test/fixtures/apps/content_engine
+  - test/fixtures/apps/realworld
+  - test/fixtures/apps/landing
+  - test/fixtures/apps/grid
+  - test/fixtures/apps/counter
+  - test/fixtures/apps/lab
+  - test/fixtures/apps/server_query
+  - test/fixtures/apps/lazy_pieces
+  - test/fixtures/apps/hybrid
+  - test/fixtures/apps/intl_store
+  - test/fixtures/apps/studio_gallery
+  - test/fixtures/apps/recipes
+
+dev_dependencies:
+  analyzer: ^12.1.0
+  lints: ^6.0.0
+  test: ^1.25.0
+

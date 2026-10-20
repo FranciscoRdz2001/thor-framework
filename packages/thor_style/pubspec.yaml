@@ -1,0 +1,18 @@
+name: thor_style
+description: "Flutter-style value types (EdgeInsets, BoxDecoration, TextStyle, Color, Alignment...) that compile to CSS. Pure Dart, no DOM dependency."
+version: 0.1.0
+repository: https://github.com/FranciscoRdz2001/thor-framework/tree/master/packages/thor_style
+issue_tracker: https://github.com/FranciscoRdz2001/thor-framework/issues
+topics:
+  - web
+  - css
+  - flutter
+  - ui
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dev_dependencies:
+  test: ^1.25.0

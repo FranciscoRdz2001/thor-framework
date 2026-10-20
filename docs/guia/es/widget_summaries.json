@@ -1,0 +1,26 @@
+{
+  "plain": "El `{name}` de Flutter.",
+  "summaries": {
+    "Row": "El `Row` de Flutter: coloca a sus hijos en una fila, con `mainAxisAlignment` y `crossAxisAlignment` como en Flutter.",
+    "Column": "El `Column` de Flutter: coloca a sus hijos en una columna, con `mainAxisAlignment` y `crossAxisAlignment` como en Flutter.",
+    "Container": "El `Container` de Flutter: un `<div>` que da tamaño, margen, relleno, decoración y alineación a su hijo.",
+    "Text": "El `Text` de Flutter. Con `headingLevel` (1 a 6) se dibuja como un `<h1>`…`<h6>` real, lo que necesitan los buscadores y los lectores de pantalla.",
+    "Scaffold": "El `Scaffold` de Flutter, como una página semántica: `header` (`appBar`), `main` (`body`) y `footer` (`bottomNavigationBar`), de al menos una pantalla de alto, con botón flotante, `bottomSheet` y un enlace para saltar al contenido. Un `drawer` es un `<dialog>` nativo.",
+    "ElevatedButton": "El `ElevatedButton` de Flutter: un botón elevado, con el énfasis entre `FilledButton` y `OutlinedButton`.",
+    "FilledButton": "El `FilledButton` de Flutter: el botón de mayor énfasis, relleno de color.",
+    "TextField": "El `TextField` de Flutter: un `<input>` nativo dentro de un campo con decoración (`InputDecoration`), con el foco y el error como en Material 3.",
+    "ListView": "El `ListView` de Flutter (con hijos, `.builder` y `.separated`). Dibuja todos los elementos en el servidor; para listas muy largas usa paginación.",
+    "Stack": "El `Stack` de Flutter: apila a sus hijos en una sola celda; los `Positioned` salen del flujo con `position: absolute`.",
+    "Padding": "El `Padding` de Flutter: añade espacio alrededor de su hijo.",
+    "Center": "El `Center` de Flutter: centra a su hijo.",
+    "Expanded": "El `Expanded` de Flutter (un `Flexible` con `FlexFit.tight`): el hijo ocupa el espacio que sobra de un `Row` o `Column`.",
+    "Image": "El `Image` de Flutter (`.network` y `.asset`), como un `<img>` con `loading=\"lazy\"`. Pasa `width` y `height` para evitar saltos de diseño.",
+    "Icon": "El `Icon` de Flutter: un glifo de un conjunto de íconos, en una caja cuadrada. Toma el color del texto (`currentColor`).",
+    "AppBar": "El `AppBar` de Flutter (barra superior de Material 3) como un `<header>`: `leading`, `title`, `actions` y `bottom` (por ejemplo una `TabBar`).",
+    "Card": "El `Card` de Flutter (tarjeta elevada de Material 3): agrupa contenido relacionado.",
+    "Checkbox": "El `Checkbox` de Flutter. Con `tristate` y `value: null` muestra el estado indeterminado (`aria-checked=\"mixed\"`).",
+    "Switch": "El `Switch` de Flutter (Material 3): un `<input type=checkbox role=switch>`.",
+    "Slider": "El `Slider` de Flutter, sobre un `<input type=range>`: el relleno de la barra lo dibuja el navegador.",
+    "Watch": "La parte de la página que cambia en el navegador, ligada a un campo o a un método de un `ThorState`: un texto, o un widget distinto según un `bool`, un enum o un entero."
+  }
+}
