@@ -359,6 +359,12 @@ Flutter's `Axis`.
 
 - valores: `horizontal`, `vertical`
 
+### `BackgroundClip` · enum
+
+How far the background of a box reaches (`background-clip`).
+
+- valores: `border`, `padding`, `content`, `text`
+
 ### `BlendMode` · enum
 
 How a box mixes with what is under it (`mix-blend-mode`): Flutter's `BlendMode` for a layer.
@@ -1215,6 +1221,12 @@ Flutter's `DefaultTextStyle`.
 
 - `DefaultTextStyle({Key? key, required TextStyle style, TextAlign? textAlign, bool? softWrap, TextOverflow? overflow, int? maxLines, required Widget child})` — Creates a widget that establishes a default text style for its descendants.
 - `DefaultTextStyle.merge({Key? key, TextStyle? style, TextAlign? textAlign, bool? softWrap, TextOverflow? overflow, int? maxLines, required Widget child})` — Flutter's `DefaultTextStyle.merge`: a default that is added to the ones above it.
+
+### `ExpandableText` · class
+
+Text cut at [maxLines] lines with a button that shows the rest, and another that cuts it again: the "read more" of a description or a review.
+
+- `ExpandableText(String text, {Key? key, int maxLines = 3, required String moreLabel, required String lessLabel, TextStyle? style, TextStyle? toggleStyle})` — Shows [text] cut at [maxLines] lines until the visitor expands it.
 
 ### `FontFeature` · class
 
@@ -3028,6 +3040,7 @@ Flutter's `ProgressIndicatorThemeData`, subset: the default look of `LinearProgr
 Flutter's `RadialGradient`: a circle of [radius] times the shortest side of the box.
 
 - `RadialGradient({Alignment center = Alignment.center, double radius = 0.5, required List<Color> colors, List<double>? stops, Size? tile})` — Creates a circular gradient centered at [center] with the given [radius] (a fraction of the box's shortest side, 0.5 by default: the circle touches the sides of a centered gradient).
+- `RadialGradient.ellipse({Alignment center = Alignment.center, required double radiusX, required double radiusY, required List<Color> colors, List<double>? stops, Size? tile})` — Creates an elliptical gradient: [radiusX] and [radiusY] are shares of the box's width and height (`1.2` and `1.0` are 120% and 100%), so it stretches with the box. [center] is where it starts.
 
 ### `RadioThemeData` · class
 
@@ -3192,6 +3205,12 @@ Flutter's `TooltipThemeData`: the default look and timing of `Tooltip`.
 Material 3's window size classes, emitted as CSS media queries instead of being resolved in Dart: no resize listeners, no rebuilds, correct on first SSR paint. Mobile-first: [compact] is the base (what applies below [medium]); the rest are widths up. Their widths come from `ThemeData.breakpoints` (the values below are the defaults, Material's).
 
 - valores: `compact`, `medium`, `expanded`, `large`, `extraLarge`
+
+### `cssAspectRatio` · function
+
+Formats an `aspect-ratio` (`width / height`): a ratio that is a small fraction is written as one (`1.3333333333333333` → `4 / 3`, `16 / 9`), as a designer writes it; anything else is a plain number (`1.5`).
+
+- `String cssAspectRatio(double ratio)`
 
 ## `animacion` · Animación y efectos
 
@@ -3440,6 +3459,18 @@ Flutter's `ElasticOutCurve` (and In/InOut).
 
 - `ElasticOutCurve([double period = 0.4])` — Creates an elastic-out curve with the given oscillation [period].
 
+### `ElementAttributes` · class
+
+`// web:` not in Flutter (it has no attributes): sets attributes on the element of [child], with no element of its own.
+
+- `ElementAttributes(HtmlAttributes attributes, {Key? key, required Widget child})` — Puts [attributes] on the element of [child].
+
+### `ElementVariables` · class
+
+`// web:` not in Flutter (it has no style cascade): sets custom properties (`--accent`) on the element of [child], from values the server knows (a store's color, a size from data).
+
+- `ElementVariables(Map<CssVariable<Object>, Object> variables, {Key? key, required Widget child})` — Puts [variables] on the element of [child].
+
 ### `ExcludeSemantics` · class
 
 Flutter's `ExcludeSemantics`: hides decorative content (image placeholders, duplicated labels) from assistive technology.
@@ -3536,11 +3567,17 @@ Flutter's `Semantics`, reduced to what maps onto ARIA.
 
 - `Semantics(…)` — Creates a widget that attaches accessibility metadata to [child].
 
+### `SemanticsCurrent` · enum
+
+`// web:` not in Flutter: the values of `aria-current` ([Semantics.current]).
+
+- valores: `page`, `step`, `location`, `date`, `time`, `item`
+
 ### `SemanticsRole` · enum
 
 Flutter's `SemanticsRole`: what a widget is for assistive technology. On the web most roles are HTML elements; the rest are ARIA roles.
 
-- valores: `none`, `list`, `listItem`, `main`, `navigation`, `complementary`, `contentInfo`, `region`, `form`, `table`, `toolbar`, `row`, `cell`, `columnHeader`, `grid`, `gridCell`, `rowHeader`, `dragHandle`, `status`, `alert`, `note`, `radioGroup`, `tooltip`, `progressBar`, `loadingSpinner`, `spinButton`, `hotKey`, `slider`, `listBox`, `image`, `tab`, `tabBar`, `tabPanel`, `dialog`, `alertDialog`, `menu`, `menuBar`, `menuItem`, `menuItemCheckbox`, `menuItemRadio`, `comboBox`, `searchBox`, `checkbox`, `radio`, `switchRole`, `option`, `article`, `paragraph`, `header`, `preformatted`, `keyboardKey`, `figure`, `figureCaption`, `blockquote`, `label`
+- valores: `none`, `list`, `orderedList`, `listItem`, `main`, `navigation`, `complementary`, `contentInfo`, `region`, `form`, `table`, `toolbar`, `row`, `cell`, `columnHeader`, `grid`, `gridCell`, `rowHeader`, `dragHandle`, `status`, `alert`, `note`, `radioGroup`, `tooltip`, `progressBar`, `loadingSpinner`, `spinButton`, `hotKey`, `slider`, `listBox`, `image`, `tab`, `tabBar`, `tabPanel`, `dialog`, `alertDialog`, `menu`, `menuBar`, `menuItem`, `menuItemCheckbox`, `menuItemRadio`, `comboBox`, `searchBox`, `checkbox`, `radio`, `switchRole`, `option`, `article`, `paragraph`, `header`, `preformatted`, `keyboardKey`, `figure`, `figureCaption`, `strong`, `emphasis`, `blockquote`, `label`
 
 ### `SemanticsSortKey` · abstract class
 
@@ -4560,7 +4597,7 @@ A route that answers something other than a page (a file, XML, text, JSON) at a 
 
 What crawlers may do with a page: `<meta name="robots">`.
 
-- `RobotsMeta({bool index = true, bool follow = true, bool noArchive = false, bool noSnippet = false, bool noImageIndex = false, List<String> other = const []})` — Directives; by default a page may be indexed and its links followed.
+- `RobotsMeta(…)` — Directives; by default a page may be indexed and its links followed.
 - `RobotsMeta.parse(String? content)` — Reads the content of a `robots` meta (`'noindex, nofollow'`). A directive it does not know goes to [other].
 
 ### `RobotsRoute` · class

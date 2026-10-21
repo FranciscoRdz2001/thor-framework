@@ -86,6 +86,8 @@ html	Css	class
 html	Css.call	NestedStyleRule call(String selector, [List<StyleRule> children = const []])
 html	Css.colorProperty	NestedStyleRule colorProperty(String name, {required Color initialValue, bool inherits = true})
 html	Css.components	StyleRule components(List<StyleRule> rules)
+html	Css.container	StyleRule container(String query, List<StyleRule> rules, {String? name})
+html	Css.containerMinWidth	StyleRule containerMinWidth(num px, List<StyleRule> rules, {String? name})
 html	Css.keyframes	StyleRule keyframes(String name, Map<String, StyleProps> frames)
 html	Css.layer	StyleRule layer(List<StyleRule> rules, {String? name})
 html	Css.maxWidth	StyleRule maxWidth(num px, List<StyleRule> rules)
@@ -1191,13 +1193,15 @@ router	Robots.toText	String toText(Uri origin)
 router	RobotsMeta	class
 router	RobotsMeta.content	String get content
 router	RobotsMeta.copyWith	RobotsMeta copyWith({bool? index, bool? follow})
+router	RobotsMeta.explicitFollow	bool explicitFollow
 router	RobotsMeta.follow	bool follow
 router	RobotsMeta.index	bool index
-router	RobotsMeta.new	RobotsMeta({bool index = true, bool follow = true, bool noArchive = false, bool noSnippet = false, bool noImageIndex = false, List<String> other = const []})
+router	RobotsMeta.new	RobotsMeta({bool index = true, bool follow = true, bool explicitFollow = false, bool noArchive = false, bool noSnippet = false, bool noImageIndex = false, List<String> other = const []})
 router	RobotsMeta.noArchive	bool noArchive
 router	RobotsMeta.noImageIndex	bool noImageIndex
 router	RobotsMeta.noSnippet	bool noSnippet
 router	RobotsMeta.noindex	RobotsMeta noindex
+router	RobotsMeta.noindexFollow	RobotsMeta noindexFollow
 router	RobotsMeta.none	RobotsMeta none
 router	RobotsMeta.other	List<String> other
 router	RobotsMeta.parse	RobotsMeta.parse(String? content)
@@ -3112,13 +3116,15 @@ thor_server	Robots.toText	String toText(Uri origin)
 thor_server	RobotsMeta	class
 thor_server	RobotsMeta.content	String get content
 thor_server	RobotsMeta.copyWith	RobotsMeta copyWith({bool? index, bool? follow})
+thor_server	RobotsMeta.explicitFollow	bool explicitFollow
 thor_server	RobotsMeta.follow	bool follow
 thor_server	RobotsMeta.index	bool index
-thor_server	RobotsMeta.new	RobotsMeta({bool index = true, bool follow = true, bool noArchive = false, bool noSnippet = false, bool noImageIndex = false, List<String> other = const []})
+thor_server	RobotsMeta.new	RobotsMeta({bool index = true, bool follow = true, bool explicitFollow = false, bool noArchive = false, bool noSnippet = false, bool noImageIndex = false, List<String> other = const []})
 thor_server	RobotsMeta.noArchive	bool noArchive
 thor_server	RobotsMeta.noImageIndex	bool noImageIndex
 thor_server	RobotsMeta.noSnippet	bool noSnippet
 thor_server	RobotsMeta.noindex	RobotsMeta noindex
+thor_server	RobotsMeta.noindexFollow	RobotsMeta noindexFollow
 thor_server	RobotsMeta.none	RobotsMeta none
 thor_server	RobotsMeta.other	List<String> other
 thor_server	RobotsMeta.parse	RobotsMeta.parse(String? content)
@@ -4769,6 +4775,13 @@ thor_style	Axis	enum
 thor_style	Axis.horizontal	Axis horizontal
 thor_style	Axis.new	Axis()
 thor_style	Axis.vertical	Axis vertical
+thor_style	BackgroundClip	enum
+thor_style	BackgroundClip.border	BackgroundClip border
+thor_style	BackgroundClip.content	BackgroundClip content
+thor_style	BackgroundClip.css	String css
+thor_style	BackgroundClip.new	BackgroundClip(String css)
+thor_style	BackgroundClip.padding	BackgroundClip padding
+thor_style	BackgroundClip.text	BackgroundClip text
 thor_style	BlendMode	enum
 thor_style	BlendMode.color	BlendMode color
 thor_style	BlendMode.colorBurn	BlendMode colorBurn
@@ -4958,6 +4971,7 @@ thor_style	Color.fromRGBO	Color.fromRGBO(int r, int g, int b, double opacity)
 thor_style	Color.green	int get green
 thor_style	Color.hasChannels	bool get hasChannels
 thor_style	Color.hashCode	int get hashCode
+thor_style	Color.lerp	Color? lerp(Color? a, Color? b, double t)
 thor_style	Color.new	Color(int value)
 thor_style	Color.opacity	double get opacity
 thor_style	Color.red	int get red
@@ -5451,6 +5465,7 @@ thor_style	Length.dvh	Length.dvh(double value)
 thor_style	Length.em	Length.em(double value)
 thor_style	Length.fitContent	Length fitContent
 thor_style	Length.hashCode	int get hashCode
+thor_style	Length.inherit	Length inherit
 thor_style	Length.lvh	Length.lvh(double value)
 thor_style	Length.max	Length.max(List<Length> values)
 thor_style	Length.maxContent	Length maxContent
@@ -5459,6 +5474,10 @@ thor_style	Length.minContent	Length minContent
 thor_style	Length.percent	Length.percent(double value)
 thor_style	Length.px	Length.px(double value)
 thor_style	Length.rem	Length.rem(double value)
+thor_style	Length.safeAreaBottom	Length safeAreaBottom
+thor_style	Length.safeAreaLeft	Length safeAreaLeft
+thor_style	Length.safeAreaRight	Length safeAreaRight
+thor_style	Length.safeAreaTop	Length safeAreaTop
 thor_style	Length.svh	Length.svh(double value)
 thor_style	Length.toString	String toString()
 thor_style	Length.variable	Length.variable(CssVariable<Length> variable, {Length? fallback})
@@ -5572,9 +5591,12 @@ thor_style	RadialGradient	class
 thor_style	RadialGradient.==	bool ==(Object other)
 thor_style	RadialGradient.center	Alignment center
 thor_style	RadialGradient.css	String get css
+thor_style	RadialGradient.ellipse	RadialGradient.ellipse({Alignment center = Alignment.center, required double radiusX, required double radiusY, required List<Color> colors, List<double>? stops, Size? tile})
 thor_style	RadialGradient.hashCode	int get hashCode
 thor_style	RadialGradient.new	RadialGradient({Alignment center = Alignment.center, double radius = 0.5, required List<Color> colors, List<double>? stops, Size? tile})
 thor_style	RadialGradient.radius	double radius
+thor_style	RadialGradient.radiusX	double? radiusX
+thor_style	RadialGradient.radiusY	double? radiusY
 thor_style	Radius	class
 thor_style	Radius.==	bool ==(Object other)
 thor_style	Radius.circular	Radius.circular(double radius)
@@ -5829,6 +5851,7 @@ thor_style	compoundOf	function
 thor_style	containerKeyOf	function
 thor_style	containerKeyPrefix	getter
 thor_style	containerWidthOf	function
+thor_style	cssAspectRatio	function
 thor_style	cssBox	function
 thor_style	cssDuration	function
 thor_style	cssInline	function
@@ -6066,11 +6089,12 @@ thor_ui	AlertDialog	class
 thor_ui	AlertDialog.actions	List<Widget> actions
 thor_ui	AlertDialog.barrierDismissible	bool barrierDismissible
 thor_ui	AlertDialog.build	Widget build(BuildContext context)
+thor_ui	AlertDialog.closeLabel	String? closeLabel
 thor_ui	AlertDialog.content	Widget? content
 thor_ui	AlertDialog.controller	DialogController? controller
 thor_ui	AlertDialog.id	String? id
 thor_ui	AlertDialog.modal	bool modal
-thor_ui	AlertDialog.new	AlertDialog({Key? key, String? id, Widget? title, Widget? content, List<Widget> actions = const [], String? semanticLabel, bool barrierDismissible = true, DialogController? controller, bool modal = true, bool showClose = false})
+thor_ui	AlertDialog.new	AlertDialog({Key? key, String? id, Widget? title, Widget? content, List<Widget> actions = const [], String? semanticLabel, bool barrierDismissible = true, DialogController? controller, bool modal = true, bool showClose = false, String? closeLabel})
 thor_ui	AlertDialog.semanticLabel	String? semanticLabel
 thor_ui	AlertDialog.showClose	bool showClose
 thor_ui	AlertDialog.title	Widget? title
@@ -6573,6 +6597,13 @@ thor_ui	BackdropFilter.enabled	bool enabled
 thor_ui	BackdropFilter.filter	ImageFilter filter
 thor_ui	BackdropFilter.new	BackdropFilter({Key? key, required ImageFilter filter, bool enabled = true, required Widget child})
 thor_ui	BackdropFilter.wrapData	WrapData get wrapData
+thor_ui	BackgroundClip	enum
+thor_ui	BackgroundClip.border	BackgroundClip border
+thor_ui	BackgroundClip.content	BackgroundClip content
+thor_ui	BackgroundClip.css	String css
+thor_ui	BackgroundClip.new	BackgroundClip(String css)
+thor_ui	BackgroundClip.padding	BackgroundClip padding
+thor_ui	BackgroundClip.text	BackgroundClip text
 thor_ui	Badge	class
 thor_ui	Badge.alignment	Alignment? alignment
 thor_ui	Badge.backgroundColor	Color? backgroundColor
@@ -6840,13 +6871,14 @@ thor_ui	ButtonStyle	class
 thor_ui	ButtonStyle.alignment	Alignment? alignment
 thor_ui	ButtonStyle.animationDuration	Duration? animationDuration
 thor_ui	ButtonStyle.backgroundColor	WidgetStateProperty<Color?>? backgroundColor
-thor_ui	ButtonStyle.copyWith	ButtonStyle copyWith({WidgetStateProperty<TextStyle?>? textStyle, WidgetStateProperty<Color?>? backgroundColor, WidgetStateProperty<Color?>? foregroundColor, WidgetStateProperty<Color?>? overlayColor, WidgetStateProperty<EdgeInsetsGeometry?>? padding, WidgetStateProperty<Size?>? minimumSize, WidgetStateProperty<BorderSide?>? side, WidgetStateProperty<OutlinedBorder?>? shape, Alignment? alignment, Duration? animationDuration, WidgetStateProperty<double?>? iconSize, WidgetStateProperty<double?>? elevation, WidgetStateProperty<Color?>? shadowColor, WidgetStateProperty<List<BoxShadow>?>? shadows})
+thor_ui	ButtonStyle.copyWith	ButtonStyle copyWith({WidgetStateProperty<TextStyle?>? textStyle, WidgetStateProperty<Color?>? backgroundColor, WidgetStateProperty<Color?>? foregroundColor, WidgetStateProperty<Color?>? overlayColor, WidgetStateProperty<EdgeInsetsGeometry?>? padding, WidgetStateProperty<Size?>? minimumSize, WidgetStateProperty<Size?>? fixedSize, WidgetStateProperty<BorderSide?>? side, WidgetStateProperty<OutlinedBorder?>? shape, Alignment? alignment, Duration? animationDuration, WidgetStateProperty<double?>? iconSize, WidgetStateProperty<double?>? elevation, WidgetStateProperty<Color?>? shadowColor, WidgetStateProperty<List<BoxShadow>?>? shadows})
 thor_ui	ButtonStyle.elevation	WidgetStateProperty<double?>? elevation
+thor_ui	ButtonStyle.fixedSize	WidgetStateProperty<Size?>? fixedSize
 thor_ui	ButtonStyle.foregroundColor	WidgetStateProperty<Color?>? foregroundColor
 thor_ui	ButtonStyle.iconSize	WidgetStateProperty<double?>? iconSize
 thor_ui	ButtonStyle.merge	ButtonStyle merge(ButtonStyle? other)
 thor_ui	ButtonStyle.minimumSize	WidgetStateProperty<Size?>? minimumSize
-thor_ui	ButtonStyle.new	ButtonStyle({WidgetStateProperty<TextStyle?>? textStyle, WidgetStateProperty<Color?>? backgroundColor, WidgetStateProperty<Color?>? foregroundColor, WidgetStateProperty<Color?>? overlayColor, WidgetStateProperty<EdgeInsetsGeometry?>? padding, WidgetStateProperty<Size?>? minimumSize, WidgetStateProperty<BorderSide?>? side, WidgetStateProperty<OutlinedBorder?>? shape, Alignment? alignment, Duration? animationDuration, WidgetStateProperty<double?>? iconSize, WidgetStateProperty<double?>? elevation, WidgetStateProperty<Color?>? shadowColor, WidgetStateProperty<List<BoxShadow>?>? shadows})
+thor_ui	ButtonStyle.new	ButtonStyle({WidgetStateProperty<TextStyle?>? textStyle, WidgetStateProperty<Color?>? backgroundColor, WidgetStateProperty<Color?>? foregroundColor, WidgetStateProperty<Color?>? overlayColor, WidgetStateProperty<EdgeInsetsGeometry?>? padding, WidgetStateProperty<Size?>? minimumSize, WidgetStateProperty<Size?>? fixedSize, WidgetStateProperty<BorderSide?>? side, WidgetStateProperty<OutlinedBorder?>? shape, Alignment? alignment, Duration? animationDuration, WidgetStateProperty<double?>? iconSize, WidgetStateProperty<double?>? elevation, WidgetStateProperty<Color?>? shadowColor, WidgetStateProperty<List<BoxShadow>?>? shadows})
 thor_ui	ButtonStyle.overlayColor	WidgetStateProperty<Color?>? overlayColor
 thor_ui	ButtonStyle.padding	WidgetStateProperty<EdgeInsetsGeometry?>? padding
 thor_ui	ButtonStyle.shadowColor	WidgetStateProperty<Color?>? shadowColor
@@ -7140,6 +7172,7 @@ thor_ui	Color.fromRGBO	Color.fromRGBO(int r, int g, int b, double opacity)
 thor_ui	Color.green	int get green
 thor_ui	Color.hasChannels	bool get hasChannels
 thor_ui	Color.hashCode	int get hashCode
+thor_ui	Color.lerp	Color? lerp(Color? a, Color? b, double t)
 thor_ui	Color.new	Color(int value)
 thor_ui	Color.opacity	double get opacity
 thor_ui	Color.red	int get red
@@ -7792,6 +7825,7 @@ thor_ui	Dialog.barrierDismissible	bool barrierDismissible
 thor_ui	Dialog.barrierFilter	ImageFilter? barrierFilter
 thor_ui	Dialog.build	Widget build(BuildContext context)
 thor_ui	Dialog.child	Widget child
+thor_ui	Dialog.closeLabel	String? closeLabel
 thor_ui	Dialog.constraints	BoxConstraints? constraints
 thor_ui	Dialog.controller	DialogController? controller
 thor_ui	Dialog.elevation	double? elevation
@@ -7799,7 +7833,7 @@ thor_ui	Dialog.id	String? id
 thor_ui	Dialog.insetPadding	EdgeInsets? insetPadding
 thor_ui	Dialog.label	String? label
 thor_ui	Dialog.modal	bool modal
-thor_ui	Dialog.new	Dialog({Key? key, String? id, required Widget child, Color? backgroundColor, double? elevation, OutlinedBorder? shape, EdgeInsets? insetPadding, BoxConstraints? constraints, List<BoxShadow>? shadows, Color? barrierColor, ImageFilter? barrierFilter, bool barrierDismissible = true, String? label, DialogController? controller, bool modal = true, bool showClose = false})
+thor_ui	Dialog.new	Dialog({Key? key, String? id, required Widget child, Color? backgroundColor, double? elevation, OutlinedBorder? shape, EdgeInsets? insetPadding, BoxConstraints? constraints, List<BoxShadow>? shadows, Color? barrierColor, ImageFilter? barrierFilter, bool barrierDismissible = true, String? label, DialogController? controller, bool modal = true, bool showClose = false, String? closeLabel})
 thor_ui	Dialog.shadows	List<BoxShadow>? shadows
 thor_ui	Dialog.shape	OutlinedBorder? shape
 thor_ui	Dialog.showClose	bool showClose
@@ -7960,11 +7994,12 @@ thor_ui	Drawer	class
 thor_ui	Drawer.backgroundColor	Color? backgroundColor
 thor_ui	Drawer.build	Widget build(BuildContext context)
 thor_ui	Drawer.child	Widget child
+thor_ui	Drawer.closeLabel	String? closeLabel
 thor_ui	Drawer.closeOnNavigate	bool closeOnNavigate
 thor_ui	Drawer.controller	DialogController? controller
 thor_ui	Drawer.id	String? id
 thor_ui	Drawer.label	String? label
-thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, bool showClose = false})
+thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, bool showClose = false, String? closeLabel})
 thor_ui	Drawer.padding	EdgeInsetsGeometry padding
 thor_ui	Drawer.permanentFrom	WindowSizeClass? permanentFrom
 thor_ui	Drawer.permanentPadding	EdgeInsetsGeometry? permanentPadding
@@ -8181,13 +8216,21 @@ thor_ui	ElasticOutCurve	class
 thor_ui	ElasticOutCurve.new	ElasticOutCurve([double period = 0.4])
 thor_ui	ElasticOutCurve.period	double period
 thor_ui	ElasticOutCurve.transformInternal	double transformInternal(double t)
+thor_ui	ElementAttributes	class
+thor_ui	ElementAttributes.attributes	HtmlAttributes attributes
+thor_ui	ElementAttributes.new	ElementAttributes(HtmlAttributes attributes, {Key? key, required Widget child})
+thor_ui	ElementAttributes.wrapData	WrapData get wrapData
+thor_ui	ElementVariables	class
+thor_ui	ElementVariables.new	ElementVariables(Map<CssVariable<Object>, Object> variables, {Key? key, required Widget child})
+thor_ui	ElementVariables.variables	Map<CssVariable<Object>, Object> variables
+thor_ui	ElementVariables.wrapData	WrapData get wrapData
 thor_ui	ElevatedButton	class
 thor_ui	ElevatedButton.hoverCss	CssDeclarations get hoverCss
 thor_ui	ElevatedButton.icon	ElevatedButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	ElevatedButton.iconPadding	(String, String)? get iconPadding
 thor_ui	ElevatedButton.new	ElevatedButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	ElevatedButton.pressedCss	CssDeclarations get pressedCss
-thor_ui	ElevatedButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
+thor_ui	ElevatedButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, Size? fixedSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	ElevatedButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
 thor_ui	ElevatedButton.variantCss	CssDeclarations get variantCss
 thor_ui	ElevatedButton.variantElevation	double variantElevation(Set<WidgetState> states)
@@ -8208,6 +8251,15 @@ thor_ui	ExcludeSemantics	class
 thor_ui	ExcludeSemantics.excluding	bool excluding
 thor_ui	ExcludeSemantics.new	ExcludeSemantics({Key? key, bool excluding = true, required Widget child})
 thor_ui	ExcludeSemantics.wrapData	WrapData get wrapData
+thor_ui	ExpandableText	class
+thor_ui	ExpandableText.build	Widget build(BuildContext context)
+thor_ui	ExpandableText.lessLabel	String lessLabel
+thor_ui	ExpandableText.maxLines	int maxLines
+thor_ui	ExpandableText.moreLabel	String moreLabel
+thor_ui	ExpandableText.new	ExpandableText(String text, {Key? key, int maxLines = 3, required String moreLabel, required String lessLabel, TextStyle? style, TextStyle? toggleStyle})
+thor_ui	ExpandableText.style	TextStyle? style
+thor_ui	ExpandableText.text	String text
+thor_ui	ExpandableText.toggleStyle	TextStyle? toggleStyle
 thor_ui	Expanded	class
 thor_ui	Expanded.new	Expanded({Key? key, int flex = 1, required Widget child})
 thor_ui	ExpansionPanelList	class
@@ -8282,7 +8334,7 @@ thor_ui	FilledButton.icon	FilledButton.icon({Key? key, void Function()? onPresse
 thor_ui	FilledButton.iconPadding	(String, String)? get iconPadding
 thor_ui	FilledButton.new	FilledButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	FilledButton.pressedCss	CssDeclarations get pressedCss
-thor_ui	FilledButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
+thor_ui	FilledButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, Size? fixedSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	FilledButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
 thor_ui	FilledButton.tonal	FilledButton.tonal({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	FilledButton.tonalIcon	FilledButton.tonalIcon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
@@ -8850,7 +8902,7 @@ thor_ui	IconButton.outlined	IconButton.outlined({Key? key, double? iconSize, Vis
 thor_ui	IconButton.padding	EdgeInsetsGeometry? padding
 thor_ui	IconButton.selectedIcon	Widget? selectedIcon
 thor_ui	IconButton.style	ButtonStyle? style
-thor_ui	IconButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, double? iconSize, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
+thor_ui	IconButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, Size? fixedSize, OutlinedBorder? shape, BorderSide? side, double? iconSize, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	IconButton.tooltip	String? tooltip
 thor_ui	IconButton.tooltipWatch	String Function()? tooltipWatch
 thor_ui	IconButton.visualDensity	VisualDensity? visualDensity
@@ -17988,6 +18040,7 @@ thor_ui	Length.dvh	Length.dvh(double value)
 thor_ui	Length.em	Length.em(double value)
 thor_ui	Length.fitContent	Length fitContent
 thor_ui	Length.hashCode	int get hashCode
+thor_ui	Length.inherit	Length inherit
 thor_ui	Length.lvh	Length.lvh(double value)
 thor_ui	Length.max	Length.max(List<Length> values)
 thor_ui	Length.maxContent	Length maxContent
@@ -17996,6 +18049,10 @@ thor_ui	Length.minContent	Length minContent
 thor_ui	Length.percent	Length.percent(double value)
 thor_ui	Length.px	Length.px(double value)
 thor_ui	Length.rem	Length.rem(double value)
+thor_ui	Length.safeAreaBottom	Length safeAreaBottom
+thor_ui	Length.safeAreaLeft	Length safeAreaLeft
+thor_ui	Length.safeAreaRight	Length safeAreaRight
+thor_ui	Length.safeAreaTop	Length safeAreaTop
 thor_ui	Length.svh	Length.svh(double value)
 thor_ui	Length.toString	String toString()
 thor_ui	Length.variable	Length.variable(CssVariable<Length> variable, {Length? fallback})
@@ -18407,12 +18464,13 @@ thor_ui	ModalBottomSheet.backgroundColor	Color? backgroundColor
 thor_ui	ModalBottomSheet.barrierColor	Color? barrierColor
 thor_ui	ModalBottomSheet.build	Widget build(BuildContext context)
 thor_ui	ModalBottomSheet.child	Widget child
+thor_ui	ModalBottomSheet.closeLabel	String? closeLabel
 thor_ui	ModalBottomSheet.constraints	BoxConstraints? constraints
 thor_ui	ModalBottomSheet.controller	DialogController? controller
 thor_ui	ModalBottomSheet.elevation	double? elevation
 thor_ui	ModalBottomSheet.id	String? id
 thor_ui	ModalBottomSheet.label	String? label
-thor_ui	ModalBottomSheet.new	ModalBottomSheet({Key? key, String? id, required Widget child, bool showDragHandle = true, String? label, DialogController? controller, Color? backgroundColor, double? elevation, OutlinedBorder? shape, BoxConstraints? constraints, Color? barrierColor, bool showClose = false})
+thor_ui	ModalBottomSheet.new	ModalBottomSheet({Key? key, String? id, required Widget child, bool showDragHandle = true, String? label, DialogController? controller, Color? backgroundColor, double? elevation, OutlinedBorder? shape, BoxConstraints? constraints, Color? barrierColor, bool showClose = false, String? closeLabel})
 thor_ui	ModalBottomSheet.shape	OutlinedBorder? shape
 thor_ui	ModalBottomSheet.showClose	bool showClose
 thor_ui	ModalBottomSheet.showDragHandle	bool showDragHandle
@@ -18617,7 +18675,7 @@ thor_ui	OutlinedButton	class
 thor_ui	OutlinedButton.icon	OutlinedButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	OutlinedButton.iconPadding	(String, String)? get iconPadding
 thor_ui	OutlinedButton.new	OutlinedButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
-thor_ui	OutlinedButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
+thor_ui	OutlinedButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, Size? fixedSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	OutlinedButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
 thor_ui	OutlinedButton.unborderedIconPadding	(String, String)? get unborderedIconPadding
 thor_ui	OutlinedButton.unborderedPadding	String? get unborderedPadding
@@ -18838,9 +18896,12 @@ thor_ui	RadialGradient	class
 thor_ui	RadialGradient.==	bool ==(Object other)
 thor_ui	RadialGradient.center	Alignment center
 thor_ui	RadialGradient.css	String get css
+thor_ui	RadialGradient.ellipse	RadialGradient.ellipse({Alignment center = Alignment.center, required double radiusX, required double radiusY, required List<Color> colors, List<double>? stops, Size? tile})
 thor_ui	RadialGradient.hashCode	int get hashCode
 thor_ui	RadialGradient.new	RadialGradient({Alignment center = Alignment.center, double radius = 0.5, required List<Color> colors, List<double>? stops, Size? tile})
 thor_ui	RadialGradient.radius	double radius
+thor_ui	RadialGradient.radiusX	double? radiusX
+thor_ui	RadialGradient.radiusY	double? radiusY
 thor_ui	Radio	class
 thor_ui	Radio.activeColor	Color? activeColor
 thor_ui	Radio.build	Widget build(BuildContext context)
@@ -19173,6 +19234,7 @@ thor_ui	Semantics.checked	bool? checked
 thor_ui	Semantics.columnCount	int? columnCount
 thor_ui	Semantics.columnIndex	int? columnIndex
 thor_ui	Semantics.container	bool container
+thor_ui	Semantics.current	SemanticsCurrent? current
 thor_ui	Semantics.enabled	bool? enabled
 thor_ui	Semantics.excludeSemantics	bool excludeSemantics
 thor_ui	Semantics.expanded	bool? expanded
@@ -19187,7 +19249,7 @@ thor_ui	Semantics.image	bool image
 thor_ui	Semantics.label	String? label
 thor_ui	Semantics.link	bool link
 thor_ui	Semantics.liveRegion	bool liveRegion
-thor_ui	Semantics.new	Semantics({Key? key, SemanticsRole? role, int? headingLevel, String? label, bool button = false, bool header = false, bool link = false, bool image = false, bool hidden = false, bool? enabled, bool? selected, bool? toggled, int? rowIndex, int? rowCount, int? columnIndex, int? columnCount, bool liveRegion = false, String? identifier, String? value, String? hint, bool? checked, bool? expanded, bool? readOnly, bool? obscured, bool? focusable, String? tooltip, bool textField = false, bool slider = false, bool container = false, bool explicitChildNodes = false, bool excludeSemantics = false, SemanticsSortKey? sortKey, required Widget child})
+thor_ui	Semantics.new	Semantics({Key? key, SemanticsRole? role, int? headingLevel, String? label, bool button = false, bool header = false, bool link = false, bool image = false, bool hidden = false, bool? enabled, bool? selected, bool? toggled, int? rowIndex, int? rowCount, int? columnIndex, int? columnCount, bool liveRegion = false, SemanticsCurrent? current, String? identifier, String? value, String? hint, bool? checked, bool? expanded, bool? readOnly, bool? obscured, bool? focusable, String? tooltip, bool textField = false, bool slider = false, bool container = false, bool explicitChildNodes = false, bool excludeSemantics = false, SemanticsSortKey? sortKey, required Widget child})
 thor_ui	Semantics.obscured	bool? obscured
 thor_ui	Semantics.readOnly	bool? readOnly
 thor_ui	Semantics.role	SemanticsRole? role
@@ -19201,6 +19263,15 @@ thor_ui	Semantics.toggled	bool? toggled
 thor_ui	Semantics.tooltip	String? tooltip
 thor_ui	Semantics.value	String? value
 thor_ui	Semantics.wrapData	WrapData get wrapData
+thor_ui	SemanticsCurrent	enum
+thor_ui	SemanticsCurrent.date	SemanticsCurrent date
+thor_ui	SemanticsCurrent.item	SemanticsCurrent item
+thor_ui	SemanticsCurrent.location	SemanticsCurrent location
+thor_ui	SemanticsCurrent.new	SemanticsCurrent(String value)
+thor_ui	SemanticsCurrent.page	SemanticsCurrent page
+thor_ui	SemanticsCurrent.step	SemanticsCurrent step
+thor_ui	SemanticsCurrent.time	SemanticsCurrent time
+thor_ui	SemanticsCurrent.value	String value
 thor_ui	SemanticsRole	enum
 thor_ui	SemanticsRole.alert	SemanticsRole alert
 thor_ui	SemanticsRole.alertDialog	SemanticsRole alertDialog
@@ -19215,6 +19286,7 @@ thor_ui	SemanticsRole.complementary	SemanticsRole complementary
 thor_ui	SemanticsRole.contentInfo	SemanticsRole contentInfo
 thor_ui	SemanticsRole.dialog	SemanticsRole dialog
 thor_ui	SemanticsRole.dragHandle	SemanticsRole dragHandle
+thor_ui	SemanticsRole.emphasis	SemanticsRole emphasis
 thor_ui	SemanticsRole.figure	SemanticsRole figure
 thor_ui	SemanticsRole.figureCaption	SemanticsRole figureCaption
 thor_ui	SemanticsRole.form	SemanticsRole form
@@ -19240,6 +19312,7 @@ thor_ui	SemanticsRole.new	SemanticsRole({String? tag, String? aria})
 thor_ui	SemanticsRole.none	SemanticsRole none
 thor_ui	SemanticsRole.note	SemanticsRole note
 thor_ui	SemanticsRole.option	SemanticsRole option
+thor_ui	SemanticsRole.orderedList	SemanticsRole orderedList
 thor_ui	SemanticsRole.paragraph	SemanticsRole paragraph
 thor_ui	SemanticsRole.preformatted	SemanticsRole preformatted
 thor_ui	SemanticsRole.progressBar	SemanticsRole progressBar
@@ -19252,6 +19325,7 @@ thor_ui	SemanticsRole.searchBox	SemanticsRole searchBox
 thor_ui	SemanticsRole.slider	SemanticsRole slider
 thor_ui	SemanticsRole.spinButton	SemanticsRole spinButton
 thor_ui	SemanticsRole.status	SemanticsRole status
+thor_ui	SemanticsRole.strong	SemanticsRole strong
 thor_ui	SemanticsRole.switchRole	SemanticsRole switchRole
 thor_ui	SemanticsRole.tab	SemanticsRole tab
 thor_ui	SemanticsRole.tabBar	SemanticsRole tabBar
@@ -19715,6 +19789,7 @@ thor_ui	StyleProps.animation	List<CssAnimation>? animation
 thor_ui	StyleProps.appearance	Appearance? appearance
 thor_ui	StyleProps.aspectRatio	double? aspectRatio
 thor_ui	StyleProps.backdropFilter	ImageFilter? backdropFilter
+thor_ui	StyleProps.backgroundClip	BackgroundClip? backgroundClip
 thor_ui	StyleProps.blur	double? blur
 thor_ui	StyleProps.borderCollapse	BorderCollapse? borderCollapse
 thor_ui	StyleProps.borderSpacing	double? borderSpacing
@@ -19742,6 +19817,8 @@ thor_ui	StyleProps.height	double? height
 thor_ui	StyleProps.heightFactor	double? heightFactor
 thor_ui	StyleProps.heightLength	Length? heightLength
 thor_ui	StyleProps.ignorePointer	bool? ignorePointer
+thor_ui	StyleProps.inset	Length? inset
+thor_ui	StyleProps.lineClamp	int? lineClamp
 thor_ui	StyleProps.listStyleType	ListStyleType? listStyleType
 thor_ui	StyleProps.mainAxisAlignment	MainAxisAlignment? mainAxisAlignment
 thor_ui	StyleProps.margin	EdgeInsetsGeometry? margin
@@ -19750,7 +19827,7 @@ thor_ui	StyleProps.maxWidth	Length? maxWidth
 thor_ui	StyleProps.minHeight	Length? minHeight
 thor_ui	StyleProps.minWidth	Length? minWidth
 thor_ui	StyleProps.mixBlendMode	BlendMode? mixBlendMode
-thor_ui	StyleProps.new	StyleProps({EdgeInsetsGeometry? padding, EdgeInsetsGeometry? margin, double? width, double? height, BoxConstraints? constraints, Color? color, BoxDecoration? decoration, TextStyle? textStyle, double? opacity, double? scale, Ratio? scaleRatio, Offset? offset, Offset? fractionalTranslation, double? widthFactor, double? heightFactor, int? zIndex, int? flex, int? flexShrink, Length? flexBasis, BoxPosition? position, Overflow? overflowX, Overflow? overflowY, Length? minWidth, Length? maxWidth, Length? minHeight, Length? maxHeight, CrossAxisAlignment? alignSelf, Axis? direction, MainAxisAlignment? mainAxisAlignment, CrossAxisAlignment? crossAxisAlignment, bool? wrap, Length? spacing, Length? runSpacing, GridTracks? gridTemplateColumns, GridTrack? gridAutoRows, BorderSide? outline, double? outlineOffset, EdgeInsetsGeometry? scrollMargin, Alignment? transformOrigin, double? turns, double? blur, bool? ignorePointer, String? viewTransitionName, bool? offstage, Length? widthLength, Length? heightLength, double? aspectRatio, Display? display, MouseCursor? cursor, TextAlign? textAlign, WhiteSpace? whiteSpace, TextWrap? textWrap, OverflowWrap? overflowWrap, VerticalAlign? verticalAlign, ListStyleType? listStyleType, ObjectFit? objectFit, List<Transition>? transition, List<CssAnimation>? animation, ImageFilter? filter, ImageFilter? backdropFilter, BlendMode? mixBlendMode, Appearance? appearance, ScrollbarWidth? scrollbarWidth, Color? scrollbarThumbColor, Color? scrollbarTrackColor, Resize? resize, BoxSizing? boxSizing, Color? accentColor, ContentVisibility? contentVisibility, ScrollSnapType? scrollSnapType, ScrollSnapAlign? scrollSnapAlign, ScrollTargetGroup? scrollTargetGroup, BorderCollapse? borderCollapse, double? borderSpacing, FontSmoothing? fontSmoothing, BoxFloat? float, UserSelect? userSelect, ContainerType? containerType, CssColorScheme? colorScheme, CssDeclarations? raw, StyleProps? medium, StyleProps? expanded, StyleProps? large, StyleProps? extraLarge, StyleProps? dark, StyleProps? open, StyleProps? hover, StyleProps? focused, StyleProps? focusWithin, StyleProps? disabled, StyleProps? pressed, StyleProps? groupHover, Map<String, StyleProps> groupHovers = const {}, Map<num, StyleProps> container = const {}})
+thor_ui	StyleProps.new	StyleProps({EdgeInsetsGeometry? padding, EdgeInsetsGeometry? margin, double? width, double? height, BoxConstraints? constraints, Color? color, BoxDecoration? decoration, TextStyle? textStyle, double? opacity, double? scale, Ratio? scaleRatio, Offset? offset, Offset? fractionalTranslation, double? widthFactor, double? heightFactor, int? zIndex, int? flex, int? flexShrink, Length? flexBasis, BoxPosition? position, Overflow? overflowX, Overflow? overflowY, Length? minWidth, Length? maxWidth, Length? minHeight, Length? maxHeight, CrossAxisAlignment? alignSelf, Axis? direction, MainAxisAlignment? mainAxisAlignment, CrossAxisAlignment? crossAxisAlignment, bool? wrap, Length? spacing, Length? runSpacing, GridTracks? gridTemplateColumns, GridTrack? gridAutoRows, BorderSide? outline, double? outlineOffset, EdgeInsetsGeometry? scrollMargin, Alignment? transformOrigin, double? turns, double? blur, bool? ignorePointer, String? viewTransitionName, bool? offstage, Length? widthLength, Length? heightLength, double? aspectRatio, Length? inset, EdgeInsetsGeometry? scrollPadding, TextTransform? textTransform, TextOverflow? textOverflow, int? lineClamp, Length? textUnderlineOffset, BackgroundClip? backgroundClip, Display? display, MouseCursor? cursor, TextAlign? textAlign, WhiteSpace? whiteSpace, TextWrap? textWrap, OverflowWrap? overflowWrap, VerticalAlign? verticalAlign, ListStyleType? listStyleType, ObjectFit? objectFit, List<Transition>? transition, List<CssAnimation>? animation, ImageFilter? filter, ImageFilter? backdropFilter, BlendMode? mixBlendMode, Appearance? appearance, ScrollbarWidth? scrollbarWidth, Color? scrollbarThumbColor, Color? scrollbarTrackColor, Resize? resize, BoxSizing? boxSizing, Color? accentColor, ContentVisibility? contentVisibility, ScrollSnapType? scrollSnapType, ScrollSnapAlign? scrollSnapAlign, ScrollTargetGroup? scrollTargetGroup, BorderCollapse? borderCollapse, double? borderSpacing, FontSmoothing? fontSmoothing, BoxFloat? float, UserSelect? userSelect, ContainerType? containerType, CssColorScheme? colorScheme, CssDeclarations? raw, StyleProps? medium, StyleProps? expanded, StyleProps? large, StyleProps? extraLarge, StyleProps? dark, StyleProps? open, StyleProps? hover, StyleProps? focused, StyleProps? focusWithin, StyleProps? disabled, StyleProps? pressed, StyleProps? groupHover, Map<String, StyleProps> groupHovers = const {}, Map<num, StyleProps> container = const {}})
 thor_ui	StyleProps.objectFit	ObjectFit? objectFit
 thor_ui	StyleProps.offset	Offset? offset
 thor_ui	StyleProps.offstage	bool? offstage
@@ -19768,6 +19845,7 @@ thor_ui	StyleProps.runSpacing	Length? runSpacing
 thor_ui	StyleProps.scale	double? scale
 thor_ui	StyleProps.scaleRatio	Ratio? scaleRatio
 thor_ui	StyleProps.scrollMargin	EdgeInsetsGeometry? scrollMargin
+thor_ui	StyleProps.scrollPadding	EdgeInsetsGeometry? scrollPadding
 thor_ui	StyleProps.scrollSnapAlign	ScrollSnapAlign? scrollSnapAlign
 thor_ui	StyleProps.scrollSnapType	ScrollSnapType? scrollSnapType
 thor_ui	StyleProps.scrollTargetGroup	ScrollTargetGroup? scrollTargetGroup
@@ -19776,7 +19854,10 @@ thor_ui	StyleProps.scrollbarTrackColor	Color? scrollbarTrackColor
 thor_ui	StyleProps.scrollbarWidth	ScrollbarWidth? scrollbarWidth
 thor_ui	StyleProps.spacing	Length? spacing
 thor_ui	StyleProps.textAlign	TextAlign? textAlign
+thor_ui	StyleProps.textOverflow	TextOverflow? textOverflow
 thor_ui	StyleProps.textStyle	TextStyle? textStyle
+thor_ui	StyleProps.textTransform	TextTransform? textTransform
+thor_ui	StyleProps.textUnderlineOffset	Length? textUnderlineOffset
 thor_ui	StyleProps.textWrap	TextWrap? textWrap
 thor_ui	StyleProps.toCss	CssDeclarations toCss()
 thor_ui	StyleProps.transformOrigin	Alignment? transformOrigin
@@ -20009,7 +20090,7 @@ thor_ui	TextButton	class
 thor_ui	TextButton.icon	TextButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	TextButton.iconPadding	(String, String)? get iconPadding
 thor_ui	TextButton.new	TextButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
-thor_ui	TextButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
+thor_ui	TextButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, Size? fixedSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	TextButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
 thor_ui	TextButton.variantCss	CssDeclarations get variantCss
 thor_ui	TextButtonThemeData	class
@@ -21155,6 +21236,7 @@ thor_ui	confirm	function
 thor_ui	containerKeyOf	function
 thor_ui	containerKeyPrefix	getter
 thor_ui	containerWidthOf	function
+thor_ui	cssAspectRatio	function
 thor_ui	cssBox	function
 thor_ui	cssDuration	function
 thor_ui	cssInline	function

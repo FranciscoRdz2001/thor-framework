@@ -15,12 +15,12 @@ void main() {
 
   test('orderedList is an <ol> with the list reset', () async {
     final html = await page(
-      Semantics(
+      const Semantics(
         role: SemanticsRole.orderedList,
         child: Column(
           children: [
-            Semantics(role: SemanticsRole.listItem, child: const Text('One')),
-            Semantics(role: SemanticsRole.listItem, child: const Text('Two')),
+            Semantics(role: SemanticsRole.listItem, child: Text('One')),
+            Semantics(role: SemanticsRole.listItem, child: Text('Two')),
           ],
         ),
       ),
@@ -32,7 +32,7 @@ void main() {
 
   test('strong and emphasis are inline elements around the text', () async {
     final html = await page(
-      Semantics(role: SemanticsRole.strong, child: const Text('Bold')),
+      const Semantics(role: SemanticsRole.strong, child: Text('Bold')),
     );
     expect(html, contains('<strong '));
     expect(html, contains('>Bold</strong>'));
@@ -40,8 +40,8 @@ void main() {
 
   test('current writes aria-current', () async {
     final html = await page(
-      Column(
-        children: const [
+      const Column(
+        children: [
           Semantics(current: SemanticsCurrent.page, child: Text('Here')),
           Semantics(current: SemanticsCurrent.step, child: Text('Two')),
           Semantics(current: SemanticsCurrent.item, child: Text('Three')),
@@ -65,9 +65,9 @@ void main() {
             children: [
               ElementAttributes(
                 HtmlAttributes(data: {'track': 'cta', 'track-id': 'a'}),
-                child: Semantics(
+                child: const Semantics(
                   role: SemanticsRole.listItem,
-                  child: const Text('Item'),
+                  child: Text('Item'),
                 ),
               ),
             ],

@@ -109,6 +109,7 @@ const topics = <(String, String, List<String>)>[
       'thor_ui/src/widgets/text.dart',
       'thor_ui/src/widgets/rich_text.dart',
       'thor_ui/src/widgets/ratio_text.dart',
+      'thor_ui/src/widgets/expandable_text.dart',
       'thor_ui/src/widgets/html_widget.dart',
       'thor_engine/sanitize.dart',
       'thor_ui/src/widgets/icon.dart',

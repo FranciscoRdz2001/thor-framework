@@ -31,12 +31,21 @@ void main() {
   });
 
   test('aspectRatio keeps a fraction as the fraction', () {
-    expect(StyleProps(aspectRatio: 4 / 3).toCss()['aspect-ratio'], '4 / 3');
-    expect(StyleProps(aspectRatio: 16 / 9).toCss()['aspect-ratio'], '16 / 9');
-    expect(StyleProps(aspectRatio: 1.5).toCss()['aspect-ratio'], '1.5');
-    expect(StyleProps(aspectRatio: 1).toCss()['aspect-ratio'], '1');
-    expect(StyleProps(aspectRatio: 0.75).toCss()['aspect-ratio'], '0.75');
-    expect(StyleProps(aspectRatio: 1.2345).toCss()['aspect-ratio'], '1.2345');
+    expect(
+      const StyleProps(aspectRatio: 4 / 3).toCss()['aspect-ratio'],
+      '4 / 3',
+    );
+    expect(
+      const StyleProps(aspectRatio: 16 / 9).toCss()['aspect-ratio'],
+      '16 / 9',
+    );
+    expect(const StyleProps(aspectRatio: 1.5).toCss()['aspect-ratio'], '1.5');
+    expect(const StyleProps(aspectRatio: 1).toCss()['aspect-ratio'], '1');
+    expect(const StyleProps(aspectRatio: 0.75).toCss()['aspect-ratio'], '0.75');
+    expect(
+      const StyleProps(aspectRatio: 1.2345).toCss()['aspect-ratio'],
+      '1.2345',
+    );
   });
 
   test('safe area and inherit are lengths', () {
@@ -46,7 +55,7 @@ void main() {
       'calc(env(safe-area-inset-bottom, 0px) + 16px)',
     );
     expect(
-      StyleProps(minHeight: Length.safeAreaTop).toCss()['min-height'],
+      const StyleProps(minHeight: Length.safeAreaTop).toCss()['min-height'],
       'env(safe-area-inset-top, 0px)',
     );
     expect(Length.inherit.css, 'inherit');

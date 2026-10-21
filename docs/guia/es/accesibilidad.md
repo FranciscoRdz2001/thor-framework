@@ -78,7 +78,12 @@ Column(children: [
 | un título | `Semantics(headingLevel: 2, …)` |
 | un nombre que no se ve | `Semantics(label: '…', …)`; `tooltip:` en un `IconButton` |
 | un aviso que se lee al cambiar | `Semantics(liveRegion: true, …)` |
-| una región de la página | `Semantics(role: SemanticsRole.navigation, …)`, también `main`, `complementary` y `region` |
+| una región de la página | `Semantics(role: SemanticsRole.navigation, …)`, también `main`, `complementary` (`<aside>`) y `region` (`<section>`) |
+| una lista de pasos, o con viñetas | `role: SemanticsRole.orderedList` (`<ol>`) o `list` (`<ul>`) con `listItem`; la sangría y el marcador, `StyleProps(listStyleType:, padding:)` |
+| texto importante o con énfasis | `role: SemanticsRole.strong` (`<strong>`), `emphasis` (`<em>`) |
+| una figura con pie | `role: SemanticsRole.figure` y `figureCaption`; un icono o gráfico con nombre, `role: SemanticsRole.image` (`role="img"`) |
+| el elemento actual de un conjunto | `Semantics(current: SemanticsCurrent.page, …)` (`aria-current`), también `step`, `location` y `date` |
+| un `data-*` o un `aria-*` sin elemento extra | `ElementAttributes(HtmlAttributes(data: {'track': 'cta'}), child: …)` |
 | ocultar algo decorativo | `ExcludeSemantics`, o `Semantics(hidden: true, …)` |
 | un destino de enlace (`#section`) | `Semantics(identifier: 'section', …)` |
 

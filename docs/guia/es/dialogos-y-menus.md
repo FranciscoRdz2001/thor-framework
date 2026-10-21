@@ -32,7 +32,23 @@ Espacio. `DialogClose` funciona igual.
 
 Agrega `showClose: true` a un `AlertDialog`, `Dialog`, `ModalBottomSheet` o
 `Drawer` y trae su propio botón de cerrar en la esquina, con el nombre
-«Cerrar» localizado, para no repetir un `DialogClose` en cada panel.
+«Cerrar» localizado, para no repetir un `DialogClose` en cada panel. Con
+`closeLabel: 'Fermer'` el nombre es el tuyo cuando el texto de la página no
+está en el idioma de la app.
+
+`dialog:` admite el diálogo envuelto en `Styled`, `Semantics` o
+`ElementAttributes` (se funden en su `<dialog>`), para darle un estilo propio
+o un `data-*`:
+
+```dart no-check
+DialogTrigger(
+  dialog: Styled(
+    style: StyleProps(maxWidth: 440.px),
+    child: Drawer(child: filters),
+  ),
+  child: const TextButton(child: Text('Filters')),
+)
+```
 
 ## Diálogo que no bloquea
 

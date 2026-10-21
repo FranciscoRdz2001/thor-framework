@@ -11,6 +11,19 @@ Widgets para mostrar información: texto, íconos, imágenes, tarjetas, listas, 
 
 `TextStyle` define tamaño, peso, color y alto de línea; `maxLines` y `overflow` recortan el texto como en Flutter: sin `overflow` el texto se corta sin puntos (`TextOverflow.clip`); pide `TextOverflow.ellipsis` para los puntos suspensivos. Un `DefaultTextStyle(maxLines:, overflow:, softWrap:)` los da por defecto a los `Text` de abajo. Envuelve un título en `Semantics(headingLevel: 2)` para que los lectores de pantalla y los buscadores lo lean como encabezado.
 
+### ExpandableText
+
+Un texto cortado en `maxLines` líneas con un botón «Ver más» que muestra el resto y otro que lo vuelve a cortar. Funciona sin JavaScript (una casilla oculta y `:has(:checked)`) y el botón se alcanza con el teclado. El servidor no sabe si el texto llena las líneas, así que el botón siempre está: úsalo con textos largos.
+
+```dart
+const ExpandableText(
+  'A long description…',
+  maxLines: 3,
+  moreLabel: 'Read more',
+  lessLabel: 'Show less',
+)
+```
+
 ### RichText y SelectableText
 
 :::bench cat-rich-text
@@ -128,7 +141,7 @@ Una fila con `leading`, `title`, `subtitle` y `trailing`. Con `href` es un enlac
 
 Una fila que se abre para mostrar más contenido. Varios con el mismo `name`, o dentro de un `ExpansionPanelList(name:)`, forman un acordeón: abrir uno cierra los demás.
 
-`controlAffinity: ListTileControlAffinity.leading` pone la flecha antes del título; `showTrailingIcon: false` la quita (también un `trailing:`, como en Flutter) y `trailing:` pone otro widget en su lugar. `dense` y `minTileHeight` acortan la cabecera. `iconSize`, `iconTurns` y `collapsedIconTurns` cambian el tamaño de la flecha y cuánto gira abierta y cerrada (una cabecera densa que gira −90° cerrada: `iconSize: 13, iconTurns: 0, collapsedIconTurns: -0.25`). Para que otra pieza cambie con la sección abierta, `.when(open: …)` en su estilo (`Text('12', style: TextStyle(color: gris).when(open: azul))`).
+`controlAffinity: ListTileControlAffinity.leading` pone la flecha antes del título; `showTrailingIcon: false` la quita (también un `trailing:`, como en Flutter) y `trailing:` pone otro widget en su lugar. `dense` y `minTileHeight` acortan la cabecera. `iconSize`, `iconTurns` y `collapsedIconTurns` cambian el tamaño de la flecha y cuánto gira abierta y cerrada (una cabecera densa que gira −90° cerrada: `iconSize: 13, iconTurns: 0, collapsedIconTurns: -0.25`). Para que otra pieza cambie con la sección abierta, `.when(open: …)` en su estilo (`Text('12', style: TextStyle(color: gris).when(open: azul))`); un chevron propio, dentro del `title` con `showTrailingIcon: false`, gira con `Styled(style: StyleProps(turns: 0).when(open: StyleProps(turns: 0.5)), child: icon)`.
 
 ## Chips y distintivos
 

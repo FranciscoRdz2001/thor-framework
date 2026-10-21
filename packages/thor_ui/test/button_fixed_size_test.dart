@@ -18,12 +18,10 @@ void main() {
 
   test('fixedSize is the width and height of the button', () async {
     final out = await css(
-      FilledButton(
-        style: const ButtonStyle(
-          fixedSize: WidgetStatePropertyAll(Size(120, 44)),
-        ),
+      const FilledButton(
+        style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(120, 44))),
         onPressed: null,
-        child: const Text('x'),
+        child: Text('x'),
       ),
     );
     expect(out, contains('width: 120px'));
@@ -32,12 +30,12 @@ void main() {
 
   test('an infinite dimension of fixedSize stays free', () async {
     final out = await css(
-      TextButton(
+      const TextButton(
         style: ButtonStyle(
           fixedSize: WidgetStatePropertyAll(Size(double.infinity, 40)),
         ),
         onPressed: null,
-        child: const Text('x'),
+        child: Text('x'),
       ),
     );
     expect(out, contains('height: 40px'));
@@ -49,6 +47,7 @@ void main() {
       IconButton(
         style: IconButton.styleFrom(fixedSize: const Size(44, 44)),
         onPressed: null,
+        tooltip: 'Close',
         icon: const Icon(Icons.close),
       ),
     );

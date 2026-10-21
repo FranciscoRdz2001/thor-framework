@@ -11,6 +11,19 @@ Widgets for displaying information: text, icons, images, cards, lists, tables an
 
 `TextStyle` sets size, weight, color and line height; `maxLines` and `overflow` clip the text as in Flutter: without `overflow` the text is cut with no dots (`TextOverflow.clip`); ask for `TextOverflow.ellipsis` to draw them. A `DefaultTextStyle(maxLines:, overflow:, softWrap:)` gives them as defaults to the `Text` widgets below. Wrap a title in `Semantics(headingLevel: 2)` so screen readers and search engines read it as a heading.
 
+### ExpandableText
+
+Text cut at `maxLines` lines with a "Read more" button that shows the rest and another that cuts it again. It works without JavaScript (a hidden checkbox and `:has(:checked)`) and the button is reachable by keyboard. The server cannot know whether the text fills the lines, so the button is always there: use it with long text.
+
+```dart
+const ExpandableText(
+  'A long description…',
+  maxLines: 3,
+  moreLabel: 'Read more',
+  lessLabel: 'Show less',
+)
+```
+
 ### RichText and SelectableText
 
 :::bench cat-rich-text
@@ -128,7 +141,7 @@ A row with `leading`, `title`, `subtitle` and `trailing`. With `href` it's a lin
 
 A row that expands to show more content. Several with the same `name`, or inside an `ExpansionPanelList(name:)`, form an accordion: opening one closes the others.
 
-`controlAffinity: ListTileControlAffinity.leading` puts the arrow before the title; `showTrailingIcon: false` removes it (a `trailing:` too, as in Flutter) and `trailing:` puts another widget in its place. `dense` and `minTileHeight` shorten the header. `iconSize`, `iconTurns` and `collapsedIconTurns` change the arrow's size and how far it turns open and closed (a dense header that turns −90° closed: `iconSize: 13, iconTurns: 0, collapsedIconTurns: -0.25`). To make another piece change while the section is open, put `.when(open: …)` in its style (`Text('12', style: TextStyle(color: gray).when(open: blue))`).
+`controlAffinity: ListTileControlAffinity.leading` puts the arrow before the title; `showTrailingIcon: false` removes it (a `trailing:` too, as in Flutter) and `trailing:` puts another widget in its place. `dense` and `minTileHeight` shorten the header. `iconSize`, `iconTurns` and `collapsedIconTurns` change the arrow's size and how far it turns open and closed (a dense header that turns −90° closed: `iconSize: 13, iconTurns: 0, collapsedIconTurns: -0.25`). To make another piece change while the section is open, put `.when(open: …)` in its style (`Text('12', style: TextStyle(color: gray).when(open: blue))`); a chevron of your own, inside the `title` with `showTrailingIcon: false`, turns with `Styled(style: StyleProps(turns: 0).when(open: StyleProps(turns: 0.5)), child: icon)`.
 
 ## Chips and badges
 

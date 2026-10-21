@@ -37,7 +37,7 @@ void main() {
 
   test('Color.lerp with a theme color is a color-mix the browser resolves', () {
     final mixed = Color.lerp(
-      const Color.css('var(--accent)'),
+      const Color.variable(CssVariable<Color>('--accent')),
       const Color(0xFFFFFFFF),
       0.78,
     )!;

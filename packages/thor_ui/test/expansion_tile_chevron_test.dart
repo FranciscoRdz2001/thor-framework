@@ -17,7 +17,9 @@ void main() {
             children: [
               const Text('Hours'),
               Styled(
-                style: StyleProps(turns: 0).when(open: StyleProps(turns: 0.5)),
+                style: const StyleProps(
+                  turns: 0,
+                ).when(open: const StyleProps(turns: 0.5)),
                 child: const Icon(Icons.expand_more),
               ),
             ],
