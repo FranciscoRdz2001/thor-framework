@@ -302,6 +302,37 @@ final away = ScoreViewModel(key: 'away');
 :::example state-keyed
 :::
 
+### After a delay, or every N seconds
+
+A `Timer` is lite-safe inside a ViewModel, in a method or in `onHydrated`. Keep it in a field to restart or cancel it: a second tap starts the count again, as `clearTimeout` would.
+
+```dart
+class SupportViewModel extends ThorState {
+  final copied = state(false);
+  final order = query(orderStatus);
+  Timer? _revert, _poll;
+
+  void copy() {
+    copied.value = true;
+    _revert?.cancel();
+    _revert = Timer(const Duration(seconds: 2), () => copied.value = false);
+  }
+
+  @override
+  void onHydrated() {
+    _poll = Timer.periodic(const Duration(seconds: 5), (t) => order.refresh());
+  }
+
+  @override
+  void dispose() {
+    _revert?.cancel();
+    _poll?.cancel();
+  }
+}
+```
+
+`Future.delayed` works in an `async` method too. To stop polling when a condition is met (an order reaches its final state), cancel the timer in the method that reads it. The server never runs these timers. For a flow the server pushes, `events()` ([Live data](live-data.md)) needs no polling.
+
 ### `onHydrated` and `dispose`
 
 `onHydrated()` runs once, when the ViewModel activates in the browser, and `dispose()` when it ends. Start whatever you need there and stop it on the way out.

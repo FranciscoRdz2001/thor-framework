@@ -302,6 +302,37 @@ final away = ScoreViewModel(key: 'away');
 :::example state-keyed
 :::
 
+### Con retardo, o cada N segundos
+
+Un `Timer` cabe en lite dentro de un ViewModel, en un método o en `onHydrated`. Guárdalo en un campo para reiniciarlo o cancelarlo: un segundo toque empieza la cuenta otra vez, como haría `clearTimeout`.
+
+```dart
+class SupportViewModel extends ThorState {
+  final copied = state(false);
+  final order = query(orderStatus);
+  Timer? _revert, _poll;
+
+  void copy() {
+    copied.value = true;
+    _revert?.cancel();
+    _revert = Timer(const Duration(seconds: 2), () => copied.value = false);
+  }
+
+  @override
+  void onHydrated() {
+    _poll = Timer.periodic(const Duration(seconds: 5), (t) => order.refresh());
+  }
+
+  @override
+  void dispose() {
+    _revert?.cancel();
+    _poll?.cancel();
+  }
+}
+```
+
+`Future.delayed` también funciona en un método `async`. Para dejar de sondear cuando se cumple una condición (un pedido llega a su estado final), cancela el timer en el método que lo lee. El servidor nunca corre estos timers. Para un flujo que el servidor empuja, `events()` ([Datos vivos](datos-vivos.md)) no necesita sondeo.
+
 ### `onHydrated` y `dispose`
 
 `onHydrated()` se ejecuta una vez, cuando el ViewModel se activa en el navegador, y `dispose()` cuando termina. Inicia ahí lo que necesites y detenlo al salir.
