@@ -2355,6 +2355,7 @@ class AlertDialog extends StatelessWidget
     this.controller,
     this.modal = true,
     this.showClose = false,
+    this.closeLabel,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
@@ -2365,6 +2366,11 @@ class AlertDialog extends StatelessWidget
   ///
   /// `// web:` Flutter's dialogs have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// Whether the dialog blocks the page (default) or floats over it.
   ///
@@ -2473,7 +2479,7 @@ class AlertDialog extends StatelessWidget
     },
     childRules: ChildRules.column,
     children: [
-      if (showClose) const DialogCloseCorner(),
+      if (showClose) DialogCloseCorner(label: closeLabel),
       if (title != null)
         WrapWith(
           WrapData(
@@ -2548,6 +2554,7 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.controller,
     this.modal = true,
     this.showClose = false,
+    this.closeLabel,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
@@ -2562,6 +2569,11 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
   ///
   /// `// web:` Flutter's dialogs have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// DOM id (the triggers point at it); optional, see `AlertDialog.id`.
   final String? id;
@@ -2693,7 +2705,10 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
         dialogControllerAttr: ?controllerIdOf(controller),
       },
       childRules: ChildRules.column,
-      children: [if (showClose) const DialogCloseCorner(), child],
+      children: [
+        if (showClose) DialogCloseCorner(label: closeLabel),
+        child,
+      ],
     );
   }
 }
@@ -3185,6 +3200,7 @@ class ModalBottomSheet extends StatelessWidget
     this.constraints,
     this.barrierColor,
     this.showClose = false,
+    this.closeLabel,
   });
 
   /// DOM id (the triggers point at it); optional, see `AlertDialog.id`.
@@ -3204,6 +3220,11 @@ class ModalBottomSheet extends StatelessWidget
   ///
   /// `// web:` Flutter's sheets have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// Whether to show the drag handle at the top (Flutter's default: true).
   final bool showDragHandle;
@@ -3328,7 +3349,7 @@ class ModalBottomSheet extends StatelessWidget
           },
           attributes: const {'aria-hidden': 'true'},
         ),
-      if (showClose) const DialogCloseCorner(),
+      if (showClose) DialogCloseCorner(label: closeLabel),
       child,
     ],
   );

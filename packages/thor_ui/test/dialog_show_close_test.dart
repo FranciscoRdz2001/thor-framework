@@ -10,6 +10,43 @@ import 'package:thor_ui/thor_ui.dart';
 Future<String> _page(Widget body) => renderDocument(ThorApp(child: body));
 
 void main() {
+  final named = <String, Widget>{
+    'AlertDialog': const AlertDialog(
+      id: 'p',
+      showClose: true,
+      closeLabel: 'Cerrar',
+      title: Text('t'),
+    ),
+    'Dialog': const Dialog(
+      id: 'p',
+      showClose: true,
+      closeLabel: 'Cerrar',
+      child: Text('c'),
+    ),
+    'ModalBottomSheet': const ModalBottomSheet(
+      id: 'p',
+      showClose: true,
+      closeLabel: 'Cerrar',
+      child: Text('c'),
+    ),
+    'Drawer': const Drawer(
+      id: 'p',
+      showClose: true,
+      closeLabel: 'Cerrar',
+      child: Text('c'),
+    ),
+  };
+  for (final MapEntry(:key, :value) in named.entries) {
+    test('$key names its close button with closeLabel', () async {
+      final html = await _page(value);
+      final button = RegExp(
+        r'<button[^>]*command="close"[^>]*>',
+      ).firstMatch(html)!;
+      expect(button.group(0), contains('aria-label="Cerrar"'));
+      expect(button.group(0), isNot(contains('Close')));
+    });
+  }
+
   final panels = <String, Widget Function(bool)>{
     'AlertDialog': (s) => AlertDialog(
       id: 'p',

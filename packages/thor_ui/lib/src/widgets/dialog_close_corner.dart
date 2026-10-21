@@ -17,7 +17,10 @@ import 'material.dart' show DialogClose;
 class DialogCloseCorner extends StatelessWidget {
   /// The button; [hiddenFrom] hides it from that breakpoint up (the inline
   /// state of a `Drawer(permanentFrom:)`, which has nothing to close).
-  const DialogCloseCorner({super.key, this.hiddenFrom});
+  const DialogCloseCorner({super.key, this.hiddenFrom, this.label});
+
+  /// The button's name; null is the localized "Close".
+  final String? label;
 
   /// Breakpoint from which the button is not drawn.
   final WindowSizeClass? hiddenFrom;
@@ -41,7 +44,7 @@ class DialogCloseCorner extends StatelessWidget {
     child: DialogClose(
       child: IconButton(
         icon: const Icon(Icons.close),
-        tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+        tooltip: label ?? MaterialLocalizations.of(context).closeButtonTooltip,
       ),
     ),
   );

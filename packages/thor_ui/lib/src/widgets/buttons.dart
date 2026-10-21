@@ -73,6 +73,7 @@ class ButtonStyle {
     this.overlayColor,
     this.padding,
     this.minimumSize,
+    this.fixedSize,
     this.side,
     this.shape,
     this.alignment,
@@ -101,6 +102,11 @@ class ButtonStyle {
 
   /// Smallest size (a dimension of 0 leaves it free).
   final WidgetStateProperty<Size?>? minimumSize;
+
+  /// Exact size (Flutter's `ButtonStyle.fixedSize`): a dimension that is
+  /// finite becomes the button's `width` or `height`; `double.infinity`
+  /// leaves it free. Wins over [minimumSize].
+  final WidgetStateProperty<Size?>? fixedSize;
 
   /// Outline (wins over the shape's side).
   final WidgetStateProperty<BorderSide?>? side;
@@ -168,6 +174,7 @@ class ButtonStyle {
     WidgetStateProperty<Color?>? overlayColor,
     WidgetStateProperty<EdgeInsetsGeometry?>? padding,
     WidgetStateProperty<Size?>? minimumSize,
+    WidgetStateProperty<Size?>? fixedSize,
     WidgetStateProperty<BorderSide?>? side,
     WidgetStateProperty<OutlinedBorder?>? shape,
     Alignment? alignment,
@@ -183,6 +190,7 @@ class ButtonStyle {
     overlayColor: overlayColor ?? this.overlayColor,
     padding: padding ?? this.padding,
     minimumSize: minimumSize ?? this.minimumSize,
+    fixedSize: fixedSize ?? this.fixedSize,
     side: side ?? this.side,
     shape: shape ?? this.shape,
     alignment: alignment ?? this.alignment,
@@ -206,6 +214,7 @@ class ButtonStyle {
       overlayColor: overlayColor ?? other.overlayColor,
       padding: padding ?? other.padding,
       minimumSize: minimumSize ?? other.minimumSize,
+      fixedSize: fixedSize ?? other.fixedSize,
       side: side ?? other.side,
       shape: shape ?? other.shape,
       alignment: alignment ?? other.alignment,
@@ -235,6 +244,7 @@ class ButtonStyle {
     final shape = this.shape?.resolve(_none);
     final border = side?.resolve(_none) ?? shape?.side;
     final minimumSize = this.minimumSize?.resolve(_none);
+    final fixedSize = this.fixedSize?.resolve(_none);
     return {
       'background-color': ?backgroundColor?.resolve(_none)?.css,
       'color': ?foregroundColor?.resolve(_none)?.css,
@@ -245,6 +255,10 @@ class ButtonStyle {
       if (minimumSize case final s?) ...{
         if (s.width.isFinite) 'min-width': cssPx(s.width),
         if (s.height.isFinite) 'min-height': cssPx(s.height),
+      },
+      if (fixedSize case final s?) ...{
+        if (s.width.isFinite) 'width': cssPx(s.width),
+        if (s.height.isFinite) 'height': cssPx(s.height),
       },
       'border-radius': ?shape?.radiusCss,
       'box-shadow': ?_shadowAt(_none),
@@ -295,6 +309,9 @@ extension ButtonStyleResolved on ButtonStyle {
   /// The minimum size without a state.
   Size? get plainMinimumSize => minimumSize?.resolve(_none);
 
+  /// The exact size without a state.
+  Size? get plainFixedSize => fixedSize?.resolve(_none);
+
   /// The icon side without a state.
   double? get plainIconSize => iconSize?.resolve(_none);
 
@@ -330,6 +347,7 @@ ButtonStyle buttonStyleFrom({
   Color? overlayColor,
   EdgeInsetsGeometry? padding,
   Size? minimumSize,
+  Size? fixedSize,
   OutlinedBorder? shape,
   BorderSide? side,
   TextStyle? textStyle,
@@ -356,6 +374,7 @@ ButtonStyle buttonStyleFrom({
     overlayColor: all(overlayColor),
     padding: all(padding),
     minimumSize: all(minimumSize),
+    fixedSize: all(fixedSize),
     side: all(side),
     shape: all(shape),
     alignment: alignment,
@@ -842,6 +861,7 @@ class FilledButton extends _ButtonBase {
     Color? overlayColor,
     EdgeInsetsGeometry? padding,
     Size? minimumSize,
+    Size? fixedSize,
     OutlinedBorder? shape,
     BorderSide? side,
     TextStyle? textStyle,
@@ -858,6 +878,7 @@ class FilledButton extends _ButtonBase {
     overlayColor: overlayColor,
     padding: padding,
     minimumSize: minimumSize,
+    fixedSize: fixedSize,
     shape: shape,
     side: side,
     textStyle: textStyle,
@@ -1001,6 +1022,7 @@ class ElevatedButton extends _ButtonBase {
     Color? overlayColor,
     EdgeInsetsGeometry? padding,
     Size? minimumSize,
+    Size? fixedSize,
     OutlinedBorder? shape,
     BorderSide? side,
     TextStyle? textStyle,
@@ -1017,6 +1039,7 @@ class ElevatedButton extends _ButtonBase {
     overlayColor: overlayColor,
     padding: padding,
     minimumSize: minimumSize,
+    fixedSize: fixedSize,
     shape: shape,
     side: side,
     textStyle: textStyle,
@@ -1109,6 +1132,7 @@ class TextButton extends _ButtonBase {
     Color? overlayColor,
     EdgeInsetsGeometry? padding,
     Size? minimumSize,
+    Size? fixedSize,
     OutlinedBorder? shape,
     BorderSide? side,
     TextStyle? textStyle,
@@ -1125,6 +1149,7 @@ class TextButton extends _ButtonBase {
     overlayColor: overlayColor,
     padding: padding,
     minimumSize: minimumSize,
+    fixedSize: fixedSize,
     shape: shape,
     side: side,
     textStyle: textStyle,
@@ -1192,6 +1217,7 @@ class OutlinedButton extends _ButtonBase {
     Color? overlayColor,
     EdgeInsetsGeometry? padding,
     Size? minimumSize,
+    Size? fixedSize,
     OutlinedBorder? shape,
     BorderSide? side,
     TextStyle? textStyle,
@@ -1208,6 +1234,7 @@ class OutlinedButton extends _ButtonBase {
     overlayColor: overlayColor,
     padding: padding,
     minimumSize: minimumSize,
+    fixedSize: fixedSize,
     shape: shape,
     side: side,
     textStyle: textStyle,
