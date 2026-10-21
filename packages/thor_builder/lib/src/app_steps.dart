@@ -409,6 +409,9 @@ Future<List<LiteUnit>> _appUnits(
       // Parts come with their library; generated libraries (the app's
       // messages) are the app's code.
       if (!path.endsWith('.dart')) continue;
+      // The file `thor analyze` drops in lib/ to prove its lints run
+      // (`Completer.sync` on purpose) is not the app's code.
+      if (path == '${prefix}lib/zz_thor_canary.dart') continue;
       final result = memo == null
           ? await context.currentSession.getResolvedLibrary(path)
           : await memo.resolvedLibrary(path);
@@ -429,10 +432,11 @@ Future<List<LiteUnit>> _appUnits(
 
 /// Checks the package in [app] (absolute) against the lite subset without
 /// writing anything: `dart run thor_builder:lite_state <dir> --check`, and
-/// `thor analyze --lite`. Its `ThorState` classes and **every** data class
-/// (a `fromJson`) count, so a package that only declares the classes other
-/// packages' `events<T>`, `query` and `state<T>` send to the browser is
-/// checked before an app uses it. Returns 0 when it fits (or has nothing to
+/// `thor analyze`. Its `ThorState` classes and what they reach count, as in
+/// the build; a package with no state counts **every** data class (a
+/// `fromJson`), so one that only declares the classes other packages'
+/// `events<T>`, `query` and `state<T>` send to the browser is checked
+/// before an app uses it. Returns 0 when it fits (or has nothing to
 /// check), 1 with the constructs printed to [err] otherwise.
 Future<int> checkLitePackage(
   String app, {

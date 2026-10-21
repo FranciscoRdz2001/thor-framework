@@ -74,9 +74,10 @@ class LiteCheck {
 }
 
 /// Whether the code of [units] fits the thor-lite subset, as the build
-/// would find out, without a build: the `ThorState` classes and **every**
-/// data class (a class with a `fromJson`), whether or not a state of these
-/// units names it.
+/// would find out, without a build: the `ThorState` classes and what they
+/// reach. A package **without** states takes **every** data class (a class
+/// with a `fromJson`) instead, as nothing says which ones the browser
+/// decodes.
 ///
 /// For a package that declares the data classes of `events<T>`, `query`
 /// and `state<T>` fields of another package (`thor analyze --lite`, the
@@ -95,21 +96,26 @@ LiteCheck checkLiteSubset(List<LiteUnit> units) {
   if (states == 0 && wire.classes.isEmpty) {
     return const LiteCheck(states: 0, dataClasses: 0, errors: []);
   }
+  // With states the build translates what they reach, and so does the
+  // check: a data class no state names is not in the browser's code (a
+  // `fromJson` of a model another page uses with `query`, say). Only a
+  // package without states (a protocol package) takes every data class.
+  final named = states == 0;
   try {
     translateLiteStates(
       units,
-      dataClasses: wire.classes,
-      dataMembers: wire.members,
+      dataClasses: named ? wire.classes : const {},
+      dataMembers: named ? wire.members : const {},
     );
     return LiteCheck(
       states: states,
-      dataClasses: wire.classes.length,
+      dataClasses: named ? wire.classes.length : 0,
       errors: const [],
     );
   } on LiteTranslationException catch (e) {
     return LiteCheck(
       states: states,
-      dataClasses: wire.classes.length,
+      dataClasses: named ? wire.classes.length : 0,
       errors: e.errors,
     );
   }

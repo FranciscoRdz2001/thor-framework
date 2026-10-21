@@ -4621,6 +4621,8 @@ class _Translator {
           e,
           'The type ${e.type} as a value is not in the lite subset.',
         );
+      case ConstructorReference():
+        return _constructorTearOff(e);
       case FunctionReference():
         // A generic function's tear-off (`math.max` for `reduce`): types go.
         return _expr(e.function, ctx);
@@ -6663,6 +6665,33 @@ class _Translator {
     return '(a, x) => ($js)(a, x)';
   }
 
+  /// `Product.fromJson` / `Product.new` as a value: a function of the
+  /// constructor's parameters (positional first, then the named ones in
+  /// declaration order, like every call here) that makes the object.
+  String _constructorTearOff(ConstructorReference e) {
+    final c = e.constructorName.element?.baseElement;
+    final cls = c?.enclosingElement;
+    if (c == null || cls == null) return _fail(e, 'Unresolved constructor.');
+    if (_isStateClass(cls)) {
+      return _fail(e, 'Creating a ThorState at run time is not supported.');
+    }
+    if (!_isApp(cls)) {
+      return _fail(
+        e,
+        'Expression not in the lite subset: ${_src(e)} (only the '
+        'constructors of the app can be passed as functions).',
+      );
+    }
+    final n = topNames[cls]!;
+    final params = [
+      for (var i = 0; i < c.formalParameters.length; i++) '\$p$i',
+    ].join(', ');
+    final name = e.constructorName.name?.name;
+    return c.isFactory
+        ? '($params) => $n.${name == null || name == 'new' ? r'$new' : _mangle(name)}($params)'
+        : '($params) => new $n($params)';
+  }
+
   String _creation(InstanceCreationExpression e, _Ctx ctx) => _construct(
     e,
     e.constructorName.element?.baseElement,
@@ -7918,6 +7947,13 @@ class _References extends RecursiveAstVisitor<void> {
     final c = node.constructorName.element;
     if (c != null) elements.add(c);
     super.visitInstanceCreationExpression(node);
+  }
+
+  @override
+  void visitConstructorReference(ConstructorReference node) {
+    final c = node.constructorName.element;
+    if (c != null) elements.add(c);
+    super.visitConstructorReference(node);
   }
 
   // `query(repo.info)`: the function runs on the server only, so what it
