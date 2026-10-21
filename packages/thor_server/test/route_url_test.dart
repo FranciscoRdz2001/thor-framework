@@ -51,6 +51,7 @@ void main() {
   test('Redirect carries it', () {
     expect(const Redirect(RouteUrl('/x')).location, '/x');
     expect(const Redirect.permanent(RouteUrl('/y')).status, 308);
+    expect(const Redirect.moved(RouteUrl('/y')).status, 301);
   });
 
   test('safeNext answers a RouteUrl', () {

@@ -62,7 +62,7 @@ Styled(
 | `overflowX`, `overflowY` | `Overflow` | inner scrolling when the content doesn't fit |
 | `minWidth`, `maxWidth`, `minHeight`, `maxHeight` | `Length` | limits in any unit |
 | `zIndex` | `int` | order among overlapping elements |
-| `backdropFilter` | `ImageFilter` | filters what is behind (`ImageFilter.blur(sigmaX: 8)`); or `BackdropFilter` |
+| `backdropFilter` | `ImageFilter` | filters what is behind (`ImageFilter.blur(sigmaX: 8)`; also `saturate`, `brightness`, `contrast`, `grayscale`, `invert`, `sepia`, `hueRotate`, `opacity`, chained with `ImageFilter.compose`); or `BackdropFilter` |
 | `scrollbarWidth`, `scrollbarThumbColor`, `scrollbarTrackColor` | `ScrollbarWidth`, `Color` | the element's scrollbar |
 | `opacity`, `scale`, `offset`, `turns` | numbers | only with `.when()`; a fixed value goes in `Opacity` or `Transform` |
 
@@ -213,6 +213,21 @@ final List<StyleRule> appStyles = [
 
 A rule varies with its selector and with `WindowSizeClass.media`; `.when()` is
 for widgets.
+
+A width that is no size class goes in a sheet with `css.minWidth(920, [...])`
+or `css.maxWidth(919.98, [...])`. A sheet is one text for every request, so
+`WindowSizeClass.media` uses the default widths unless it is given the app's
+own: keep them in one `const` and pass it to the theme and to the sheet.
+
+```dart no-check
+const siteBreakpoints = Breakpoints(medium: 640, expanded: 768, large: 1024);
+// ThemeData(breakpoints: siteBreakpoints)
+WindowSizeClass.medium.media(breakpoints: siteBreakpoints, [...]);
+css.minWidth(920, [css('.card').props(const StyleProps(padding: EdgeInsets.all(20)))]);
+```
+
+Widgets (`.when(...)`) see the theme's four size classes; for any other width
+of their own box use `.when(container: {920: …})`.
 
 > **Important:** Rules in your stylesheets always win over widget styles.
 > Use them for your own classes, not to change every element of a type, and

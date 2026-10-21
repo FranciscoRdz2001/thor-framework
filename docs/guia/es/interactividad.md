@@ -98,6 +98,59 @@ Watch(orders.pendingLabel)
 
 El editor lo marca y `thor dev` lo muestra en la consola.
 
+## Funciones del navegador
+
+Tres funciones del navegador llegan a un ViewModel como callbacks, sin escribir JavaScript. Cada una es un envoltorio del widget sobre el que actúa, y los widgets funcionan sin ellas: simplemente no hacen nada hasta que el motor está cargado.
+
+**Visible en pantalla.** `VisibilityDetector` llama a un método con `true` cuando su hijo aparece y con `false` cuando sale; `margin` lo adelanta antes de que se vea y `once` se detiene tras la primera vez. El uso típico es el scroll infinito: un centinela de un píxel tras la última fila y, dentro, un enlace «Ver más» para las páginas sin JavaScript.
+
+```dart no-check
+class FeedViewModel extends ThorState {
+  final rows = state(<String>[]);
+  final hasMore = state(true);
+
+  void seen(bool visible) {
+    if (visible && hasMore.value) loadMore();
+  }
+}
+
+VisibilityDetector(
+  onVisibilityChanged: feed.seen,
+  margin: 400,
+  child: const SizedBox(height: 1),
+)
+```
+
+Avisa de los cambios: un centinela que sigue en pantalla después de cargar sus filas no se avisa de nuevo, así que quítalo cuando no haya más (`if (hasMore)`) o deja que las filas nuevas lo empujen fuera.
+
+**Ubicación.** `GeolocationRequest` pide la posición cuando se toca su hijo (los navegadores solo la permiten tras un toque y en una página segura). La respuesta son dos métodos del ViewModel; la posición no viaja al servidor por sí sola, así que las páginas en caché siguen iguales para todos.
+
+```dart no-check
+class NearbyViewModel extends ThorState {
+  void found(double latitude, double longitude, double accuracy) {}
+  void failed(String reason) {} // denied, unavailable, timeout o unsupported
+}
+
+GeolocationRequest(
+  onPosition: nearby.found,
+  onError: nearby.failed,
+  child: TextButton(onPressed: () {}, child: const Text('Usar mi ubicación')),
+)
+```
+
+**Compartir.** `ShareRequest` abre la hoja de compartir del dispositivo con un título, un texto y un enlace (la página actual por defecto). Donde el navegador no tiene hoja de compartir, un hijo que es un enlace conserva su `href` y uno que no lo es copia el texto y el enlace; `onResult` dice cuál (`shared`, `cancelled`, `link`, `copied` o `failed`).
+
+```dart no-check
+ShareRequest(
+  title: place.name,
+  url: placeRoute.link().toString(),
+  onResult: place.shared, // void shared(String result) muestra «Enlace copiado»
+  child: TextButton(onPressed: () {}, child: const Text('Compartir')),
+)
+```
+
+> **Diferencia con Flutter:** allí son paquetes (`visibility_detector`, `geolocator`, `share_plus`) que devuelven valores a Dart; aquí el navegador llama a un método del ViewModel. Necesitan el motor lite, que es el predeterminado.
+
 ## Siguientes pasos
 
 :::cards

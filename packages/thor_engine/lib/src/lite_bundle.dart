@@ -65,6 +65,12 @@ const liteParts = [
   'element_events',
   // PageView(onPageChanged:): the page a scroll-snap view settled on.
   'page_view',
+  // VisibilityDetector: an element shown or hidden by the viewport.
+  'visibility',
+  // GeolocationRequest and ShareRequest: a tap asks for the position or
+  // opens the share sheet.
+  'geolocation',
+  'share',
   'animated_size',
   // CarouselView(autoPlay:): the carousel moves by itself.
   'carousel',
@@ -119,6 +125,16 @@ const _needs = {
   'key_actions': ['shortcuts'],
 };
 
+/// Parts for the browser's own APIs: the widget in the app's sources and
+/// the markup it writes.
+final _browserApiParts = <String, (RegExp code, RegExp markup)>{
+  'geolocation': (
+    RegExp(r'(?<![\w.])GeolocationRequest\s*\('),
+    RegExp(' data-t-geo='),
+  ),
+  'share': (RegExp(r'(?<![\w.])ShareRequest\s*\('), RegExp(' data-t-share-d=')),
+};
+
 /// Parts an engine feature brings: the feature in the app's engine entry
 /// (`web/engine.dart`) and the markup that needs the part on a page.
 final _featureParts = <String, (RegExp feature, RegExp markup)>{
@@ -158,6 +174,10 @@ final _featureParts = <String, (RegExp feature, RegExp markup)>{
   'page_view': (
     RegExp(r'\bElementEventsFeature\('),
     RegExp(r' data-t-ev="(?:[^"]*;)?page:'),
+  ),
+  'visibility': (
+    RegExp(r'\bElementEventsFeature\('),
+    RegExp(r' data-t-ev="(?:[^"]*;)?visible:'),
   ),
   'animated_size': (RegExp(r'\bSizeAnimationsFeature\('), RegExp(' data-tsz=')),
   'carousel': (
@@ -211,6 +231,10 @@ List<String> litePartsFor({
         // Only an app with an `onPageChanged:` ships it (the feature's
         // other callbacks are not it).
         'page_view' => RegExp(r'\bonPageChanged\s*:').hasMatch(sources),
+        // Only an app with a `VisibilityDetector`.
+        'visibility' => RegExp(
+          r'(?<![\w.])VisibilityDetector\s*\(',
+        ).hasMatch(sources),
         // Only an app with `Shortcuts`/`Actions` or a `Focus(onKeyEvent:)`
         // (not `CallbackShortcuts`).
         'key_actions' => RegExp(
@@ -243,6 +267,14 @@ List<String> litePartsFor({
   if (pages == null &&
       RegExp(r'\b(FutureBuilder|LazyPiece)\s*[<(]').hasMatch(sources)) {
     parts.add('stream');
+  }
+  // Parts that need no engine feature: a tap on an element the markup
+  // marks (a server app asks the sources, a static site its pages).
+  for (final MapEntry(key: part, value: (code, markup))
+      in _browserApiParts.entries) {
+    if (pages != null ? pages.any(markup.hasMatch) : code.hasMatch(sources)) {
+      parts.add(part);
+    }
   }
   for (final part in parts.toList()) {
     parts.addAll(_needs[part] ?? const []);

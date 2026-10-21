@@ -196,7 +196,8 @@ Middleware stores values in `request.context` under a `ContextKey` (`const curre
 ```dart
 throw Redirect(homeRoute.link());               // 303
 throw Redirect.found(loginRoute.link());        // 302, temporary
-throw Redirect.permanent(newRoute.link());      // 308
+throw Redirect.moved(oldRoute.link());          // 301, moved for good
+throw Redirect.permanent(newRoute.link());      // 308, keeps the method
 throw const NotFound();                         // 404: the error page
 throw const HttpError(StatusCode.forbidden, 'You do not have access.');
 ```

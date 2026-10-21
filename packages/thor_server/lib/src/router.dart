@@ -1,3 +1,4 @@
+import 'cache_control.dart' show CacheControl;
 import 'errors.dart';
 import 'results.dart';
 import 'routes.dart';
@@ -34,6 +35,11 @@ class RouteEntry<P> {
   /// The page's `cache`, else the nearest layout's.
   Duration? get cache =>
       page.cache ?? layouts.reversed.map((l) => l.cache).nonNulls.firstOrNull;
+
+  /// The page's `cacheControl`, else the nearest layout's.
+  CacheControl? get cacheControl =>
+      page.cacheControl ??
+      layouts.reversed.map((l) => l.cacheControl).nonNulls.firstOrNull;
 
   /// The page's `prefetch`, else the nearest layout's, else `true`.
   bool get prefetch =>

@@ -88,7 +88,9 @@ html	Css.colorProperty	NestedStyleRule colorProperty(String name, {required Colo
 html	Css.components	StyleRule components(List<StyleRule> rules)
 html	Css.keyframes	StyleRule keyframes(String name, Map<String, StyleProps> frames)
 html	Css.layer	StyleRule layer(List<StyleRule> rules, {String? name})
+html	Css.maxWidth	StyleRule maxWidth(num px, List<StyleRule> rules)
 html	Css.media	StyleRule media(String query, List<StyleRule> rules)
+html	Css.minWidth	StyleRule minWidth(num px, List<StyleRule> rules)
 html	Css.states	StyleRule states(List<StyleRule> rules)
 html	Css.supports	StyleRule supports(String condition, List<StyleRule> rules)
 html	HtmlAttributes	class
@@ -299,10 +301,13 @@ html	link.as	String? as
 html	link.attributes	Map<String, String>? attributes
 html	link.build	Widget build(BuildContext context)
 html	link.classes	String? classes
+html	link.crossOrigin	String? crossOrigin
 html	link.href	String href
 html	link.id	String? id
-html	link.new	link({required String href, String? rel, String? type, String? as, String? id, String? classes, Styles? styles, Map<String, String>? attributes, Key? key})
+html	link.media	String? media
+html	link.new	link({required String href, String? rel, String? type, String? as, String? sizes, String? media, String? crossOrigin, String? id, String? classes, Styles? styles, Map<String, String>? attributes, Key? key})
 html	link.rel	String? rel
+html	link.sizes	String? sizes
 html	link.styles	Styles? styles
 html	link.type	String? type
 html	meta	class
@@ -497,6 +502,16 @@ router	ActionResult.data	Object? data
 router	ActionResult.fail	ActionResult.fail(int status, [Object? data])
 router	ActionResult.status	int status
 router	ActionResult.success	ActionResult.success([Object? data])
+router	CacheControl	class
+router	CacheControl.==	bool ==(Object other)
+router	CacheControl.hashCode	int get hashCode
+router	CacheControl.header	String get header
+router	CacheControl.maxAge	Duration maxAge
+router	CacheControl.new	CacheControl({required Duration maxAge, Duration? sharedMaxAge, Duration? staleWhileRevalidate, Duration? staleIfError})
+router	CacheControl.sharedMaxAge	Duration? sharedMaxAge
+router	CacheControl.staleIfError	Duration? staleIfError
+router	CacheControl.staleWhileRevalidate	Duration? staleWhileRevalidate
+router	CacheControl.toString	String toString()
 router	ChangeFrequency	enum
 router	ChangeFrequency.always	ChangeFrequency always
 router	ChangeFrequency.daily	ChangeFrequency daily
@@ -717,12 +732,13 @@ router	FrameOptions.sameOrigin	FrameOptions sameOrigin
 router	FrameOptions.value	String value
 router	Group	class
 router	Group.cache	Duration? cache
+router	Group.cacheControl	CacheControl? cacheControl
 router	Group.children	List<RouteTableNode> children
 router	Group.earlyHints	bool? earlyHints
 router	Group.error	ErrorPage? error
 router	Group.layout	ThorLayout<Object?>? layout
 router	Group.middleware	List<Middleware> middleware
-router	Group.new	Group({ThorLayout<Object?>? layout, String? prefix, List<Middleware> middleware = const [], ErrorPage? error, ErrorPage? notFound, List<StyleRule>? styles, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteTableNode> children})
+router	Group.new	Group({ThorLayout<Object?>? layout, String? prefix, List<Middleware> middleware = const [], ErrorPage? error, ErrorPage? notFound, List<StyleRule>? styles, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteTableNode> children})
 router	Group.notFound	ErrorPage? notFound
 router	Group.personalized	bool? personalized
 router	Group.prefetch	bool? prefetch
@@ -830,6 +846,7 @@ router	LayoutRoute	class
 router	LayoutRoute.build	P Function(PageState<T>, P) build
 router	LayoutRoute.buildWith	P buildWith(PageState<Object?> state, P child)
 router	LayoutRoute.cache	Duration? cache
+router	LayoutRoute.cacheControl	CacheControl? cacheControl
 router	LayoutRoute.children	List<RouteNode<P>> children
 router	LayoutRoute.dataType	Type get dataType
 router	LayoutRoute.earlyHints	bool? earlyHints
@@ -841,7 +858,7 @@ router	LayoutRoute.loadsUntyped	bool get loadsUntyped
 router	LayoutRoute.meta	PageMeta Function(PageState<T>)? meta
 router	LayoutRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
 router	LayoutRoute.middleware	Middleware? middleware
-router	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
+router	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
 router	LayoutRoute.notFound	P Function(ErrorState)? notFound
 router	LayoutRoute.notFoundMeta	PageMeta Function(ErrorState)? notFoundMeta
 router	LayoutRoute.personalized	bool? personalized
@@ -1057,6 +1074,7 @@ router	PageRoute.actions	Map<String, FormAction> actions
 router	PageRoute.build	P Function(PageState<T>) build
 router	PageRoute.buildWith	P buildWith(PageState<Object?> state)
 router	PageRoute.cache	Duration? cache
+router	PageRoute.cacheControl	CacheControl? cacheControl
 router	PageRoute.earlyHints	bool? earlyHints
 router	PageRoute.forLayouts	List<Object> Function(PageState<T>)? forLayouts
 router	PageRoute.forLayoutsWith	List<Object> forLayoutsWith(PageState<Object?> state)
@@ -1065,7 +1083,7 @@ router	PageRoute.load	Loader<T>? load
 router	PageRoute.maxBodyBytes	int? maxBodyBytes
 router	PageRoute.meta	PageMeta Function(PageState<T>)? meta
 router	PageRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
-router	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
+router	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
 router	PageRoute.personalized	bool? personalized
 router	PageRoute.prefetch	bool? prefetch
 router	PageRoute.prerender	bool? prerender
@@ -1117,6 +1135,7 @@ router	Redirect.flash	Redirect flash(String message, {FlashKind kind = FlashKind
 router	Redirect.flashMessage	FlashMessage? flashMessage
 router	Redirect.found	Redirect.found(RouteUrl location)
 router	Redirect.location	RouteUrl location
+router	Redirect.moved	Redirect.moved(RouteUrl location)
 router	Redirect.new	Redirect(RouteUrl location, {int status = 303, bool resetScroll = false})
 router	Redirect.permanent	Redirect.permanent(RouteUrl location)
 router	Redirect.resetScroll	bool resetScroll
@@ -1393,10 +1412,11 @@ router	ThorHttpResponse.uri	Uri uri
 router	ThorLayout	abstract class
 router	ThorLayout.build	Widget build(BuildContext context, PageState<T> state, Widget child)
 router	ThorLayout.cache	Duration? cache
+router	ThorLayout.cacheControl	CacheControl? cacheControl
 router	ThorLayout.earlyHints	bool? earlyHints
 router	ThorLayout.load	FutureOr<T> load(PageRequest request)
 router	ThorLayout.meta	PageMeta meta(PageState<T> state)
-router	ThorLayout.new	ThorLayout<T>({Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})
+router	ThorLayout.new	ThorLayout<T>({Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})
 router	ThorLayout.personalized	bool? personalized
 router	ThorLayout.prefetch	bool? prefetch
 router	ThorLayout.prerender	bool? prerender
@@ -1405,13 +1425,14 @@ router	ThorLayout.transition	PageTransition? transition
 router	ThorPage	abstract class
 router	ThorPage.build	Widget build(BuildContext context, PageState<T> state)
 router	ThorPage.cache	Duration? cache
+router	ThorPage.cacheControl	CacheControl? cacheControl
 router	ThorPage.earlyHints	bool? earlyHints
 router	ThorPage.forLayouts	List<Object> forLayouts(PageState<T> state)
 router	ThorPage.invalidateOnWrite	bool invalidateOnWrite
 router	ThorPage.load	FutureOr<T> load(PageRequest request)
 router	ThorPage.maxBodyBytes	int? maxBodyBytes
 router	ThorPage.meta	PageMeta meta(PageState<T> state)
-router	ThorPage.new	ThorPage<T>({Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch})
+router	ThorPage.new	ThorPage<T>({Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch})
 router	ThorPage.personalized	bool? personalized
 router	ThorPage.prefetch	bool? prefetch
 router	ThorPage.prerender	bool? prerender
@@ -2098,7 +2119,10 @@ thor_engine	StateSignal.dispose	void dispose()
 thor_engine	StateSignal.fromJson	T fromJson(Object? json)
 thor_engine	StateSignal.hasListeners	bool get hasListeners
 thor_engine	StateSignal.local	String? local
+thor_engine	StateSignal.localKey	String? get localKey
+thor_engine	StateSignal.localScope	StateSignal<String>? localScope
 thor_engine	StateSignal.maxCookieLength	int maxCookieLength
+thor_engine	StateSignal.maxLocalScopeLength	int maxLocalScopeLength
 thor_engine	StateSignal.notifyListeners	void notifyListeners()
 thor_engine	StateSignal.peek	T peek()
 thor_engine	StateSignal.removeListener	void removeListener(void Function() listener)
@@ -2359,6 +2383,8 @@ thor_engine	fieldAttr	getter
 thor_engine	fillKey	function
 thor_engine	firstDayOffset	function
 thor_engine	focusNodeAttr	getter
+thor_engine	geolocationAttr	getter
+thor_engine	geolocationOptionsAttr	getter
 thor_engine	gestureActiveAttr	getter
 thor_engine	gestureAttr	getter
 thor_engine	gestureOutAttr	getter
@@ -2443,6 +2469,8 @@ thor_engine	safeAttributeValue	function
 thor_engine	safeCssColor	function
 thor_engine	scaleAttr	getter
 thor_engine	scrollControllerAttr	getter
+thor_engine	shareAttr	getter
+thor_engine	shareDataAttr	getter
 thor_engine	shortcutMatches	function
 thor_engine	shortcutSpec	function
 thor_engine	shortcutsAttr	getter
@@ -2472,6 +2500,7 @@ thor_engine	variantAttr	getter
 thor_engine	variantAttributes	getter
 thor_engine	variantIndexAttr	getter
 thor_engine	variantTemplateAttr	getter
+thor_engine	visibilityAttr	getter
 thor_server	ActionMessage	abstract class
 thor_server	ActionMessage.actionMessage	String? get actionMessage
 thor_server	ActionMessage.new	ActionMessage()
@@ -2483,6 +2512,16 @@ thor_server	ActionResult.data	Object? data
 thor_server	ActionResult.fail	ActionResult.fail(int status, [Object? data])
 thor_server	ActionResult.status	int status
 thor_server	ActionResult.success	ActionResult.success([Object? data])
+thor_server	CacheControl	class
+thor_server	CacheControl.==	bool ==(Object other)
+thor_server	CacheControl.hashCode	int get hashCode
+thor_server	CacheControl.header	String get header
+thor_server	CacheControl.maxAge	Duration maxAge
+thor_server	CacheControl.new	CacheControl({required Duration maxAge, Duration? sharedMaxAge, Duration? staleWhileRevalidate, Duration? staleIfError})
+thor_server	CacheControl.sharedMaxAge	Duration? sharedMaxAge
+thor_server	CacheControl.staleIfError	Duration? staleIfError
+thor_server	CacheControl.staleWhileRevalidate	Duration? staleWhileRevalidate
+thor_server	CacheControl.toString	String toString()
 thor_server	ChangeFrequency	enum
 thor_server	ChangeFrequency.always	ChangeFrequency always
 thor_server	ChangeFrequency.daily	ChangeFrequency daily
@@ -2748,6 +2787,7 @@ thor_server	LayoutRoute	class
 thor_server	LayoutRoute.build	P Function(PageState<T>, P) build
 thor_server	LayoutRoute.buildWith	P buildWith(PageState<Object?> state, P child)
 thor_server	LayoutRoute.cache	Duration? cache
+thor_server	LayoutRoute.cacheControl	CacheControl? cacheControl
 thor_server	LayoutRoute.children	List<RouteNode<P>> children
 thor_server	LayoutRoute.dataType	Type get dataType
 thor_server	LayoutRoute.earlyHints	bool? earlyHints
@@ -2759,7 +2799,7 @@ thor_server	LayoutRoute.loadsUntyped	bool get loadsUntyped
 thor_server	LayoutRoute.meta	PageMeta Function(PageState<T>)? meta
 thor_server	LayoutRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
 thor_server	LayoutRoute.middleware	Middleware? middleware
-thor_server	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
+thor_server	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
 thor_server	LayoutRoute.notFound	P Function(ErrorState)? notFound
 thor_server	LayoutRoute.notFoundMeta	PageMeta Function(ErrorState)? notFoundMeta
 thor_server	LayoutRoute.personalized	bool? personalized
@@ -2943,6 +2983,7 @@ thor_server	PageRoute.actions	Map<String, FormAction> actions
 thor_server	PageRoute.build	P Function(PageState<T>) build
 thor_server	PageRoute.buildWith	P buildWith(PageState<Object?> state)
 thor_server	PageRoute.cache	Duration? cache
+thor_server	PageRoute.cacheControl	CacheControl? cacheControl
 thor_server	PageRoute.earlyHints	bool? earlyHints
 thor_server	PageRoute.forLayouts	List<Object> Function(PageState<T>)? forLayouts
 thor_server	PageRoute.forLayoutsWith	List<Object> forLayoutsWith(PageState<Object?> state)
@@ -2951,7 +2992,7 @@ thor_server	PageRoute.load	Loader<T>? load
 thor_server	PageRoute.maxBodyBytes	int? maxBodyBytes
 thor_server	PageRoute.meta	PageMeta Function(PageState<T>)? meta
 thor_server	PageRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
-thor_server	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
+thor_server	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
 thor_server	PageRoute.personalized	bool? personalized
 thor_server	PageRoute.prefetch	bool? prefetch
 thor_server	PageRoute.prerender	bool? prerender
@@ -3002,6 +3043,7 @@ thor_server	Redirect.flash	Redirect flash(String message, {FlashKind kind = Flas
 thor_server	Redirect.flashMessage	FlashMessage? flashMessage
 thor_server	Redirect.found	Redirect.found(RouteUrl location)
 thor_server	Redirect.location	RouteUrl location
+thor_server	Redirect.moved	Redirect.moved(RouteUrl location)
 thor_server	Redirect.new	Redirect(RouteUrl location, {int status = 303, bool resetScroll = false})
 thor_server	Redirect.permanent	Redirect.permanent(RouteUrl location)
 thor_server	Redirect.resetScroll	bool resetScroll
@@ -3088,6 +3130,7 @@ thor_server	RobotsRule.new	RobotsRule({String userAgent = '*', List<String> allo
 thor_server	RobotsRule.userAgent	String userAgent
 thor_server	RouteEntry	class
 thor_server	RouteEntry.cache	Duration? get cache
+thor_server	RouteEntry.cacheControl	CacheControl? get cacheControl
 thor_server	RouteEntry.earlyHints	bool get earlyHints
 thor_server	RouteEntry.invalidateOnWrite	bool get invalidateOnWrite
 thor_server	RouteEntry.isStatic	bool get isStatic
@@ -5370,8 +5413,11 @@ thor_style	ImageFilter.contrast	ImageFilter.contrast(double amount)
 thor_style	ImageFilter.css	String css
 thor_style	ImageFilter.grayscale	ImageFilter.grayscale(double amount)
 thor_style	ImageFilter.hashCode	int get hashCode
+thor_style	ImageFilter.hueRotate	ImageFilter.hueRotate(double degrees)
 thor_style	ImageFilter.invert	ImageFilter.invert(double amount)
+thor_style	ImageFilter.opacity	ImageFilter.opacity(double amount)
 thor_style	ImageFilter.saturate	ImageFilter.saturate(double amount)
+thor_style	ImageFilter.sepia	ImageFilter.sepia(double amount)
 thor_style	Interval	class
 thor_style	Interval.begin	double begin
 thor_style	Interval.curve	Curve curve
@@ -8560,6 +8606,14 @@ thor_ui	FutureBuilder.builder	Widget Function(BuildContext, AsyncSnapshot<T>) bu
 thor_ui	FutureBuilder.future	Future<T>? future
 thor_ui	FutureBuilder.initialData	T? initialData
 thor_ui	FutureBuilder.new	FutureBuilder<T>({Key? key, required Future<T>? future, required Widget Function(BuildContext, AsyncSnapshot<T>) builder, T? initialData})
+thor_ui	GeolocationRequest	class
+thor_ui	GeolocationRequest.highAccuracy	bool highAccuracy
+thor_ui	GeolocationRequest.maximumAge	Duration? maximumAge
+thor_ui	GeolocationRequest.new	GeolocationRequest({Key? key, void Function(double, double, double)? onPosition, void Function(String)? onError, bool highAccuracy = false, Duration? timeout, Duration? maximumAge, required Widget child})
+thor_ui	GeolocationRequest.onError	void Function(String)? onError
+thor_ui	GeolocationRequest.onPosition	void Function(double, double, double)? onPosition
+thor_ui	GeolocationRequest.timeout	Duration? timeout
+thor_ui	GeolocationRequest.wrapData	WrapData get wrapData
 thor_ui	Gesture	class
 thor_ui	Gesture.drag	Drag drag
 thor_ui	Gesture.feedback	Press? feedback
@@ -17643,8 +17697,11 @@ thor_ui	ImageFilter.contrast	ImageFilter.contrast(double amount)
 thor_ui	ImageFilter.css	String css
 thor_ui	ImageFilter.grayscale	ImageFilter.grayscale(double amount)
 thor_ui	ImageFilter.hashCode	int get hashCode
+thor_ui	ImageFilter.hueRotate	ImageFilter.hueRotate(double degrees)
 thor_ui	ImageFilter.invert	ImageFilter.invert(double amount)
+thor_ui	ImageFilter.opacity	ImageFilter.opacity(double amount)
 thor_ui	ImageFilter.saturate	ImageFilter.saturate(double amount)
+thor_ui	ImageFilter.sepia	ImageFilter.sepia(double amount)
 thor_ui	ImageLoadError	class
 thor_ui	ImageLoadError.new	ImageLoadError(String url)
 thor_ui	ImageLoadError.toString	String toString()
@@ -19292,6 +19349,13 @@ thor_ui	Shadow.css	String get css
 thor_ui	Shadow.hashCode	int get hashCode
 thor_ui	Shadow.new	Shadow({Color color = const Color(0xFF000000), Offset offset = Offset.zero, double blurRadius = 0})
 thor_ui	Shadow.offset	Offset offset
+thor_ui	ShareRequest	class
+thor_ui	ShareRequest.new	ShareRequest({Key? key, String? title, String? text, String? url, void Function(String)? onResult, required Widget child})
+thor_ui	ShareRequest.onResult	void Function(String)? onResult
+thor_ui	ShareRequest.text	String? text
+thor_ui	ShareRequest.title	String? title
+thor_ui	ShareRequest.url	String? url
+thor_ui	ShareRequest.wrapData	WrapData get wrapData
 thor_ui	ShortcutActivator	abstract class
 thor_ui	ShortcutActivator.new	ShortcutActivator()
 thor_ui	ShortcutActivator.spec	String get spec
@@ -19619,7 +19683,10 @@ thor_ui	StateSignal.dispose	void dispose()
 thor_ui	StateSignal.fromJson	T fromJson(Object? json)
 thor_ui	StateSignal.hasListeners	bool get hasListeners
 thor_ui	StateSignal.local	String? local
+thor_ui	StateSignal.localKey	String? get localKey
+thor_ui	StateSignal.localScope	StateSignal<String>? localScope
 thor_ui	StateSignal.maxCookieLength	int maxCookieLength
+thor_ui	StateSignal.maxLocalScopeLength	int maxLocalScopeLength
 thor_ui	StateSignal.notifyListeners	void notifyListeners()
 thor_ui	StateSignal.peek	T peek()
 thor_ui	StateSignal.removeListener	void removeListener(void Function() listener)
@@ -20822,6 +20889,13 @@ thor_ui	Visibility.maintainSize	bool maintainSize
 thor_ui	Visibility.new	Visibility({Key? key, bool visible = true, bool maintainSize = false, required Widget child})
 thor_ui	Visibility.visible	bool visible
 thor_ui	Visibility.wrapData	WrapData get wrapData
+thor_ui	VisibilityDetector	class
+thor_ui	VisibilityDetector.margin	double margin
+thor_ui	VisibilityDetector.new	VisibilityDetector({Key? key, required void Function(bool) onVisibilityChanged, double threshold = 0, double margin = 0, bool once = false, required Widget child})
+thor_ui	VisibilityDetector.onVisibilityChanged	void Function(bool) onVisibilityChanged
+thor_ui	VisibilityDetector.once	bool once
+thor_ui	VisibilityDetector.threshold	double threshold
+thor_ui	VisibilityDetector.wrapData	WrapData get wrapData
 thor_ui	VisualDensity	class
 thor_ui	VisualDensity.==	bool ==(Object other)
 thor_ui	VisualDensity.baseSizeAdjustment	Offset get baseSizeAdjustment
@@ -21000,7 +21074,7 @@ thor_ui	WindowSizeClass.compact	WindowSizeClass compact
 thor_ui	WindowSizeClass.expanded	WindowSizeClass expanded
 thor_ui	WindowSizeClass.extraLarge	WindowSizeClass extraLarge
 thor_ui	WindowSizeClass.large	WindowSizeClass large
-thor_ui	WindowSizeClass.media	StyleRule media(List<StyleRule> rules)
+thor_ui	WindowSizeClass.media	StyleRule media(List<StyleRule> rules, {Breakpoints breakpoints = const Breakpoints()})
 thor_ui	WindowSizeClass.medium	WindowSizeClass medium
 thor_ui	WindowSizeClass.minWidth	double minWidth
 thor_ui	WindowSizeClass.new	WindowSizeClass(double minWidth)

@@ -74,6 +74,22 @@ final class Css {
   StyleRule media(String query, List<StyleRule> rules) =>
       _GroupRule('@media', query, rules);
 
+  /// `@media screen and (min-width: <px>) { rules }`: from a viewport width
+  /// up, any width (`css.minWidth(920, [...])`), for the sizes that are no
+  /// size class. Mobile-first, like `.when(medium: …)`.
+  ///
+  /// `// web:` the widths of widgets are the theme's four size classes; this
+  /// is the escape for the app stylesheet. The widths of the size classes
+  /// themselves: `WindowSizeClass.medium.media`.
+  StyleRule minWidth(num px, List<StyleRule> rules) =>
+      _GroupRule('@media', 'screen and (min-width: ${cssPx(px.toDouble())})', rules);
+
+  /// `@media screen and (max-width: <px>) { rules }`: up to and including a
+  /// viewport width (`css.maxWidth(919.98, …)` is "below 920"; a fraction
+  /// avoids the 1px overlap with `css.minWidth(920, …)`).
+  StyleRule maxWidth(num px, List<StyleRule> rules) =>
+      _GroupRule('@media', 'screen and (max-width: ${cssPx(px.toDouble())})', rules);
+
   /// `@layer <name> { rules }` (an anonymous layer without [name]).
   ///
   /// `name: 'thor'` means `thor.reset`: thor's layers are sublayers of

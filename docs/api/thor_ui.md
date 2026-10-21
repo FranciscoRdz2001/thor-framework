@@ -730,6 +730,9 @@ Flutter's `ImageFilter` for a box: `blur` and the color filters the browser appl
 - `ImageFilter.contrast(double amount)` — Contrast: `0` flat grey, `1` as is.
 - `ImageFilter.grayscale(double amount)` — Share of grey: `0` as is, `1` fully grey.
 - `ImageFilter.invert(double amount)` — Share of inverted colors: `0` as is, `1` a negative (a dark-mode version of a black-on-white diagram).
+- `ImageFilter.sepia(double amount)` — Share of sepia tone: `0` as is, `1` fully sepia.
+- `ImageFilter.hueRotate(double degrees)` — Turns every hue by [degrees] around the color wheel.
+- `ImageFilter.opacity(double amount)` — Opacity of the filtered result: `0` invisible, `1` as is.
 - `ImageFilter.compose({required ImageFilter outer, required ImageFilter inner})` — [inner] applies first, then [outer] (Flutter's `ImageFilter.compose`).
 
 ### `IndexedStack` · class
@@ -1811,6 +1814,12 @@ What a `Form` gives the named fields below it: the values and the messages of a 
 
 - `FormScope({Key? key, FormInvalid? failed, Map<String, Object?> defaults = const {}, FormSchema? schema, required Widget child})` — Publishes [failed], [defaults] and [schema] to [child].
 
+### `GeolocationRequest` · class
+
+Asks the browser for the visitor's position when its child is tapped.
+
+- `GeolocationRequest(…)` — Wraps [child]: tapping it asks for the position.
+
 ### `Gesture` · class
 
 Every touch and mouse gesture in one widget: tap, double tap, long press (hold), swipe (to dismiss), drag and pinch, plus press feedback.
@@ -2079,6 +2088,12 @@ Flutter's `SegmentedButton<T>`: a row of [segments] to choose one value (or seve
 Flutter's `SelectableDayPredicate`: whether [day] can be picked.
 
 
+### `ShareRequest` · class
+
+Opens the device's share sheet when its child is tapped.
+
+- `ShareRequest({Key? key, String? title, String? text, String? url, void Function(String)? onResult, required Widget child})` — Wraps [child]: tapping it shares.
+
 ### `ShortcutActivator` · abstract class
 
 Flutter's `ShortcutActivator`: what a key press must be to trigger a shortcut.
@@ -2227,6 +2242,12 @@ A validation rule of a [TextFormField].
 Flutter's `Velocity`: a speed in logical pixels per second.
 
 - `Velocity({required Offset pixelsPerSecond})` — A velocity of [pixelsPerSecond].
+
+### `VisibilityDetector` · class
+
+Reports when its child enters or leaves the viewport: an infinite list's "load more" sentinel, a reveal-on-scroll, a view counter.
+
+- `VisibilityDetector({Key? key, required void Function(bool) onVisibilityChanged, double threshold = 0, double margin = 0, bool once = false, required Widget child})` — Wraps [child], reporting to [onVisibilityChanged].
 
 ### `WidgetPropertyResolver` · typedef
 
@@ -3993,7 +4014,7 @@ Teaches the engine to read and write a class of the app as JSON, so a `state<Lis
 
 A reactive field of a [ThorState]: `final count = state(0);`. Values that are not JSON (numbers, strings, bools, lists and maps of them) need [encode] and [decode] to travel from the server to the page.
 
-- `StateSignal<T> state<T>(T initial, {Object? Function(T)? encode, T Function(Object?)? decode, String? cookie, String? local})`
+- `StateSignal<T> state<T>(T initial, {Object? Function(T)? encode, T Function(Object?)? decode, String? cookie, String? local, StateSignal<String>? localScope})`
 
 ### `toast` · function
 
@@ -4055,6 +4076,12 @@ What an action returns: a [Redirect], or the page again ([ActionResult.fail], [A
 
 - `ActionResult.fail(int status, [Object? data])` — The action failed: the page renders again with [status] and [data] as its `state.form` (the values to re-fill and the errors to show).
 - `ActionResult.success([Object? data])` — The action worked and the page renders again (no redirect) with [data] as its `state.form`.
+
+### `CacheControl` · class
+
+How long a browser or a CDN may keep a page that is the same for every visitor, and how long it may keep serving it while it fetches a new copy:
+
+- `CacheControl({required Duration maxAge, Duration? sharedMaxAge, Duration? staleWhileRevalidate, Duration? staleIfError})` — A page kept for [maxAge], and served stale for [staleWhileRevalidate] (and [staleIfError] when the server fails) while a new copy is fetched.
 
 ### `ChangeFrequency` · enum
 
@@ -4489,7 +4516,8 @@ Ends the request with a redirect to [location]. Thrown from a `load` or returned
 - `Redirect.back(PageRequest request, {int status = 303, bool resetScroll = false})` — The page [request] was posted from, its query kept and the action key (`?/save`) gone: the very URL the visitor was on, so the browser keeps their scroll and the pressed button (`thor_ui`'s form script). A hand-written `Redirect(request.uri.path)` drops the query (`/orders? status=paid` lands on `/orders`): that is another page and it starts at the top. Not the `Referer`: that header is the client's to send or not, and an action may also be posted from another page.
 - `Redirect.found(RouteUrl location)` — `302 Found`: a temporary redirect (e.g. a protected page → `/login`).
 - `Redirect.temporary(RouteUrl location)` — `307 Temporary Redirect`: keeps the method and body.
-- `Redirect.permanent(RouteUrl location)` — `308 Permanent Redirect`.
+- `Redirect.moved(RouteUrl location)` — `301 Moved Permanently`: the classic permanent redirect for a URL that changed for good (search engines transfer the page to the new URL). A browser may follow it with a `GET` whatever the original method.
+- `Redirect.permanent(RouteUrl location)` — `308 Permanent Redirect`: permanent, and the method and body are kept. For a plain moved page [Redirect.moved] (`301`) is the usual choice.
 
 ### `ReferrerPolicy` · enum
 
@@ -4660,7 +4688,7 @@ A complete response from a backend.
 
 A layout: the frame a [Group] puts around its pages ([build]'s `child`). Like [ThorPage]: [T] is its [load]'s data (a page below reads it with `request.parent<T>()`), one const instance, settings in `super(…)`; the pages below inherit them.
 
-- `ThorLayout<T>({Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})` — A layout with its settings.
+- `ThorLayout<T>({Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})` — A layout with its settings.
 
 ### `ThorPage` · abstract class
 
@@ -4976,7 +5004,7 @@ A rule of the app's stylesheet (`styles:` of `initializeThor` or `WidgetRenderer
 
 `<link>`.
 
-- `link({required String href, String? rel, String? type, String? as, String? id, String? classes, Styles? styles, Map<String, String>? attributes, Key? key})` — A `<link>` element.
+- `link(…)` — A `<link>` element.
 
 ### `meta` · class
 

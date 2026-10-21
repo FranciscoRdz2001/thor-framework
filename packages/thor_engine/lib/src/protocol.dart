@@ -353,6 +353,32 @@ const gestureAttr = 'data-tg';
 /// and `toggle`, the page index for `page`.
 const elementEventsAttr = 'data-t-ev';
 
+/// Options of a [elementEventsAttr] `visible:` event (thor_ui's
+/// `VisibilityDetector`): `<threshold>|<margin px>|<once 0 or 1>`, the share
+/// of the element that must show (0 to 1), how far outside the viewport it
+/// counts as showing, and whether it reports only its first appearance.
+const visibilityAttr = 'data-t-vis';
+
+/// A click on this element asks the browser for the position (thor_ui's
+/// `GeolocationRequest`): `ok:id;err:id` (same format as [onAttr]). `ok` gets
+/// `latitude~longitude~accuracy` (metres) and `err` one of `denied`,
+/// `unavailable`, `timeout` or `unsupported`.
+const geolocationAttr = 'data-t-geo';
+
+/// Options of a [geolocationAttr]: `highAccuracy|timeoutMs|maxAgeMs`, the
+/// first 0 or 1 and 0 in the others leaving the browser's default.
+const geolocationOptionsAttr = 'data-t-geo-o';
+
+/// A click on this element shares a page, a text or a link with the device's
+/// own share sheet (thor_ui's `ShareRequest`): `result:id` (same format as
+/// [onAttr]); the handler gets `shared`, `cancelled`, `copied`, `link` or
+/// `failed`.
+const shareAttr = 'data-t-share';
+
+/// What a [shareAttr] element shares, as JSON: `{"title":…,"text":…,"url":…}`
+/// (a missing `url` is the current page).
+const shareDataAttr = 'data-t-share-d';
+
 /// An element whose height follows its content's, animated (thor_ui's
 /// `AnimatedSize` and `AnimatedCrossFade`): `<ms>|<easing>|<ms shrinking>`.
 /// Its only child is the measured content.

@@ -263,6 +263,25 @@ final class ImageFilter {
   factory ImageFilter.invert(double amount) =>
       ImageFilter._('invert(${cssNum(amount)})');
 
+  /// Share of sepia tone: `0` as is, `1` fully sepia.
+  // web: not a Flutter `ImageFilter` constructor (Flutter does this with
+  // `ColorFilter.matrix`); it is the CSS `sepia()` filter function.
+  factory ImageFilter.sepia(double amount) =>
+      ImageFilter._('sepia(${cssNum(amount)})');
+
+  /// Turns every hue by [degrees] around the color wheel.
+  // web: not a Flutter `ImageFilter` constructor (Flutter does this with
+  // `ColorFilter.matrix`); it is the CSS `hue-rotate()` filter function.
+  factory ImageFilter.hueRotate(double degrees) =>
+      ImageFilter._('hue-rotate(${cssNum(degrees)}deg)');
+
+  /// Opacity of the filtered result: `0` invisible, `1` as is.
+  // web: not a Flutter `ImageFilter` constructor; it is the CSS `opacity()`
+  // filter function (it composes with the others, unlike the `opacity`
+  // property).
+  factory ImageFilter.opacity(double amount) =>
+      ImageFilter._('opacity(${cssNum(amount)})');
+
   /// [inner] applies first, then [outer] (Flutter's `ImageFilter.compose`).
   factory ImageFilter.compose({
     required ImageFilter outer,

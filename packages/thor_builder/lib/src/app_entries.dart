@@ -123,7 +123,8 @@ final engineFeatures = <String, bool Function(String source)>{
   // do not bubble; enter/leave/focus need the related target).
   'ElementEventsFeature': (s) =>
       RegExp(
-        r'\bon(Enter|Exit|FocusChange|ExpansionChanged|PageChanged):',
+        r'\bon(Enter|Exit|FocusChange|ExpansionChanged|PageChanged|'
+        r'VisibilityChanged):',
       ).hasMatch(s) ||
       RegExp(r'(?<![\w.])SplitPane\(').hasMatch(s),
   // The size follows the content: the browser is told after the fact.

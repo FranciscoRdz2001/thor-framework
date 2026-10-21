@@ -2780,6 +2780,8 @@ class _Translator {
     final cookies = <String>[];
     // Fields kept in localStorage: the same, when one is stored.
     final locals = <String>[];
+    // The `state(...)` fields made so far (a `localScope:` names one).
+    final stateFields = <String>{};
     if (n.implementsClause != null) {
       _fail(n, 'State $name: interfaces are not in the lite subset.');
     }
@@ -3059,7 +3061,7 @@ class _Translator {
               final args = init.argumentList.arguments;
               final initial = args.firstWhere((a) => a is! NamedExpression);
               String? decode, encode;
-              Expression? cookie, local;
+              Expression? cookie, local, localScope;
               for (final a in args.whereType<NamedExpression>()) {
                 switch (a.name.label.name) {
                   case 'decode':
@@ -3070,6 +3072,8 @@ class _Translator {
                     cookie = a.expression;
                   case 'local':
                     local = a.expression;
+                  case 'localScope':
+                    localScope = a.expression;
                 }
               }
               // A class of the app with `toJson()`/`fromJson` (or a list or
@@ -3125,11 +3129,40 @@ class _Translator {
                     'of them.',
                   );
                 } else {
-                  (cookie != null ? cookies : locals).add(c);
+                  // `localScope: field`: a signal of this state, made before
+                  // this one, names the instance (`<c>:<its value>`).
+                  String? scope;
+                  if (localScope != null) {
+                    if (cookie != null) {
+                      _fail(
+                        localScope,
+                        'state(localScope:) goes with local:, not cookie: '
+                        '(THOR-S009).',
+                      );
+                    } else if (localScope is SimpleIdentifier &&
+                        stateFields.contains(localScope.name)) {
+                      scope = _mangle(localScope.name);
+                    } else {
+                      _fail(
+                        localScope,
+                        'state(localScope:) takes a `state(...)` field of the '
+                        'same class, declared before this one (THOR-S009).',
+                      );
+                    }
+                  }
+                  (cookie != null ? cookies : locals).add(
+                    scope == null ? c : '$c:*',
+                  );
                   made =
-                      "${_use(cookie != null ? r'$persist' : r'$local')}($made, '$c', ${encode ?? 'null'}, ${check ?? 'null'}, ${decode ?? 'null'})";
+                      "${_use(cookie != null ? r'$persist' : r'$local')}($made, '$c', ${encode ?? 'null'}, ${check ?? 'null'}, ${decode ?? 'null'}${scope == null ? '' : ', $scope'})";
                 }
+              } else if (localScope != null) {
+                _fail(
+                  localScope,
+                  'state(localScope:) needs local: (THOR-S009).',
+                );
               }
+              stateFields.add(v.name.lexeme);
               // `thor dev` keeps the page's values across a reload: a field
               // with a codec carries it on the signal (`enc`/`dec`) so the
               // dev_state part saves and restores it. Release drops it.

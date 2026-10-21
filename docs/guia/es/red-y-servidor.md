@@ -174,6 +174,20 @@ class ProductsPage extends ThorPage<List<Product>> {
 - Una acción o un command que termina bien la vacía en todos los isolates; uno que falla (4xx o 5xx) no, aunque haya escrito antes de fallar. Si la acción escribe en varios pasos, hazlos en una transacción.
 - Una caché delante del servidor (CDN, proxy) no se entera: púrgala tú al escribir.
 - Un layout puede dar el formato del título de las páginas que contiene: `PageMeta(title: 'Shop', titleTemplate: '%s · Shop')`. Open Graph, JSON-LD y el sitemap están en [SEO](seo.md).
+- `cacheControl:` es el otro lado: lo que la página le dice a navegadores y CDN (`public, max-age=60, stale-while-revalidate=600`), para un CDN delante del servidor. Solo se aplica a una página pública; una personal, una que pone una cookie, tiene nonce de CSP o falla sigue con `private, no-cache`, y un `Cache-Control` puesto en `request.response.headers` gana.
+
+```dart no-check
+class ProductsPage extends ThorPage<List<Product>> {
+  const ProductsPage()
+    : super(
+        cache: const Duration(seconds: 30),
+        cacheControl: const CacheControl(
+          maxAge: Duration(seconds: 60),
+          staleWhileRevalidate: Duration(minutes: 10),
+        ),
+      );
+}
+```
 
 ### Vaciar solo lo que cambió
 

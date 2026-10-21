@@ -53,6 +53,7 @@ final class StateSignal<T> extends Signal<T> implements ValueNotifier<T> {
     this._decode,
     this.cookie, [
     this.local,
+    this.localScope,
   ]) : _initial = value;
 
   /// The cookie this field persists in (`thor-s.<cookie>`), or null: the
@@ -65,6 +66,27 @@ final class StateSignal<T> extends Signal<T> implements ValueNotifier<T> {
   /// the state starts in the browser; the server never sees it (see
   /// [state]).
   final String? local;
+
+  /// The field whose value names the instance of [local]: the storage key is
+  /// `thor-s.<local>:<scope value>` (see [state]).
+  final StateSignal<String>? localScope;
+
+  /// The `localStorage` key this field reads and writes, without the
+  /// `thor-s.` prefix: [local], plus `:` and the value of [localScope] when
+  /// there is one. Null when the field is not persisted there, or its scope
+  /// is empty or longer than [maxLocalScopeLength] (it then lives in memory,
+  /// as with blocked storage).
+  String? get localKey {
+    final base = local;
+    final scope = localScope;
+    if (base == null || scope == null) return base;
+    final value = scope.value;
+    if (value.isEmpty || value.length > maxLocalScopeLength) return null;
+    return '$base:$value';
+  }
+
+  /// The longest [localScope] value used in a storage key.
+  static const maxLocalScopeLength = 100;
 
   /// The longest cookie value read back (longer ones are ignored).
   static const maxCookieLength = 2048;
@@ -363,12 +385,34 @@ extension StateSetOps<T> on StateSignal<Set<T>> {
 /// page, without an error. The same name rule and the same caution: the
 /// value is the visitor's to write. A field persists in one place: [cookie]
 /// or [local], not both (THOR-S009).
+///
+/// [localScope] makes one `local:` field many: a field holding a value the
+/// server wrote for the page (`final store = state('')`, set to the store's
+/// slug while the page is built) names the instance, and the storage key is
+/// `thor-s.<local>:<value>`. The cart of each store, the draft of each
+/// document:
+///
+/// ```dart
+/// final store = state('');
+/// late final cart = state(<String>[], local: 'cart', localScope: store);
+/// ```
+///
+/// The value is read when the state starts in the browser, so a page of
+/// another store starts the field from another key; one that is empty (or
+/// longer than 100 characters) keeps the field in memory for the page. The
+/// scope must be a field of the same state, declared before it; it needs
+/// [local].
+///
+/// `// web:` not in Flutter's `shared_preferences`, where the key is a
+/// string built at runtime; a lite state is compiled ahead of time, so the
+/// key is the literal plus a field the page fills.
 StateSignal<T> state<T>(
   T initial, {
   Object? Function(T value)? encode,
   T Function(Object? json)? decode,
   String? cookie,
   String? local,
+  StateSignal<String>? localScope,
 }) {
   // web: Flutter's shared_preferences is async; the browser's localStorage
   // is read synchronously, so the stored value is there when the state
@@ -394,7 +438,14 @@ StateSignal<T> state<T>(
       'A field persists in a cookie or in localStorage, not both (THOR-S009)',
     );
   }
-  return StateSignal._(initial, encode, decode, cookie, local);
+  if (localScope != null && local == null) {
+    throw ArgumentError.value(
+      localScope,
+      'localScope',
+      'localScope names the instance of a local: field; give local: too',
+    );
+  }
+  return StateSignal._(initial, encode, decode, cookie, local, localScope);
 }
 
 /// A value computed from other fields and kept: `late final visible =

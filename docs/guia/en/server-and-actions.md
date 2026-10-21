@@ -174,6 +174,20 @@ class ProductsPage extends ThorPage<List<Product>> {
 - An action or a command that succeeds clears it in every isolate; one that fails (4xx or 5xx) does not, even if it wrote before failing. If the action writes in several steps, do them in a transaction.
 - A cache in front of the server (CDN, proxy) is not notified: purge it yourself when you write.
 - A layout can set the title format of the pages it contains: `PageMeta(title: 'Shop', titleTemplate: '%s · Shop')`. Open Graph, JSON-LD and the sitemap are in [SEO](seo.md).
+- `cacheControl:` is the other side: what the page tells browsers and CDNs (`public, max-age=60, stale-while-revalidate=600`), for a CDN in front of the server. It only applies to a public page; a personal page, one that sets a cookie, has a CSP nonce or fails stays `private, no-cache`, and a `Cache-Control` set in `request.response.headers` wins.
+
+```dart no-check
+class ProductsPage extends ThorPage<List<Product>> {
+  const ProductsPage()
+    : super(
+        cache: const Duration(seconds: 30),
+        cacheControl: const CacheControl(
+          maxAge: Duration(seconds: 60),
+          staleWhileRevalidate: Duration(minutes: 10),
+        ),
+      );
+}
+```
 
 ### Clearing only what changed
 
