@@ -59,7 +59,13 @@ Group(
 - Los atributos `style` que Thor escribe están permitidos por `style-src-attr 'unsafe-inline'`, que nunca permite elementos `<style>`.
 - Los atributos de evento (`oninput`, `onclick`…) no admiten nonce. Para conservarlos: `scriptSrcAttr: [CspSource.unsafeHashes, ...CspSource.thorHandlers]`.
 - En una respuesta escrita a mano, `request.cspNonce` es el nonce.
-- Una página con nonce sale sin `ETag` y con `Cache-Control: private`: no la pongas detrás de una caché compartida.
+- Una página con nonce sale sin `ETag` y con `Cache-Control: private`: no la pongas detrás de una caché compartida. Para una página pública (`cacheControl:`), usa hashes en lugar del nonce:
+
+```dart no-check
+contentSecurityPolicy(const ContentSecurityPolicy(nonce: false, hashes: true))
+```
+
+  Con `hashes: true` la cabecera lista el SHA-256 de cada `<script>` y `<style>` en línea de la página terminada, así que el cuerpo es el mismo para todos: conserva su `ETag` y su caché `public`. El precio: el middleware lee el cuerpo completo (una página que transmite sus valores diferidos sale completa), y un `<style>` o `<script>` que llega después en el fragmento de una pieza perezosa no está en la cabecera. Una página que cambia en cada petición no es para este modo.
 - La política cubre las páginas del grupo, no los archivos estáticos ni los errores globales.
 
 Un sitio estático no tiene servidor que ponga un nonce. Cada código en línea de Thor es constante y se permite con su hash en `script-src`; los atributos de evento piden además `'unsafe-hashes'`. Sin su hash, cada uno se degrada sin romper la página:

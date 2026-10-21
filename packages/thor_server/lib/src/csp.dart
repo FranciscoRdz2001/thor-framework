@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:crypto/crypto.dart' show sha256;
+
 import 'handler.dart';
 import 'http_types.dart';
 import 'middleware.dart';
@@ -187,9 +189,13 @@ final class ContentSecurityPolicy {
     this.frameAncestors = const [CspSource.none],
     this.upgradeInsecureRequests = false,
     this.nonce = true,
+    this.hashes = false,
     this.reportOnly = false,
     this.reportUri,
-  });
+  }) : assert(
+         !hashes || !nonce,
+         'ContentSecurityPolicy: hashes replaces the nonce, give nonce: false',
+       );
 
   /// `default-src`: what the directives below that are null fall back to.
   final List<CspSource>? defaultSrc;
@@ -246,6 +252,28 @@ final class ContentSecurityPolicy {
   /// `style-src` and stamped on the inline scripts and styles of its HTML.
   final bool nonce;
 
+  /// Allow the inline `<script>` and `<style>` elements of a page by the
+  /// SHA-256 of their text instead of a nonce (use it with `nonce: false`).
+  /// The header is computed from the finished HTML, so the body is the same
+  /// for every request: it keeps its `ETag` and a public `Cache-Control`
+  /// (`PageRoute.cacheControl`), which a nonce takes away. The inline
+  /// scripts and styles that the renderer emits are covered, and so is
+  /// the `<script>` of your `html.script`; data blocks (`application/json`,
+  /// `application/ld+json`) need no source.
+  ///
+  /// ```dart
+  /// contentSecurityPolicy(const ContentSecurityPolicy(nonce: false, hashes: true))
+  /// ```
+  ///
+  /// The cost: the middleware reads the whole body (a page that streams its
+  /// deferred values is sent whole), and a `<style>` or `<script>` that
+  /// arrives after the page, in the fragment of a `LazyPiece`, is not in the
+  /// header (it is blocked): use a nonce for a page with lazy pieces that
+  /// carry their own styles. A page that changes on every request (a
+  /// visitor's name inside a script) gets a new header with each body, so
+  /// it should not be public.
+  final bool hashes;
+
   /// Send `Content-Security-Policy-Report-Only`: violations are reported,
   /// nothing is blocked.
   final bool reportOnly;
@@ -258,30 +286,40 @@ final class ContentSecurityPolicy {
       ? 'content-security-policy-report-only'
       : 'content-security-policy';
 
-  /// The header value for a request whose nonce is [requestNonce].
-  String headerValue(String? requestNonce) {
+  /// The header value for a request whose nonce is [requestNonce], with
+  /// the [scriptHashes] and [styleHashes] of the page (`hashes: true`; the
+  /// base64 SHA-256 of each inline element).
+  String headerValue(
+    String? requestNonce, {
+    Iterable<String> scriptHashes = const [],
+    Iterable<String> styleHashes = const [],
+  }) {
     String? directive(
       String name,
       List<CspSource>? sources, {
       bool withNonce = false,
+      Iterable<String> hashed = const [],
     }) {
       final stamp = withNonce && nonce && requestNonce != null;
+      final hash = withNonce && hashes && hashed.isNotEmpty;
       // A null script-src or style-src keeps falling back to default-src:
       // the nonce must not turn it into a nonce-only directive.
-      final base = sources ?? (stamp ? defaultSrc : null);
+      final base = sources ?? (stamp || hash ? defaultSrc : null);
       if (base == null) return null;
       return [
         name,
         ...base.map((s) => s.value),
         if (stamp) "'nonce-$requestNonce'",
+        if (hash)
+          for (final h in hashed) "'sha256-$h'",
       ].join(' ');
     }
 
     return [
       directive('default-src', defaultSrc),
-      directive('script-src', scriptSrc, withNonce: true),
+      directive('script-src', scriptSrc, withNonce: true, hashed: scriptHashes),
       directive('script-src-attr', scriptSrcAttr),
-      directive('style-src', styleSrc, withNonce: true),
+      directive('style-src', styleSrc, withNonce: true, hashed: styleHashes),
       directive('style-src-attr', styleSrcAttr),
       directive('img-src', imgSrc),
       directive('font-src', fontSrc),
@@ -354,6 +392,29 @@ Middleware contentSecurityPolicy([
           ? response
           : _stamped(response, NonceInjector(nonce));
     }
+    if (policy.hashes && isHtml) {
+      // The policy comes from the finished page: read it whole.
+      final body = response.stream == null
+          ? response.body
+          : [for (final c in await response.stream!.toList()) ...c];
+      final (scripts, styles) = _inlineHashes(
+        body,
+        _header(response.headers, 'etag'),
+      );
+      return ThorResponse(
+        response.status,
+        headers: {
+          ...response.headers,
+          HttpHeader(policy.headerName): policy.headerValue(
+            null,
+            scriptHashes: scripts,
+            styleHashes: styles,
+          ),
+        },
+        cookies: response.cookies,
+        body: body,
+      );
+    }
     final header = <HttpHeader, String>{
       HttpHeader(policy.headerName): policy.headerValue(nonce),
       // A `LazyPiece` fragment is its own response: its `<style>` carries
@@ -367,6 +428,54 @@ Middleware contentSecurityPolicy([
     if (nonce == null || !isHtml) return response.withHeaders(header);
     return _stamped(response.withHeaders(header), NonceInjector(nonce));
   });
+}
+
+String? _header(Map<HttpHeader, String> headers, String name) {
+  for (final MapEntry(:key, :value) in headers.entries) {
+    if (key.toLowerCase() == name) return value;
+  }
+  return null;
+}
+
+// The hashes of a page by its ETag (a cached page is asked for again and
+// again; the body of a validator never changes).
+final _hashesByEtag = <String, (List<String>, List<String>)>{};
+
+final _inline = RegExp(
+  r'<(script|style)\b([^>]*)>([\s\S]*?)</\1\s*>',
+  caseSensitive: false,
+);
+
+/// The base64 SHA-256 of each inline `<script>` and `<style>` of [body]
+/// (an element with `src`, or a script that is a data block, has none).
+(List<String>, List<String>) _inlineHashes(List<int> body, String? etag) {
+  final known = etag == null ? null : _hashesByEtag[etag];
+  if (known != null) return known;
+  final scripts = <String>{}, styles = <String>{};
+  final html = utf8.decode(body, allowMalformed: true);
+  for (final m in _inline.allMatches(html)) {
+    final tag = m.group(1)!.toLowerCase();
+    final attributes = m.group(2)!.toLowerCase();
+    final text = m.group(3)!;
+    if (tag == 'script') {
+      if (RegExp(r'\bsrc\s*=').hasMatch(attributes)) continue;
+      if (RegExp(
+        r'''type\s*=\s*["']?(application/(ld\+)?json)\b''',
+      ).hasMatch(attributes)) {
+        continue;
+      }
+    }
+    final digest = base64.encode(sha256.convert(utf8.encode(text)).bytes);
+    (tag == 'script' ? scripts : styles).add(digest);
+  }
+  final found = (scripts.toList(), styles.toList());
+  if (etag != null) {
+    if (_hashesByEtag.length >= 256) {
+      _hashesByEtag.remove(_hashesByEtag.keys.first);
+    }
+    _hashesByEtag[etag] = found;
+  }
+  return found;
 }
 
 ThorResponse _withoutValidator(ThorResponse r) {
