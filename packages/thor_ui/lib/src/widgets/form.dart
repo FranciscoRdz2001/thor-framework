@@ -669,6 +669,7 @@ class Form<S extends FormSchema> extends StatelessWidget
     this.preserveQuery = true,
     this.stay = false,
     this.confirm,
+    this.id,
   }) : assert(
          onValid == null || onPost == null,
          'a form posts to one action: onValid or onPost',
@@ -676,6 +677,12 @@ class Form<S extends FormSchema> extends StatelessWidget
 
   /// The form's fields and controls.
   final Widget child;
+
+  // web: not in Flutter.
+  /// The form's `id`, for a button that submits it from outside
+  /// (`FilledButton(formId: 'filters')`): the footer of a `Dialog` or a
+  /// `Drawer` sits outside the form it closes. Unique in the page.
+  final String? id;
 
   /// The fields [onValid] receives: the same schema the server checks
   /// before running it (`TextFormField(field:)` puts the same rules in the
@@ -851,6 +858,7 @@ class Form<S extends FormSchema> extends StatelessWidget
       ],
       childRules: ChildRules.box,
       attributes: {
+        'id': ?id,
         'action': ?_actionUrl(context),
         'method': formMethod?.value ?? FormMethod.post.value,
         // The `AutofillGroup` around it that asked the browser to forget.

@@ -408,6 +408,7 @@ abstract class _ButtonBase extends StatelessWidget
     this.style,
     this.href,
     this.formAction,
+    this.formId,
     this.onPost,
     this.onValid,
     this.confirm,
@@ -442,7 +443,15 @@ abstract class _ButtonBase extends StatelessWidget
   final ButtonType? buttonType;
 
   // The type in effect: [buttonType], else a plain button.
-  ButtonType get _type => buttonType ?? ButtonType.button;
+  ButtonType get _type =>
+      buttonType ?? (formId != null ? ButtonType.submit : ButtonType.button);
+
+  // web: not in Flutter.
+  /// The `Form.id` of the form this button submits when it is not inside
+  /// it (`form="id"`): the footer of a dialog or a drawer, outside the form
+  /// it closes. It makes the button a submit button unless [buttonType] says
+  /// otherwise.
+  final String? formId;
 
   // web: not in Flutter.
   /// Where this submit button posts, instead of its form's
@@ -684,10 +693,12 @@ abstract class _ButtonBase extends StatelessWidget
               ..._tooltipAttributes(),
               'type': onPost != null || onValid != null ? 'submit' : _type.name,
               ...submit,
+              'form': ?formId,
               // A submit button in a `Form` submits it: it needs no handler.
               if (onPressed == null &&
                   onPost == null &&
                   onValid == null &&
+                  formId == null &&
                   !(_type == ButtonType.submit && InsideForm.isIn(context)))
                 'disabled': '',
               // web: without JS the page's dialog never asks, so a submit
@@ -777,6 +788,7 @@ class FilledButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -794,6 +806,7 @@ class FilledButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -810,6 +823,7 @@ class FilledButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -827,6 +841,7 @@ class FilledButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -972,6 +987,7 @@ class ElevatedButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -989,6 +1005,7 @@ class ElevatedButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -1080,6 +1097,7 @@ class TextButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -1097,6 +1115,7 @@ class TextButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -1163,6 +1182,7 @@ class OutlinedButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,
@@ -1180,6 +1200,7 @@ class OutlinedButton extends _ButtonBase {
     super.style,
     super.href,
     super.formAction,
+    super.formId,
     super.onPost,
     super.onValid,
     super.confirm,

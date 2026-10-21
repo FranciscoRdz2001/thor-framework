@@ -305,4 +305,36 @@ void main() {
       );
     });
   });
+
+  group('Form(id:) and a button\'s formId', () {
+    test('the form has the id; a button outside it submits it', () async {
+      final html = await bodyOf(
+        const Column(
+          children: [
+            Form(id: 'filters', formMethod: FormMethod.get, child: Text('x')),
+            FilledButton(formId: 'filters', child: Text('Apply')),
+          ],
+        ),
+      );
+      expect(html, contains(' id="filters" method="get"'));
+      expect(
+        html,
+        matches(RegExp(r'<button[^>]*type="submit"[^>]*form="filters"')),
+      );
+      expect(html, isNot(contains('disabled=""')));
+    });
+
+    test('no id, no form attribute', () async {
+      final html = await bodyOf(
+        const Column(
+          children: [
+            Form(child: Text('x')),
+            TextButton(child: Text('Go')),
+          ],
+        ),
+      );
+      expect(html, isNot(contains(' id="')));
+      expect(html, isNot(contains('form="')));
+    });
+  });
 }
