@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -48,6 +49,24 @@ bool runsLiteCheck({required bool? asked, required Set<String> dependencies}) =>
 /// breaks the lite subset, so `thor_lite_subset` must report it when thor's
 /// analyzer plugin (thor_lints) is alive.
 const canaryFile = 'zz_thor_canary.dart';
+
+/// The canary file of the project in [projectDir].
+File canaryOf(String projectDir) => File(p.join(projectDir, 'lib', canaryFile));
+
+/// Deletes the canary of [projectDir] when it is there (left by a run that
+/// was killed): true when it deleted one.
+bool removeCanary(String projectDir) {
+  final file = canaryOf(projectDir);
+  try {
+    if (file.existsSync()) {
+      file.deleteSync();
+      return true;
+    }
+  } on FileSystemException {
+    // Already gone, or not ours to delete.
+  }
+  return false;
+}
 
 /// The canary's source: needs only `thor_ui`, which every thor project has.
 const canarySource = '''
@@ -174,17 +193,33 @@ class AnalyzeCommand extends Command<int> with ProjectCommand<int> {
     // The rules of thor_lints run in a plugin that can fail without
     // failing `dart analyze`: a canary state proves they ran.
     final enabled = _pluginEnabled(project.dir, root);
-    final canary = File(p.join(project.dir, 'lib', canaryFile));
-    final lib = canary.parent;
-    final dropCanary = enabled && lib.existsSync() && !canary.existsSync();
-    if (dropCanary) canary.writeAsStringSync(canarySource);
+    // A canary a killed run left behind is not the app's: out first.
+    removeCanary(project.dir);
+    final dropCanary =
+        enabled && Directory(p.join(project.dir, 'lib')).existsSync();
+    if (dropCanary) canaryOf(project.dir).writeAsStringSync(canarySource);
     final String output;
+    final signals = <StreamSubscription<ProcessSignal>>[];
     try {
       final process = await Process.start(
         'dart',
         analyzeArgs(target, fatalInfos: fatalInfos),
         workingDirectory: root,
       );
+      // Ctrl-C (or a kill) skips `finally`: remove the canary here too.
+      for (final signal in [ProcessSignal.sigint, ProcessSignal.sigterm]) {
+        try {
+          signals.add(
+            signal.watch().listen((_) {
+              process.kill();
+              removeCanary(project.dir);
+              exit(signal == ProcessSignal.sigint ? 130 : 143);
+            }),
+          );
+        } on SignalException {
+          // Not supported on this platform.
+        }
+      }
       final buffer = StringBuffer();
       await Future.wait([
         process.stdout.transform(utf8.decoder).forEach(buffer.write),
@@ -193,7 +228,10 @@ class AnalyzeCommand extends Command<int> with ProjectCommand<int> {
       await process.exitCode;
       output = buffer.toString();
     } finally {
-      if (dropCanary && canary.existsSync()) canary.deleteSync();
+      for (final s in signals) {
+        await s.cancel();
+      }
+      removeCanary(project.dir);
     }
     final judged = judgeAnalysis(
       output,

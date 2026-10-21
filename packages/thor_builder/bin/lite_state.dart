@@ -14,10 +14,10 @@
 // the code they use. Anything outside the lite subset is an error with its
 // file and line (exit code 1) and nothing is written.
 //
-// `--check` (what `thor analyze --lite` runs) also translates every data
-// class (a `fromJson`) of the package, named by a state of it or not: a
-// protocol package declares the classes of other packages' `events<T>`,
-// `query` and `state<T>`, and is checked before an app uses it.
+// `--check` (what `thor analyze` runs) translates what the build would: the
+// states and what they reach. A package with no state (a protocol package
+// that declares the classes of other packages' `events<T>`, `query` and
+// `state<T>`) is checked on every data class (a `fromJson`) instead.
 import 'dart:io';
 
 import 'package:thor_builder/src/app_steps.dart';

@@ -2,6 +2,9 @@
 @TestOn('vm')
 library;
 
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:thor_cli/src/commands/analyze.dart';
 
@@ -107,5 +110,27 @@ void main() {
       isFalse,
     );
     expect(pluginEnabledIn('# thor_lints is off\n'), isFalse);
+  });
+
+  group('the canary file', () {
+    late Directory dir;
+    setUp(() {
+      dir = Directory.systemTemp.createTempSync('thor_canary_');
+      Directory(p.join(dir.path, 'lib')).createSync();
+    });
+    tearDown(() => dir.deleteSync(recursive: true));
+
+    test('lives in lib/ and a stale one is deleted', () {
+      expect(canaryOf(dir.path).path, p.join(dir.path, 'lib', canaryFile));
+      expect(removeCanary(dir.path), isFalse);
+      canaryOf(dir.path).writeAsStringSync(canarySource);
+      expect(removeCanary(dir.path), isTrue);
+      expect(canaryOf(dir.path).existsSync(), isFalse);
+    });
+
+    test('the lite check skips it by the same name', () {
+      // thor_builder's `_appUnits` skips `lib/zz_thor_canary.dart`.
+      expect(canaryFile, 'zz_thor_canary.dart');
+    });
   });
 }

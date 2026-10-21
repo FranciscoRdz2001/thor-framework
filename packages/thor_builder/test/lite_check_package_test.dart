@@ -92,4 +92,93 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 3)),
   );
+
+  test(
+    'with a state, --check sees only what the state reaches, like the build',
+    () async {
+      final app = await _package({
+        'status.dart': _status,
+        'page.dart': '''
+import 'package:thor_ui/thor_ui.dart';
+
+class PageState extends ThorState {
+  final n = state(0);
+  List<int> twice() => [n.value, n.value * 2];
+}
+''',
+      });
+      final out = StringBuffer(), err = StringBuffer();
+      final code = await checkLitePackage(app, out: out, err: err);
+      expect(code, 0, reason: '$err');
+      final built = StringBuffer(), builtErr = StringBuffer();
+      final buildCode = await writeLiteStates(
+        app,
+        outPath: p.join(app, 'build', 'state.js'),
+        readable: false,
+        out: built,
+        err: builtErr,
+      );
+      expect(buildCode, 0, reason: '$builtErr');
+    },
+    timeout: const Timeout(Duration(minutes: 3)),
+  );
+
+  test(
+    'with a state, a data class it reaches is still refused by both',
+    () async {
+      final app = await _package({
+        'status.dart': _status,
+        'page.dart': '''
+import 'package:thor_ui/thor_ui.dart';
+
+import 'status.dart';
+
+class PageState extends ThorState {
+  final s = state(const SessionStatus(null));
+  Object? url() => s.value.url;
+}
+''',
+      });
+      final err = StringBuffer();
+      expect(await checkLitePackage(app, out: StringBuffer(), err: err), 1);
+      final builtErr = StringBuffer();
+      expect(
+        await writeLiteStates(
+          app,
+          outPath: p.join(app, 'build', 'state.js'),
+          readable: false,
+          out: StringBuffer(),
+          err: builtErr,
+        ),
+        1,
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 3)),
+  );
+
+  test(
+    'the canary of `thor analyze` is not the package\'s code',
+    () async {
+      final app = await _package({
+        'zz_thor_canary.dart': '''
+import 'dart:async';
+
+import 'package:thor_ui/thor_ui.dart';
+
+class ZzThorCanary extends ThorState {
+  final a = state(0);
+  Object f() => Completer<int>.sync();
+}
+''',
+      });
+      final out = StringBuffer(), err = StringBuffer();
+      expect(
+        await checkLitePackage(app, out: out, err: err),
+        0,
+        reason: '$err',
+      );
+      expect('$out', contains('Nothing to check'));
+    },
+    timeout: const Timeout(Duration(minutes: 3)),
+  );
 }
