@@ -667,7 +667,7 @@ class Form<S extends FormSchema> extends StatelessWidget
     this.defaults,
     this.noValidate = false,
     this.preserveQuery = true,
-
+    this.stay = false,
     this.confirm,
   }) : assert(
          onValid == null || onPost == null,
@@ -763,6 +763,32 @@ class Form<S extends FormSchema> extends StatelessWidget
   /// [action] of its own.
   final bool preserveQuery;
 
+  // web: Flutter's `Form` submits nowhere; here a save may not leave the page.
+  /// Save where the page stands. With JavaScript the form posts without
+  /// navigating: its submit buttons are disabled while it goes (`data-pending`
+  /// on the form), the action's `Redirect.back(request).flash(…)` (or a
+  /// failed `ActionResult`) shows as the page's toast, the files chosen are
+  /// cleared and the page's server queries are asked again. The action is the
+  /// same: it still answers a `Redirect`, so without JavaScript the form
+  /// posts, the browser follows the `303` and the next page shows the flash.
+  ///
+  /// ```dart
+  /// Form(onPost: save, stay: true, child: …)
+  /// // in the page
+  /// Future<Redirect> save(PageRequest request) async {
+  ///   await store(await request.form());
+  ///   return Redirect.back(request).flash('Saved', kind: FlashKind.success);
+  /// }
+  /// ```
+  ///
+  /// An answer that redirects somewhere else navigates there. The form fires
+  /// `thor:stay` (`detail`: `ok`, `status`, `kind`, `message`) after each
+  /// answer. Only the page's queries (`query(fn)` of a `ThorState`) update on
+  /// their own; what the server drew into the HTML does not change until the
+  /// page loads again. Not for [FormMethod.get], [onSubmit] or a `mailto:`
+  /// [action]; it shows no upload progress bar.
+  final bool stay;
+
   // web: not in Flutter.
   /// Ask before the form submits (`onPost`, `onValid`, `action`
   /// or `onSubmit`): the page's one native `<dialog>` shows the question and
@@ -787,6 +813,7 @@ class Form<S extends FormSchema> extends StatelessWidget
     if (disableOnSubmit && onSubmit == null) {
       ThorStyleRegistry.active(context)?.useFormScript();
     }
+    if (stay) ThorStyleRegistry.active(context)?.useStayScript();
     // The answer of a POST that carries the failed form shows its errors and
     // focuses the first: whatever the status the action chose (a soft `200`).
     // A GET never is one (`failed:` is the answer of an action), and a
@@ -838,6 +865,7 @@ class Form<S extends FormSchema> extends StatelessWidget
           'enctype': 'text/plain',
         if (!disableOnSubmit) 'data-t-nopending': '',
         if (resetScroll) 'data-t-reset': '',
+        if (stay) 'data-t-stay': '',
         if (noValidate) 'novalidate': '',
         ...confirmAttributes(ThorStyleRegistry.active(context), confirm),
         ...engineAttributes({'submit': onSubmit}),
@@ -1019,6 +1047,8 @@ class FileField extends StatelessWidget
     this.multiple = false,
     this.required = false,
     this.enabled = true,
+    this.submitOnChange = false,
+    this.submitWith,
   });
 
   /// The form field's name.
@@ -1040,6 +1070,18 @@ class FileField extends StatelessWidget
   /// Whether it can be used.
   final bool enabled;
 
+  // web: not in Flutter.
+  /// Send the form as soon as files are chosen. With JavaScript, choosing
+  /// files submits the form (through [submitWith] when given); without it the
+  /// field stays a normal file input next to the form's submit button.
+  /// Together with `Form(stay: true)` the page keeps its place.
+  final bool submitOnChange;
+
+  /// The submit button [submitOnChange] presses: the one whose `name` is this,
+  /// or whose action is (`'store'` for the button with `onPost: store`).
+  /// The form's first submit button when null.
+  final String? submitWith;
+
   static const _button = <String, String>{
     'margin-right': '12px',
     'padding': '8px 16px',
@@ -1052,7 +1094,12 @@ class FileField extends StatelessWidget
   };
 
   @override
-  Widget build(BuildContext context) => thorElement(
+  Widget build(BuildContext context) {
+    if (submitOnChange) ThorStyleRegistry.active(context)?.useStayScript();
+    return _build();
+  }
+
+  Widget _build() => thorElement(
     'label',
     debugName: 'FileField',
     css: const {
@@ -1084,6 +1131,7 @@ class FileField extends StatelessWidget
           if (multiple) 'multiple': '',
           if (required) 'required': '',
           if (!enabled) 'disabled': '',
+          if (submitOnChange) 'data-t-submit-on-files': submitWith ?? '',
         },
       ),
     ],

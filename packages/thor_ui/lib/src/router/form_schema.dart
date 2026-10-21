@@ -152,7 +152,8 @@ final class FormValid extends FormResult {
 /// A [Form] given this as `failed: state.form` refills every named field
 /// and shows its messages (like Rails' `form_with model:` after a failed
 /// `save`, or Django's bound form).
-final class FormInvalid extends FormResult implements ActionOutcome {
+final class FormInvalid extends FormResult
+    implements ActionOutcome, ActionMessage {
   /// A failure with field [errors] (one message per field) and
   /// [fieldErrors] (several), the [formErrors] and the [values] to
   /// re-fill (never a secret field's). [valueLists] are the values of a
@@ -228,6 +229,10 @@ final class FormInvalid extends FormResult implements ActionOutcome {
   /// Returned as is from an action, a failed form is a `422`.
   @override
   ActionResult get actionResult => fail();
+
+  /// The messages joined (what a `Form(stay: true)` shows as its toast).
+  @override
+  String? get actionMessage => messages.isEmpty ? null : messages.join(' ');
 }
 
 /// A field of a [FormSchema] that yields a [T].

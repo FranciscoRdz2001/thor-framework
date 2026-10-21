@@ -76,6 +76,7 @@ A static site has no server to set a nonce. Each piece of Thor's inline code is 
 | `ExpansionTile(permanentFrom:)` | removes the header from the Tab order from the breakpoint | the header still receives focus with Tab |
 | `Form` | submit state, focus on the first error, preserved position | the form submits without those three things |
 | `LinearProgressIndicator.upload()` | shows the upload progress | there is no bar; the form still submits |
+| `Form(stay: true)`, `FileField(submitOnChange: true)` | submits the form without leaving the page, or when files are chosen | the form submits the normal way and the next page shows the message |
 | `darkTheme` | remembers the chosen light or dark theme | the choice is not remembered across pages |
 | Link prefetching in Firefox and Safari | loads the fallback prefetch | those browsers do not prefetch |
 | `PageTransition.slide` | reverses the direction when going back | the transition always moves forward |
@@ -94,6 +95,7 @@ script-src 'self' 'unsafe-hashes'
   'sha256-tiaf4Ty5SJfKEBWPKh/B6ZKlL80Xn7N9K+Q1zZFqvy4='
   'sha256-zlm6MXXoeDrl6SMrFRQc7NRm+ZLmsHjlpTuOW4kCA9g='
   'sha256-Asckod0Qy5jICUwq+JiuJxRdh6mNnBMYtL2+X0M9imE='
+  'sha256-iXlGGEvhMoI+078S7Itq+JPK7xMdbE8uvolspVmGsuc='
   'sha256-aDxpB7mloHYVrqMV+HWFEAdeclRvWIRgIUucid0L9GI='
   'sha256-+vjJOlGdlPgTbJrnHZFLodugWUckeEMjYbDKn3UzboI='
   'sha256-B07+DJJ+zTmWcS+ikeNI2qf05ksFMdwClL0hweHfXo8='

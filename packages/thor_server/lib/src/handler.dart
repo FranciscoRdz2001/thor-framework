@@ -55,6 +55,15 @@ const queryHeader = 'x-thor-query';
 const _uploadHeader = 'x-thor-upload';
 const _uploadLocation = 'x-thor-location';
 
+/// The header of a `Form(stay: true)` the browser posts with `fetch`: the
+/// answer carries it back and says what happened in headers instead of
+/// navigating (a redirect to the page the form is on is a `200` with the
+/// flash in [_stayFlash], a failed action keeps its status and its message
+/// there; a redirect anywhere else is a `200` with [_uploadLocation]).
+const _stayHeader = 'x-thor-stay';
+const _stayFlash = 'x-thor-flash';
+const _stayFlashKind = 'x-thor-flash-kind';
+
 /// A [PageRenderer] whose pages hold server queries (`query(fn)` in a
 /// `ThorState`, thor_ui's `WidgetRenderer`): it runs them before drawing,
 /// says which ones each render used, and answers the browser's calls.
@@ -2008,8 +2017,8 @@ class RouteHandler<P> {
     final outcome = await action(request);
     return switch (outcome) {
       Redirect() => _redirect(request, outcome),
-      ActionResult() => outcome,
-      ActionOutcome() => outcome.actionResult,
+      ActionResult() => _stayed(request, outcome),
+      ActionOutcome() => _stayed(request, outcome.actionResult),
       // Post/redirect/get: back to the page, without the action key.
       null => _redirect(request, Redirect(_withoutAction(request.uri))),
       // Anything else used to render as a success without its data: a
@@ -2023,6 +2032,58 @@ class RouteHandler<P> {
       ),
     };
   }
+
+  /// What a `Form(stay: true)` gets for the page [result] an action asked
+  /// to draw: no page (the browser stays where it is), only its status and
+  /// the sentence the result carries ([ActionMessage], a `String` or a
+  /// `message` / `error` entry of a `Map`; a failure with none says the
+  /// generic message). Any other request gets [result] to render.
+  Object _stayed(PageRequest request, ActionResult result) {
+    if (!request.headers.containsKey(_stayHeader)) return result;
+    final failed = result.status >= 400;
+    final text = _stayMessage(result.data)?.trim();
+    final message = text != null && text.isNotEmpty
+        ? text
+        : failed
+        ? _messagesFor(request).generic
+        : null;
+    return _finish(
+      request,
+      ThorResponse(
+        result.status,
+        headers: {
+          const HttpHeader(_stayHeader): '1',
+          HttpHeader.cacheControl: 'no-store',
+          ..._flashHeaders(
+            message == null
+                ? null
+                : FlashMessage(
+                    message,
+                    failed ? FlashKind.error : FlashKind.success,
+                  ),
+          ),
+        },
+      ),
+    );
+  }
+
+  static String? _stayMessage(Object? data) => switch (data) {
+    ActionMessage() => data.actionMessage,
+    String() => data,
+    Map() =>
+      (data['message'] ?? data['error']) is String
+          ? (data['message'] ?? data['error']) as String
+          : null,
+    _ => null,
+  };
+
+  /// A flash as headers (the message percent-encoded: a header is ASCII).
+  static Map<HttpHeader, String> _flashHeaders(FlashMessage? flash) => {
+    if (flash != null) ...{
+      const HttpHeader(_stayFlashKind): flash.kind.name,
+      const HttpHeader(_stayFlash): Uri.encodeComponent(flash.message),
+    },
+  };
 
   /// The action a POST without a key (`POST /login`) runs: `default` (the
   /// page's action of that name), else the page's only one (without
@@ -2700,6 +2761,51 @@ class RouteHandler<P> {
   }
 
   ThorResponse _redirect(PageRequest request, Redirect r) {
+    // A `Form(stay: true)`: the redirect back to the page the form is on is
+    // not followed (the page stays), and its flash does not wait for a next
+    // page: it comes in headers. A redirect anywhere else is a `200` with
+    // the place to go; its flash rides the cookie as usual.
+    if (request.headers.containsKey(_stayHeader)) {
+      final target = safeLocation(r.location);
+      final to = Uri.tryParse(target);
+      final here =
+          to != null &&
+          !to.hasScheme &&
+          !to.hasAuthority &&
+          _noSlash(to.path.isEmpty ? request.uri.path : to.path) ==
+              _noSlash(request.uri.path);
+      if (here) {
+        return _finish(
+          request,
+          ThorResponse(
+            200,
+            headers: {
+              const HttpHeader(_stayHeader): '1',
+              HttpHeader.cacheControl: 'no-store',
+              ..._flashHeaders(r.flashMessage),
+            },
+          ),
+        );
+      }
+      if (r.flashMessage case final flash?) {
+        request.response.setCookie(
+          flashCookie,
+          flash.cookieValue,
+          maxAge: flashLifetime,
+        );
+      }
+      return _finish(
+        request,
+        ThorResponse(
+          200,
+          headers: {
+            const HttpHeader(_stayHeader): '1',
+            const HttpHeader(_uploadLocation): target,
+            HttpHeader.cacheControl: 'no-store',
+          },
+        ),
+      );
+    }
     // A flash rides to the next page that draws: this response is not it.
     if (r.flashMessage case final flash?) {
       request.response.setCookie(
@@ -2732,6 +2838,10 @@ class RouteHandler<P> {
       ),
     );
   }
+
+  static String _noSlash(String path) => path.length > 1 && path.endsWith('/')
+      ? path.substring(0, path.length - 1)
+      : path;
 
   static final _tabMark = RegExp(r'^[A-Za-z0-9_-]{1,64}$');
 

@@ -76,6 +76,7 @@ Un sitio estático no tiene servidor que ponga un nonce. Cada código en línea 
 | `ExpansionTile(permanentFrom:)` | quita el encabezado del orden de Tab desde el punto de quiebre | el encabezado sigue recibiendo el foco con Tab |
 | `Form` | estado de envío, foco del primer error, posición conservada | el formulario envía sin esas tres cosas |
 | `LinearProgressIndicator.upload()` | muestra el progreso de la subida | no hay barra; el formulario envía igual |
+| `Form(stay: true)`, `FileField(submitOnChange: true)` | envía el formulario sin cambiar de página, o al elegir archivos | el formulario envía de la forma normal y la página siguiente muestra el aviso |
 | `darkTheme` | recuerda el tema claro u oscuro elegido | la elección no se recuerda entre páginas |
 | Precarga de enlaces en Firefox y Safari | carga la precarga de respaldo | esos navegadores no precargan |
 | `PageTransition.slide` | invierte la dirección al volver atrás | la transición siempre avanza |
@@ -94,6 +95,7 @@ script-src 'self' 'unsafe-hashes'
   'sha256-tiaf4Ty5SJfKEBWPKh/B6ZKlL80Xn7N9K+Q1zZFqvy4='
   'sha256-zlm6MXXoeDrl6SMrFRQc7NRm+ZLmsHjlpTuOW4kCA9g='
   'sha256-Asckod0Qy5jICUwq+JiuJxRdh6mNnBMYtL2+X0M9imE='
+  'sha256-iXlGGEvhMoI+078S7Itq+JPK7xMdbE8uvolspVmGsuc='
   'sha256-aDxpB7mloHYVrqMV+HWFEAdeclRvWIRgIUucid0L9GI='
   'sha256-+vjJOlGdlPgTbJrnHZFLodugWUckeEMjYbDKn3UzboI='
   'sha256-B07+DJJ+zTmWcS+ikeNI2qf05ksFMdwClL0hweHfXo8='

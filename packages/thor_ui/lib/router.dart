@@ -79,6 +79,7 @@ import 'thor_ui.dart'
 // not re-exported: import `package:thor_server/thor_server.dart` for it.
 export 'package:thor_server/thor_server.dart'
     show
+        ActionMessage,
         ActionOutcome,
         ActionResult,
         ChangeFrequency,

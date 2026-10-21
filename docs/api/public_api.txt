@@ -486,6 +486,9 @@ intl	LocaleFormat.new	LocaleFormat(Locale locale)
 intl	LocaleFormat.of	LocaleFormat.of(BuildContext context)
 intl	LocaleFormat.percent	String percent(num value)
 intl	LocaleFormat.time	String time(DateTime value)
+router	ActionMessage	abstract class
+router	ActionMessage.actionMessage	String? get actionMessage
+router	ActionMessage.new	ActionMessage()
 router	ActionOutcome	abstract class
 router	ActionOutcome.actionResult	ActionResult get actionResult
 router	ActionOutcome.new	ActionOutcome()
@@ -679,6 +682,7 @@ router	FormData.new	FormData(Map<String, List<String>> fields, {Map<String, List
 router	FormData.parse	FormData.parse(String body)
 router	FormData.toMap	Map<String, String> toMap()
 router	FormInvalid	class
+router	FormInvalid.actionMessage	String? get actionMessage
 router	FormInvalid.actionResult	ActionResult get actionResult
 router	FormInvalid.errors	Map<String, String> get errors
 router	FormInvalid.errorsOf	List<String> errorsOf(String name)
@@ -2464,6 +2468,9 @@ thor_engine	variantAttr	getter
 thor_engine	variantAttributes	getter
 thor_engine	variantIndexAttr	getter
 thor_engine	variantTemplateAttr	getter
+thor_server	ActionMessage	abstract class
+thor_server	ActionMessage.actionMessage	String? get actionMessage
+thor_server	ActionMessage.new	ActionMessage()
 thor_server	ActionOutcome	abstract class
 thor_server	ActionOutcome.actionResult	ActionResult get actionResult
 thor_server	ActionOutcome.new	ActionOutcome()
@@ -8198,8 +8205,10 @@ thor_ui	FileField.enabled	bool enabled
 thor_ui	FileField.label	String? label
 thor_ui	FileField.multiple	bool multiple
 thor_ui	FileField.name	String name
-thor_ui	FileField.new	FileField({Key? key, required String name, String? label, List<String> accept = const [], bool multiple = false, bool required = false, bool enabled = true})
+thor_ui	FileField.new	FileField({Key? key, required String name, String? label, List<String> accept = const [], bool multiple = false, bool required = false, bool enabled = true, bool submitOnChange = false, String? submitWith})
 thor_ui	FileField.required	bool required
+thor_ui	FileField.submitOnChange	bool submitOnChange
+thor_ui	FileField.submitWith	String? submitWith
 thor_ui	FilledButton	class
 thor_ui	FilledButton.hoverCss	CssDeclarations get hoverCss
 thor_ui	FilledButton.icon	FilledButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
@@ -8467,7 +8476,7 @@ thor_ui	Form.failed	Object? failed
 thor_ui	Form.fillsHeight	bool get fillsHeight
 thor_ui	Form.fillsWidth	bool get fillsWidth
 thor_ui	Form.formMethod	FormMethod? formMethod
-thor_ui	Form.new	Form<S>({Key? key, required Widget child, S? schema, PageValidPost<S>? onValid, PagePost? onPost, VoidCallback? onSubmit, String? action, FormMethod? formMethod, FormEncoding encoding = FormEncoding.urlEncoded, bool disableOnSubmit = true, bool resetScroll = false, Object? failed, Object? defaults, bool noValidate = false, bool preserveQuery = true, ConfirmSpec? confirm})
+thor_ui	Form.new	Form<S>({Key? key, required Widget child, S? schema, PageValidPost<S>? onValid, PagePost? onPost, VoidCallback? onSubmit, String? action, FormMethod? formMethod, FormEncoding encoding = FormEncoding.urlEncoded, bool disableOnSubmit = true, bool resetScroll = false, Object? failed, Object? defaults, bool noValidate = false, bool preserveQuery = true, bool stay = false, ConfirmSpec? confirm})
 thor_ui	Form.noValidate	bool noValidate
 thor_ui	Form.onPost	PagePost? onPost
 thor_ui	Form.onSubmit	VoidCallback? onSubmit
@@ -8475,6 +8484,7 @@ thor_ui	Form.onValid	PageValidPost<S>? onValid
 thor_ui	Form.preserveQuery	bool preserveQuery
 thor_ui	Form.resetScroll	bool resetScroll
 thor_ui	Form.schema	S? schema
+thor_ui	Form.stay	bool stay
 thor_ui	FormEncoding	enum
 thor_ui	FormEncoding.multipart	FormEncoding multipart
 thor_ui	FormEncoding.new	FormEncoding(String value)
@@ -20552,6 +20562,7 @@ thor_ui	ThorStyleRegistry.usePermanentScript	void usePermanentScript()
 thor_ui	ThorStyleRegistry.usePostForm	void usePostForm()
 thor_ui	ThorStyleRegistry.useSnack	void useSnack()
 thor_ui	ThorStyleRegistry.useState	void useState(ThorState state)
+thor_ui	ThorStyleRegistry.useStayScript	void useStayScript()
 thor_ui	ThorStyleRegistry.useToast	void useToast()
 thor_ui	ThorStyleRegistry.useUploadScript	void useUploadScript()
 thor_ui	ThorStyleRegistry.useValidation	void useValidation()

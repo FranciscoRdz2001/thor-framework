@@ -116,6 +116,7 @@ export 'src/resources.dart'
     show readThorResource, thorDartSdkPath, thorResource;
 export 'src/results.dart'
     show
+        ActionMessage,
         ActionOutcome,
         ActionResult,
         HttpError,

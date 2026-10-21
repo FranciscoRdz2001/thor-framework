@@ -223,6 +223,35 @@ Future<ActionResult?> add(PageRequest request, int id) async {
 
 `Redirect.back(request)` is the page the form was submitted from, with its query. To go back to the top on the same route (when clearing filters, when going back to page 1), use `Redirect('/orders', resetScroll: true)` or `Form(resetScroll: true)`. The language prefix is part of the route: `/es/p` and `/p` are different routes.
 
+### Save without leaving the page
+
+`Form(stay: true)` saves without leaving the page. With JavaScript the form is sent with `fetch` (with its files if it is `multipart`) and the page does not navigate: while it goes, the form is busy and its buttons are disabled; when it comes back, the message of `Redirect.back(request).flash(…)` (or the message of an `ActionResult.fail`) shows as a toast, the files chosen are cleared and the server queries (`query(fn)` of a `ThorState`) are asked again. The action is the same as ever.
+
+```dart
+Form(
+  onPost: const SettingsPage().save,
+  stay: true,
+  child: Column(children: [
+    TextFormField(name: 'name', label: 'Name'),
+    FilledButton(buttonType: ButtonType.submit, child: const Text('Save')),
+  ]),
+)
+
+// in the page
+Future<Redirect> save(PageRequest request) async {
+  await store(await request.form());
+  return Redirect.back(request).flash('Saved', kind: FlashKind.success);
+}
+```
+
+| The action answers | With `stay: true` |
+|---|---|
+| `Redirect.back(request)`, with or without `flash` | the page stays; the message shows as a toast |
+| `ActionResult.fail(…)` | error toast with its message (a `String`, `{'error': …}`, a `FormInvalid` or an `ActionMessage`); what was typed is kept |
+| a `Redirect` to another route | navigates there; the message arrives with the next page |
+
+The form fires `thor:stay` (`detail`: `ok`, `status`, `kind`, `message`) after each answer, for anyone who wants to update something else. Only the queries update on their own: what the server drew into the HTML does not change until the page loads again. Without JavaScript the form posts, the browser follows the `303` and the next page shows the message, as always.
+
 ## One schema for the browser and the server
 
 Browser validation can be bypassed with a `curl` or a tampered form. A `FormSchema` declares the form once: the page takes each field's rules from it and the server checks them again before calling your method.
@@ -348,6 +377,23 @@ Form(
 ```
 
 When the upload finishes, the bar turns indeterminate while the server works, and then a normal navigation follows: a redirect goes to its destination, a page is shown and a file is downloaded. A `204` or a dropped connection releases the form and emits the `thor:upload-error` event. Without JavaScript, with no file chosen or with `disableOnSubmit: false`, the form submits the normal way and the bar does not appear.
+
+### Submit when files are chosen
+
+`FileField(submitOnChange: true)` submits the form as soon as files are chosen. `submitWith` names the button that sends it (the one with that `name` or that action: `submitWith: 'store'` for the button with `onPost: store`); without it, the first one. With `Form(stay: true)` the page does not move. Without JavaScript the field is a normal file input next to its button.
+
+```dart
+Form(
+  onPost: const PhotosPage().store,
+  stay: true,
+  encoding: FormEncoding.multipart,
+  child: Column(children: [
+    const FileField(name: 'photos', label: 'Photos', multiple: true,
+        submitOnChange: true, submitWith: 'store'),
+    FilledButton(buttonType: ButtonType.submit, child: const Text('Upload')),
+  ]),
+)
+```
 
 ### Large files
 
