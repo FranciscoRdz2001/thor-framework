@@ -5382,7 +5382,7 @@
   "constructors": [
    {
     "name": "FileField",
-    "signature": "FileField({\n  Key? key,\n  required String name,\n  String? label,\n  List<String> accept = const [],\n  bool multiple = false,\n  bool required = false,\n  bool enabled = true,\n})",
+    "signature": "FileField({\n  Key? key,\n  required String name,\n  String? label,\n  List<String> accept = const [],\n  bool multiple = false,\n  bool required = false,\n  bool enabled = true,\n  bool submitOnChange = false,\n  String? submitWith,\n})",
     "summary": "A file input named [name].",
     "params": [
      {
@@ -5426,6 +5426,20 @@
       "required": false,
       "default": "true",
       "doc": "Whether it can be used."
+     },
+     {
+      "name": "submitOnChange",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Send the form as soon as files are chosen. With JavaScript, choosing files submits the form (through [submitWith] when given); without it the field stays a normal file input next to the form's submit button. Together with `Form(stay: true)` the page keeps its place."
+     },
+     {
+      "name": "submitWith",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The submit button [submitOnChange] presses: the one whose `name` is this, or whose action is (`'store'` for the button with `onPost: store`). The form's first submit button when null."
      }
     ]
    }
@@ -6373,7 +6387,7 @@
   "constructors": [
    {
     "name": "Form",
-    "signature": "Form({\n  Key? key,\n  required Widget child,\n  S? schema,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<S>)? onValid,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  void Function()? onSubmit,\n  String? action,\n  FormMethod? formMethod,\n  FormEncoding encoding = FormEncoding.urlEncoded,\n  bool disableOnSubmit = true,\n  bool resetScroll = false,\n  Object? failed,\n  Object? defaults,\n  bool noValidate = false,\n  bool preserveQuery = true,\n  ConfirmSpec? confirm,\n})",
+    "signature": "Form({\n  Key? key,\n  required Widget child,\n  S? schema,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<S>)? onValid,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  void Function()? onSubmit,\n  String? action,\n  FormMethod? formMethod,\n  FormEncoding encoding = FormEncoding.urlEncoded,\n  bool disableOnSubmit = true,\n  bool resetScroll = false,\n  Object? failed,\n  Object? defaults,\n  bool noValidate = false,\n  bool preserveQuery = true,\n  bool stay = false,\n  ConfirmSpec? confirm,\n})",
     "summary": "Creates a form.",
     "params": [
      {
@@ -6473,6 +6487,13 @@
       "required": false,
       "default": "true",
       "doc": "`// web:` whether the form keeps the page's query string when it posts to one of the page's actions (`?tab=account&/save`, not `?/save`, which replaces the whole query and lands the answer on the wrong tab or page). On by default; the answer of a failed post never carries the previous action key. Only for [onValid] / [onPost] with no [action] of its own."
+     },
+     {
+      "name": "stay",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Save where the page stands. With JavaScript the form posts without navigating: its submit buttons are disabled while it goes (`data-pending` on the form), the action's `Redirect.back(request).flash(…)` (or a failed `ActionResult`) shows as the page's toast, the files chosen are cleared and the page's server queries are asked again. The action is the same: it still answers a `Redirect`, so without JavaScript the form posts, the browser follows the `303` and the next page shows the flash."
      },
      {
       "name": "confirm",

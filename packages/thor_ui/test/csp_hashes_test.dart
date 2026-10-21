@@ -14,6 +14,7 @@ import 'package:thor_ui/src/engine/lazy_script.dart' show lazyScript;
 import 'package:thor_ui/src/engine/permanent_script.dart' show permanentScript;
 import 'package:thor_ui/src/engine/prefetch_script.dart'
     show prefetchLoaderScript;
+import 'package:thor_ui/src/engine/stay_script.dart' show stayScript;
 import 'package:thor_ui/src/engine/theme_script.dart' show themeScript;
 import 'package:thor_ui/src/engine/upload_script.dart' show uploadScript;
 import 'package:thor_ui/src/router/late_pieces.dart' show deferScript;
@@ -110,6 +111,19 @@ void main() {
       '../../docs/guia/es/sesion-y-seguridad.md',
     ).readAsStringSync();
     expect(guide, contains(_hash(uploadScript)), reason: _hash(uploadScript));
+  });
+
+  test('the stay script is hashed in the security guide (es and en)', () {
+    for (final f in [
+      '../../docs/guia/es/sesion-y-seguridad.md',
+      '../../docs/guia/en/session-and-security.md',
+    ]) {
+      expect(
+        File(f).readAsStringSync(),
+        contains(_hash(stayScript)),
+        reason: _hash(stayScript),
+      );
+    }
   });
 
   test(

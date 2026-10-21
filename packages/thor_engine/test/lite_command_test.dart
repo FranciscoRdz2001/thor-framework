@@ -57,7 +57,7 @@ thor.def('CartState', ($) => {
 // recording each call; `step()` lets the pending promises settle.
 const _page = r'''
 globalThis.window = globalThis;
-const root = { addEventListener() {}, querySelectorAll: () => [] };
+const root = { addEventListener(t, f) { (root.h ||= {})[t] = f; }, querySelectorAll: () => [] };
 globalThis.document = {
   documentElement: root, querySelectorAll: () => [],
   getElementById: (id) => (id === 'thor-state' && globalThis.__state ? { textContent: globalThis.__state } : null),
@@ -167,6 +167,22 @@ out.error = s.add.error.value;
           expect(out['lines'], ['Taza']);
           expect(out['total'], 360);
           expect(out['error'], isNull);
+        });
+
+        test('a stay form that was answered asks the queries again', () {
+          final out = _run(r'''
+answers.push([200, { data: [{ name: 'Nueva' }] }]);
+answers.push([200, { data: 360 }]);
+root.h['thor:stay']({ detail: { ok: false } });
+out.skipped = calls.length;
+root.h['thor:stay']({ detail: { ok: true } });
+await step(20);
+out.asked = calls.map((c) => c.headers['x-thor-query']).sort();
+out.lines = s.lines.data.value;
+''', minify: minify);
+          expect(out['skipped'], 0);
+          expect(out['asked'], ['CartState.lines', 'CartState.total']);
+          expect(out['lines'], ['Nueva']);
         });
 
         test(

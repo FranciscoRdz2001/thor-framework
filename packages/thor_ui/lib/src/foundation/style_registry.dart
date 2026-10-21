@@ -23,6 +23,7 @@ import '../engine/lazy_script.dart' show lazyScript;
 import '../engine/permanent_script.dart' show permanentScript;
 import '../engine/prefetch_script.dart'
     show prefetchLoaderScript, prefetchSrcAttr;
+import '../engine/stay_script.dart' show stayScript;
 import '../engine/theme_script.dart' show themeScript;
 import '../engine/upload_script.dart' show uploadScript;
 import '../engine/validation_script.dart' show validationScript;
@@ -622,6 +623,21 @@ class ThorStyleRegistry {
     // Page-level output: a replayed fragment asks for it again.
     _recording?.uses.add(_PageUse.uploadScript);
     _uploadScript = true;
+  }
+
+  bool _stayScript = false;
+
+  /// Records that the page has a form that saves where it stands
+  /// (`Form(stay: true)`) or a file input that sends its form when files are
+  /// chosen (`FileField(submitOnChange:)`): [ThorApp] then ships the script
+  /// that does it, before the form script, with or without the engine.
+  @internal
+  void useStayScript() {
+    // Page-level output: a replayed fragment asks for it again.
+    _recording?.uses.add(_PageUse.stayScript);
+    _stayScript = true;
+    // The answer is a toast.
+    useToast();
   }
 
   bool _lazyScript = false;
@@ -2321,6 +2337,10 @@ class _StyleFlush extends StatelessWidget implements ThorBuiltIn {
     final form = registry._formScript
         ? const Widget.element(tag: 'script', children: [RawText(formScript)])
         : null;
+    // Before both: a submit it takes is cancelled, and they leave it alone.
+    final stay = registry._stayScript
+        ? const Widget.element(tag: 'script', children: [RawText(stayScript)])
+        : null;
     // Before the form script: the address of a kept result is put back first,
     // so the form script keeps the place as for a same-path answer.
     final upload = registry._uploadScript
@@ -2350,6 +2370,7 @@ class _StyleFlush extends StatelessWidget implements ThorBuiltIn {
       ?flutterLoader,
       ?validation,
       ?postForm,
+      ?stay,
       ?upload,
       ?form,
       ?lazy,

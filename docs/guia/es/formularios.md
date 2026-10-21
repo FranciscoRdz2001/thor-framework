@@ -223,6 +223,35 @@ Future<ActionResult?> add(PageRequest request, int id) async {
 
 `Redirect.back(request)` es la página desde la que se envió, con su query. Para volver arriba en la misma ruta (al quitar los filtros, al volver a la página 1), usa `Redirect('/orders', resetScroll: true)` o `Form(resetScroll: true)`. El prefijo de idioma forma parte de la ruta: `/es/p` y `/p` son rutas distintas.
 
+### Guardar sin cambiar de página
+
+`Form(stay: true)` guarda sin salir de la página. Con JavaScript el formulario se envía por `fetch` (con archivos si es `multipart`) y la página no navega: mientras va, el formulario queda ocupado y sus botones deshabilitados; al volver, el aviso de `Redirect.back(request).flash(…)` (o el mensaje de un `ActionResult.fail`) sale como toast, los archivos elegidos se limpian y las consultas del servidor (`query(fn)` de un `ThorState`) se piden otra vez. La acción es la misma de siempre.
+
+```dart
+Form(
+  onPost: const SettingsPage().save,
+  stay: true,
+  child: Column(children: [
+    TextFormField(name: 'name', label: 'Name'),
+    FilledButton(buttonType: ButtonType.submit, child: const Text('Save')),
+  ]),
+)
+
+// en la página
+Future<Redirect> save(PageRequest request) async {
+  await store(await request.form());
+  return Redirect.back(request).flash('Saved', kind: FlashKind.success);
+}
+```
+
+| La acción responde | Con `stay: true` |
+|---|---|
+| `Redirect.back(request)`, con o sin `flash` | la página se queda; el aviso sale como toast |
+| `ActionResult.fail(…)` | toast de error con su mensaje (un `String`, `{'error': …}`, un `FormInvalid` o un `ActionMessage`); lo escrito se conserva |
+| un `Redirect` a otra ruta | navega allí; el aviso llega con la página siguiente |
+
+El formulario emite `thor:stay` (`detail`: `ok`, `status`, `kind`, `message`) tras cada respuesta, para quien quiera actualizar algo más. Solo las consultas se actualizan solas: lo que el servidor dibujó en el HTML no cambia hasta que la página se vuelve a cargar. Sin JavaScript el formulario envía, el navegador sigue el `303` y la página siguiente muestra el aviso, igual que siempre.
+
 ## Un esquema para el navegador y el servidor
 
 La validación del navegador se puede saltar con un `curl` o un formulario alterado. Un `FormSchema` declara el formulario una vez: la página toma de él las reglas de cada campo y el servidor las comprueba otra vez antes de llamar a tu método.
@@ -348,6 +377,23 @@ Form(
 ```
 
 Al terminar el envío, la barra queda indeterminada mientras el servidor trabaja, y después sigue una navegación normal: una redirección va a su destino, una página se muestra y un archivo se descarga. Un `204` o una conexión cortada libera el formulario y emite el evento `thor:upload-error`. Sin JavaScript, sin archivo elegido o con `disableOnSubmit: false`, el formulario envía de la forma normal y la barra no aparece.
+
+### Enviar al elegir archivos
+
+`FileField(submitOnChange: true)` envía el formulario en cuanto se eligen archivos. `submitWith` nombra el botón que lo envía (el de ese `name` o el de esa acción: `submitWith: 'store'` para el botón con `onPost: store`); sin él, el primero. Junto con `Form(stay: true)` la página no se mueve. Sin JavaScript, el campo es un campo de archivo normal junto a su botón.
+
+```dart
+Form(
+  onPost: const PhotosPage().store,
+  stay: true,
+  encoding: FormEncoding.multipart,
+  child: Column(children: [
+    const FileField(name: 'photos', label: 'Photos', multiple: true,
+        submitOnChange: true, submitWith: 'store'),
+    FilledButton(buttonType: ButtonType.submit, child: const Text('Upload')),
+  ]),
+)
+```
 
 ### Archivos grandes
 

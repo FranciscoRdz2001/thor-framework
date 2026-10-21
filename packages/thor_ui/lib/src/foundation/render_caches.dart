@@ -441,6 +441,8 @@ bool replayFragmentRecord(ThorStyleRegistry registry, FragmentRecord record) {
         registry.useFormScript();
       case _PageUse.uploadScript:
         registry.useUploadScript();
+      case _PageUse.stayScript:
+        registry.useStayScript();
       case _PageUse.lazyScript:
         registry.useLazyScript();
       case _PageUse.permanentScript:
@@ -467,6 +469,7 @@ enum _PageUse {
   validation,
   formScript,
   uploadScript,
+  stayScript,
   lazyScript,
   permanentScript,
   confirm,

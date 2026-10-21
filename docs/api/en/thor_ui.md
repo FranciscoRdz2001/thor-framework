@@ -1744,7 +1744,7 @@ Flutter's `ElevatedButton`: a raised button on the surface, for the emphasis bet
 
 `// web:` a file input (`<input type="file">`): Flutter has none (apps use a plugin), the browser has a native one that works without JS. Put it in a `Form(encoding: FormEncoding.multipart)`; the server reads it with `(await request.form()).file(name)`.
 
-- `FileField({Key? key, required String name, String? label, List<String> accept = const [], bool multiple = false, bool required = false, bool enabled = true})` — A file input named [name].
+- `FileField(…)` — A file input named [name].
 
 ### `FilledButton` · class
 
@@ -4036,6 +4036,12 @@ Serves [app] (a `Document`): the entry of a static app.
 - `void runApp(Widget app)`
 
 ## `router` · `package:thor_ui/router.dart`
+
+### `ActionMessage` · abstract class
+
+A value an [ActionResult.data] can be that says in one sentence what happened. A `Form(stay: true)` shows it as the toast of the answer (a failed form is a `422` with its messages joined).
+
+- `ActionMessage()`
 
 ### `ActionOutcome` · abstract class
 

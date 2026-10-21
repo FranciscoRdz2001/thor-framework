@@ -24,6 +24,9 @@
 // is: `setArg` with an equal value asks nothing (unless the last call
 // failed), and an answer for the argument the command sent lands even if
 // the state holds another object of that value.
+// A `Form(stay: true)` that was answered (`thor:stay`, form_stay.js) asks the
+// page's queries again, the ones the server drew included: what the form saved
+// shows without a reload.
 ((T) => {
   T.query = ($, c, n, a, d, w, ms, ad, ae = (x) => x) => {
     const id = `${$.p}.${n}`;
@@ -116,4 +119,10 @@
     (T.qs ||= Object.create(null))[id] = q;
     return q;
   };
+  document.documentElement.addEventListener('thor:stay', (e) => {
+    if (!e.detail?.ok) return;
+    const drawn = saved().get('!q');
+    if (Array.isArray(drawn)) for (const q of drawn) T.use(`${q}`.slice(0, `${q}`.lastIndexOf('.')));
+    for (const q in T.qs) if (live[q.slice(0, q.lastIndexOf('.'))]?.m) T.qs[q].refresh();
+  });
 })(thor);

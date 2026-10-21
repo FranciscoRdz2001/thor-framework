@@ -192,3 +192,11 @@ abstract interface class ActionOutcome {
   /// What the page renders with.
   ActionResult get actionResult;
 }
+
+/// A value an [ActionResult.data] can be that says in one sentence what
+/// happened. A `Form(stay: true)` shows it as the toast of the answer (a
+/// failed form is a `422` with its messages joined).
+abstract interface class ActionMessage {
+  /// The sentence, or null when there is none to say.
+  String? get actionMessage;
+}
