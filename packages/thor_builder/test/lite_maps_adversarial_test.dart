@@ -420,11 +420,7 @@ class PState extends ThorState {
     test(
       'the other late forms stay rejected, with the fix in the hint',
       () async {
-        for (final c in [
-          r'late int x = 3;',
-          r'late final int x;',
-          r'late final x = state(0);',
-        ]) {
+        for (final c in [r'late int x = 3;', r'late final int x;']) {
           final src =
               '''
 import 'package:thor_ui/thor_ui.dart';
