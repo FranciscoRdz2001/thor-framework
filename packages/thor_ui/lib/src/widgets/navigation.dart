@@ -17,6 +17,7 @@ import '../foundation/widget_state.dart';
 import 'backdrop.dart';
 import 'buttons.dart' show ButtonStyle, ButtonStyleResolved, buttonStyleCss;
 import 'component_themes.dart' show DrawerThemeData;
+import 'dialog_close_corner.dart' show DialogCloseCorner;
 import 'flex.dart' show Expanded;
 import 'shortcuts.dart' show controllerIdOf;
 import 'theme.dart' show Theme;
@@ -154,6 +155,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.permanentFrom,
     this.permanentWidth,
     this.permanentPadding,
+    this.showClose = false,
   }) : assert(
          (permanentWidth == null && permanentPadding == null) ||
              permanentFrom != null,
@@ -205,6 +207,13 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
 
   /// Content of the drawer.
   final Widget child;
+
+  /// Whether the drawer brings its own close button in the top corner
+  /// (`DialogClose` with a close icon, named by the localized "Close"); it is
+  /// not drawn once [permanentFrom] makes the drawer an inline panel.
+  ///
+  /// `// web:` Flutter's drawers have no built-in close button.
+  final bool showClose;
 
   /// The edge it slides from (default: the start; in a `Scaffold`'s
   /// `endDrawer:`, the end).
@@ -362,7 +371,10 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       },
       childRules: ChildRules.column,
       // Like Flutter's, the child gets the panel's full height.
-      children: [Expanded(child: child)],
+      children: [
+        if (showClose) DialogCloseCorner(hiddenFrom: permanentFrom),
+        Expanded(child: child),
+      ],
     );
   }
 }

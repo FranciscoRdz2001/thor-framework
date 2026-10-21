@@ -25,6 +25,15 @@ button inside `DialogTrigger` or `DialogClose` works without `onPressed`.
 
 `dialog:` also takes a component of yours that builds the dialog (`DialogTrigger(dialog: const CreateDialog(), …)`): one component per class, no long `AlertDialog` inside the button.
 
+The child does not have to be a button: around a tappable card
+(`DialogTrigger(dialog: …, child: InkWell(child: Card(…)))`) the card becomes a
+focusable `role="button"` and the dialog opens on a click, Enter or Space.
+`DialogClose` works the same.
+
+Add `showClose: true` to an `AlertDialog`, `Dialog`, `ModalBottomSheet` or
+`Drawer` and it brings its own close button in the top corner, named by the
+localized "Close", so you don't repeat a `DialogClose` in every panel.
+
 ## A dialog that does not block
 
 `Dialog(modal: false)` and `AlertDialog(modal: false)` are a `<dialog open>` drawn without `showModal`: they show from the first paint, the rest of the page stays active and there is no backdrop, scroll lock or close with Esc. `DialogClose` closes them and they are placed like any box (with `Positioned`). They take no `controller` or `DialogTrigger`.

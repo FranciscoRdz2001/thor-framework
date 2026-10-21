@@ -126,7 +126,7 @@
   "constructors": [
    {
     "name": "AlertDialog",
-    "signature": "AlertDialog({\n  Key? key,\n  String? id,\n  Widget? title,\n  Widget? content,\n  List<Widget> actions = const [],\n  String? semanticLabel,\n  bool barrierDismissible = true,\n  DialogController? controller,\n  bool modal = true,\n})",
+    "signature": "AlertDialog({\n  Key? key,\n  String? id,\n  Widget? title,\n  Widget? content,\n  List<Widget> actions = const [],\n  String? semanticLabel,\n  bool barrierDismissible = true,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n})",
     "summary": "Creates a Material alert dialog.",
     "params": [
      {
@@ -184,6 +184,13 @@
       "required": false,
       "default": "true",
       "doc": "Whether the dialog blocks the page (default) or floats over it."
+     },
+     {
+      "name": "showClose",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the dialog brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\")."
      }
     ]
    }
@@ -3639,7 +3646,7 @@
   "constructors": [
    {
     "name": "Dialog",
-    "signature": "Dialog({\n  Key? key,\n  String? id,\n  required Widget child,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  EdgeInsets? insetPadding,\n  BoxConstraints? constraints,\n  List<BoxShadow>? shadows,\n  Color? barrierColor,\n  ImageFilter? barrierFilter,\n  bool barrierDismissible = true,\n  String? label,\n  DialogController? controller,\n  bool modal = true,\n})",
+    "signature": "Dialog({\n  Key? key,\n  String? id,\n  required Widget child,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  EdgeInsets? insetPadding,\n  BoxConstraints? constraints,\n  List<BoxShadow>? shadows,\n  Color? barrierColor,\n  ImageFilter? barrierFilter,\n  bool barrierDismissible = true,\n  String? label,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n})",
     "summary": "A dialog with [child] as its content.",
     "params": [
      {
@@ -3739,6 +3746,13 @@
       "required": false,
       "default": "true",
       "doc": "Whether the dialog blocks the page (default) or floats over it; see `AlertDialog.modal`."
+     },
+     {
+      "name": "showClose",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the dialog brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\")."
      }
     ]
    }
@@ -3785,7 +3799,7 @@
   "name": "DialogTrigger",
   "topic": "material",
   "summary": "Makes its `<button>` child open a dialog (Invoker Commands). Three ways to say which one, the first needing no name at all:",
-  "doc": "Makes its `<button>` child open a dialog (Invoker Commands). Three ways\nto say which one, the first needing no name at all:\n\n* [dialog]: the dialog travels with its button, like Flutter's\n  `onPressed: () => showDialog(builder: …)` reads. The trigger renders\n  the button and, right after it, the closed `<dialog>`; the page names\n  it.\n* [controller]: the dialog that holds the same `DialogController` (a\n  field of a `ThorState`).\n* [id]: the dialog with that DOM id.\n\n`// web:` the button needs no `onPressed` (Flutter code writes one only\nto enable the button): the browser opens the dialog and the button\nstays enabled.\n\n```dart\nDialogTrigger(\n  dialog: AlertDialog(\n    title: const Text('Delete?'),\n    actions: [DialogClose(child: TextButton(child: const Text('Cancel')))],\n  ),\n  child: FilledButton(child: const Text('Delete')),\n)\n```",
+  "doc": "Makes its `<button>` child open a dialog (Invoker Commands). Three ways\nto say which one, the first needing no name at all:\n\n* [dialog]: the dialog travels with its button, like Flutter's\n  `onPressed: () => showDialog(builder: …)` reads. The trigger renders\n  the button and, right after it, the closed `<dialog>`; the page names\n  it.\n* [controller]: the dialog that holds the same `DialogController` (a\n  field of a `ThorState`).\n* [id]: the dialog with that DOM id.\n\n`// web:` the button needs no `onPressed` (Flutter code writes one only\nto enable the button): the browser opens the dialog and the button\nstays enabled.\n\nThe child may also be a tappable box (an `InkWell` or `GestureDetector`\naround a card): the browser only runs the command on a `<button>`, so\nthat element is a focusable `role=\"button\"` and the engine opens the\ndialog on a click, Enter or Space. [DialogClose] works the same.\n\n```dart\nDialogTrigger(\n  dialog: AlertDialog(\n    title: const Text('Delete?'),\n    actions: [DialogClose(child: TextButton(child: const Text('Cancel')))],\n  ),\n  child: FilledButton(child: const Text('Delete')),\n)\n```",
   "flutter": null,
   "constructors": [
    {
@@ -4157,7 +4171,7 @@
   "constructors": [
    {
     "name": "Drawer",
-    "signature": "Drawer({\n  Key? key,\n  String? id,\n  required Widget child,\n  DrawerSide? side,\n  double? width,\n  Color? backgroundColor,\n  String? label,\n  bool closeOnNavigate = true,\n  DialogController? controller,\n  EdgeInsetsGeometry padding = const EdgeInsets.all(16),\n  WindowSizeClass? permanentFrom,\n  double? permanentWidth,\n  EdgeInsetsGeometry? permanentPadding,\n})",
+    "signature": "Drawer({\n  Key? key,\n  String? id,\n  required Widget child,\n  DrawerSide? side,\n  double? width,\n  Color? backgroundColor,\n  String? label,\n  bool closeOnNavigate = true,\n  DialogController? controller,\n  EdgeInsetsGeometry padding = const EdgeInsets.all(16),\n  WindowSizeClass? permanentFrom,\n  double? permanentWidth,\n  EdgeInsetsGeometry? permanentPadding,\n  bool showClose = false,\n})",
     "summary": "Creates a drawer.",
     "params": [
      {
@@ -4243,6 +4257,13 @@
       "required": false,
       "default": null,
       "doc": "[padding] of the inline panel when it differs from the modal's. Default: [padding]."
+     },
+     {
+      "name": "showClose",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the drawer brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\"); it is not drawn once [permanentFrom] makes the drawer an inline panel."
      }
     ]
    }
@@ -10367,7 +10388,7 @@
   "constructors": [
    {
     "name": "ModalBottomSheet",
-    "signature": "ModalBottomSheet({\n  Key? key,\n  String? id,\n  required Widget child,\n  bool showDragHandle = true,\n  String? label,\n  DialogController? controller,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  BoxConstraints? constraints,\n  Color? barrierColor,\n})",
+    "signature": "ModalBottomSheet({\n  Key? key,\n  String? id,\n  required Widget child,\n  bool showDragHandle = true,\n  String? label,\n  DialogController? controller,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  BoxConstraints? constraints,\n  Color? barrierColor,\n  bool showClose = false,\n})",
     "summary": "Creates a Material modal bottom sheet.",
     "params": [
      {
@@ -10439,6 +10460,13 @@
       "required": false,
       "default": null,
       "doc": "The color behind the sheet (default: the theme's `modalBarrierColor`, else 32 % black)."
+     },
+     {
+      "name": "showClose",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the sheet brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\")."
      }
     ]
    }

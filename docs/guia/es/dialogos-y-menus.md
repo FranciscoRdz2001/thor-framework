@@ -25,6 +25,15 @@ dentro de `DialogTrigger` o `DialogClose` funciona sin `onPressed`.
 
 `dialog:` también acepta un componente tuyo que construye el diálogo (`DialogTrigger(dialog: const CreateDialog(), …)`): un componente por clase, sin un `AlertDialog` largo dentro del botón.
 
+El hijo no tiene que ser un botón: alrededor de una tarjeta tocable
+(`DialogTrigger(dialog: …, child: InkWell(child: Card(…)))`) la tarjeta pasa a
+ser un `role="button"` con foco y el diálogo se abre con un clic, Enter o
+Espacio. `DialogClose` funciona igual.
+
+Agrega `showClose: true` a un `AlertDialog`, `Dialog`, `ModalBottomSheet` o
+`Drawer` y trae su propio botón de cerrar en la esquina, con el nombre
+«Cerrar» localizado, para no repetir un `DialogClose` en cada panel.
+
 ## Diálogo que no bloquea
 
 `Dialog(modal: false)` y `AlertDialog(modal: false)` son un `<dialog open>` sin `showModal`: se ven desde el primer pintado, el resto de la página sigue activa y no hay fondo oscuro, ni bloqueo del scroll ni cierre con Esc. Se cierran con `DialogClose` y se colocan como cualquier caja (con `Positioned`). No admiten `controller` ni `DialogTrigger`.
