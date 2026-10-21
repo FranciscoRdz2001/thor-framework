@@ -379,7 +379,7 @@ de bloque de HTML. Separa las cosas a la manera de Flutter, con `spacing:`,
 ```dart
 Column(
   spacing: 20,
-  children: [Text('Título'), Text('Subtítulo'), Grid()],
+  children: [Text('Title'), Text('Subtitle'), Grid()],
 )
 ```
 
@@ -396,9 +396,9 @@ Styled(
     children: [
       Styled(
         style: const StyleProps(display: Display.inlineFlex),
-        child: Row(children: [Text('Nuevo')]),
+        child: Row(children: [Text('New')]),
       ),
-      Text('Título'),
+      Text('Title'),
     ],
   ),
 )
