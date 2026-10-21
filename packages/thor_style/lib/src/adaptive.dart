@@ -628,7 +628,34 @@ CssDeclarations mergeAdaptive(CssDeclarations under, CssDeclarations over) {
     ...under,
     for (final e in over.entries)
       e.key: under[e.key] != null && e.value.startsWith(_openAlt)
-          ? '$_open${under[e.key]}${e.value.substring(1)}'
+          ? _layerVariants(under[e.key]!, e.value)
           : e.value,
   };
+}
+
+final _wholeMarker = RegExp('^$_open([^$_close]*)$_close\$');
+
+// [over], a marker with no base of its own, over [under]: [under] is its
+// base. When [under] carries variants itself (a parent's rule per direction
+// below a wrapper's own variant of the same property), the two merge into
+// one marker where [over] wins per key: markers do not nest, a marker inside
+// a marker would leak into the CSS.
+String _layerVariants(String under, String over) {
+  if (!isAdaptive(under)) return '$_open$under${over.substring(1)}';
+  final inner = _wholeMarker.firstMatch(under);
+  final outer = _wholeMarker.firstMatch(over);
+  if (inner == null || outer == null) {
+    // Several markers in one value (a shorthand): only the base of [under]
+    // can sit below [over].
+    return '$_open${resolveAdaptive(under, null)}${over.substring(1)}';
+  }
+  final variants = <String, String>{};
+  for (final part in [
+    ...inner[1]!.split(_alt).skip(1),
+    ...outer[1]!.split(_alt).skip(1),
+  ]) {
+    final kv = part.split(_kv);
+    variants[kv.first] = kv.last;
+  }
+  return markAdaptive(inner[1]!.split(_alt).first, variants);
 }
