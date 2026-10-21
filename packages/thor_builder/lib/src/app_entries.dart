@@ -96,11 +96,12 @@ bool mayFailSilently(String source) =>
 
 /// Whether [source] may misuse a state: it names a state class or one of
 /// the app's top-level states ([names]), so it is worth resolving.
-bool mayUseStates(String source, Set<String> names) {
-  if (names.isEmpty) return false;
-  final pattern = RegExp('\\b(${names.map(RegExp.escape).join('|')})\\b');
-  return pattern.hasMatch(source);
-}
+bool mayUseStates(String source, Set<String> names) =>
+    names.isNotEmpty && statesPattern(names).hasMatch(source);
+
+/// What [mayUseStates] looks for in a source: one of [names] as a word.
+RegExp statesPattern(Set<String> names) =>
+    RegExp('\\b(${names.map(RegExp.escape).join('|')})\\b');
 
 // `Gesture(` and the Flutter names over it (`GestureDetector`, `InkWell`,
 // `InkResponse`), not a name that only ends like them.
@@ -282,10 +283,12 @@ Set<String> featuresCalledIn(Iterable<CompilationUnit> units) {
 /// another file that calls `confirm(…)`), followed through [session]
 /// transitively. [inApp] says whether a library is the app's (packages are
 /// not followed). A call through a tear-off (`run(askDelete)`) counts too.
+/// The libraries whose function bodies were read go to [reached].
 Future<Set<String>> featuresReachedFrom(
   Iterable<CompilationUnit> units,
   AnalysisSession session, {
   required bool Function(Uri library) inApp,
+  Set<LibraryElement>? reached,
 }) async {
   final found = featuresCalledIn(units);
   final own = {for (final u in units) u.declaredFragment?.element};
@@ -312,6 +315,7 @@ Future<Set<String>> featuresReachedFrom(
   while (work.isNotEmpty && seen.length < 5000) {
     final e = work.removeLast();
     final lib = e.library;
+    reached?.add(lib);
     final result = libraries[lib] ??= await session
         .getResolvedLibraryByElement(lib)
         .then((r) => r is ResolvedLibraryResult ? r : null);

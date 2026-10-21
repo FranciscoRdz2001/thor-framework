@@ -16,6 +16,7 @@ import 'package:thor_engine/lite.dart' show writeFileIfChanged;
 import 'package:thor_lints/lite.dart';
 
 import 'app_entries.dart';
+import 'entries_cache.dart';
 
 /// The analysis of an app's `lib/` ([lib], absolute), as both steps want
 /// it.
@@ -32,21 +33,69 @@ Future<int> writeAppEntries(
   required StringSink out,
   required StringSink err,
   AnalysisContextCollection? analysis,
+  EntriesCache? cache,
 }) async {
-  final lib = Directory('$app/lib');
-  final package = RegExp(
+  cache ??= EntriesCache();
+  try {
+    return await _writeAppEntries(
+      app,
+      allFeatures: allFeatures,
+      out: out,
+      err: err,
+      analysis: analysis,
+      cache: cache,
+    );
+  } finally {
+    cache.finish();
+  }
+}
+
+/// Every Dart file of the app's `lib/`, by path.
+Map<String, String> _libSources(String lib) => {
+  for (final f in Directory(lib).listSync(recursive: true))
+    if (f is File && f.path.endsWith('.dart')) f.path: f.readAsStringSync(),
+};
+
+/// The name of the package in [app], or null without a pubspec.
+String? _packageName(String app) {
+  final pubspec = File('$app/pubspec.yaml');
+  if (!pubspec.existsSync()) return null;
+  return RegExp(
     r'^name:\s*(\S+)',
     multiLine: true,
-  ).firstMatch(File('$app/pubspec.yaml').readAsStringSync())!.group(1)!;
+  ).firstMatch(pubspec.readAsStringSync())?.group(1);
+}
 
-  final sources = <String, String>{
-    for (final f in lib.listSync(recursive: true))
-      if (f is File &&
-          f.path.endsWith('.dart') &&
-          !f.path.endsWith('.thor.dart'))
-        f.path: f.readAsStringSync(),
+Future<int> _writeAppEntries(
+  String app, {
+  required bool allFeatures,
+  required StringSink out,
+  required StringSink err,
+  required AnalysisContextCollection? analysis,
+  required EntriesCache cache,
+}) async {
+  final lib = Directory('$app/lib');
+  final package = _packageName(app)!;
+
+  final files = _libSources(lib.path);
+  final sources = {
+    for (final e in files.entries)
+      if (!e.key.endsWith('.thor.dart')) e.key: e.value,
   };
-  final (features, rowAttributes) = featuresOf(sources.values);
+  final graph = cache.graph(app: app, package: package, files: files);
+  // What the engine needs, from the text of each file (kept while it is the
+  // same).
+  final features = <String>{};
+  var rowAttributes = false;
+  for (final e in sources.entries) {
+    final (found, attributes) = cache.perFile(
+      'features',
+      e.key,
+      () => featuresOf([e.value]),
+    );
+    features.addAll(found);
+    rowAttributes |= attributes;
+  }
 
   // Resolve only what may hold states: files that declare one, then files
   // that create one (a top-level `final cart = CartState();`).
@@ -56,43 +105,53 @@ Future<int> writeAppEntries(
   ]..sort();
   final collection = analysis ?? appAnalysis(lib.path);
   final context = collection.contextFor(lib.path);
-  // Each library resolves once per run: the stages below ask for the same
-  // files again, and resolving the bodies again is most of the cost.
-  final libraries = <String, Future<SomeResolvedLibraryResult>>{};
-  final units = <String, Future<SomeResolvedUnitResult>>{};
-  Future<SomeResolvedLibraryResult> resolvedLibrary(String path) =>
-      libraries[path] ??= context.currentSession.getResolvedLibrary(path);
-  Future<SomeResolvedUnitResult> resolvedUnit(String path) =>
-      units[path] ??= () async {
-        // A library already resolved has its unit.
-        final library = await libraries[path];
-        if (library is ResolvedLibraryResult) {
-          for (final unit in library.units) {
-            if (unit.path == path) return unit;
-          }
-        }
-        return context.currentSession.getResolvedUnit(path);
-      }();
-  final classes = <(ClassElement, String)>[];
-  // What each state's library asks the page for (`confirm`, `toast`).
-  final uses = <ClassElement, Set<String>>{};
-  final names = <String>{};
+  // Each library resolves once per update (the lite states ask for the same
+  // files again), and only when the facts kept from the last one no longer
+  // hold: resolving the bodies is most of the cost.
+  final memo = cache.memoFor(context.currentSession);
   String rel(String path) =>
       path.startsWith('$app/') ? path.substring(app.length + 1) : path;
-  for (final path in declaring) {
-    final result = await resolvedLibrary(path);
-    if (result is! ResolvedLibraryResult) continue;
-    // What the library calls, and what the functions of other files it calls
-    // do (a helper `askDelete()` that calls `confirm(…)`).
+
+  // What the library at [path] calls, and what the functions of other files
+  // it calls do (a helper `askDelete()` that calls `confirm(…)`).
+  Future<Set<String>> calledBy(String path) async {
+    final root = graph.rootOf(path) ?? path;
+    final key = graph.keyOf(path);
+    if (cache.calledFacts(root, key, graph) case final known?) return known;
+    final result = await memo.resolvedLibrary(path);
+    if (result is! ResolvedLibraryResult) return const {};
+    final reached = <LibraryElement>{};
     final called = await featuresReachedFrom(
       [for (final u in result.units) u.unit],
       context.currentSession,
       inApp: (uri) =>
           uri.scheme == 'package' && uri.pathSegments.first == package,
+      reached: reached,
     );
-    for (final c in result.element.classes) {
+    cache.putCalledFacts(
+      root,
+      key,
+      CalledFacts(called, {
+        for (final r in reached)
+          if (r.firstFragment.source.fullName case final reachedPath)
+            reachedPath: graph.contentKey(reachedPath),
+      }),
+    );
+    return called;
+  }
+
+  final classes = <(ClassElement, String)>[];
+  // What each state's library asks the page for (`confirm`, `toast`).
+  final uses = <ClassElement, Set<String>>{};
+  final names = <String>{};
+  for (final path in declaring) {
+    final library = await memo.library(path);
+    if (library == null) continue;
+    Set<String>? called;
+    for (final c in library.classes) {
       if (isRegisteredState(c)) {
         classes.add((c, rel(path)));
+        called ??= await calledBy(path);
         if (called.isNotEmpty) uses[c] = called;
       }
       if (isThorStateType(c.thisType) && c.name != null) names.add(c.name!);
@@ -102,21 +161,31 @@ Future<int> writeAppEntries(
   // gets the feedback feature when any state reaches it.
   if (uses.isNotEmpty) features.add('FeedbackFeature');
   final instances = <(String, String)>[];
+  // A file that makes a state: one of the names followed by `(`.
+  final makes = names.isEmpty
+      ? null
+      : RegExp('(${names.map(RegExp.escape).join('|')})\\(');
   final creating = [
     for (final e in sources.entries)
-      if (names.any((n) => e.value.contains('$n(')) ||
+      if ((makes != null && makes.hasMatch(e.value)) ||
           declaring.contains(e.key))
         e.key,
   ]..sort();
   for (final path in creating) {
-    final result = await resolvedLibrary(path);
-    if (result is! ResolvedLibraryResult) continue;
-    for (final v in result.element.topLevelVariables) {
-      final name = v.name;
-      if (name == null || name.startsWith('_')) continue;
-      if (isThorStateType(v.type)) {
-        instances.add(('package:$package/${rel(path).substring(4)}', name));
-      }
+    final key = graph.keyOf(path);
+    var found = cache.instanceFacts(path, key);
+    if (found == null) {
+      final library = await memo.library(path);
+      if (library == null) continue;
+      found = [
+        for (final v in library.topLevelVariables)
+          if (v.name case final name?)
+            if (!name.startsWith('_') && isThorStateType(v.type)) name,
+      ];
+      cache.putInstanceFacts(path, key, found);
+    }
+    for (final name in found) {
+      instances.add(('package:$package/${rel(path).substring(4)}', name));
     }
   }
 
@@ -126,22 +195,41 @@ Future<int> writeAppEntries(
   final used = {...names, for (final (_, name) in instances) name};
   final misuses = <String>[];
   final warnings = <String>[];
+  final usedPattern = used.isEmpty ? null : statesPattern(used);
   for (final path in sources.keys.toList()..sort()) {
     final source = sources[path]!;
-    if (!mayUseStates(source, used) && !mayFailSilently(source)) continue;
-    final result = await resolvedUnit(path);
-    if (result is! ResolvedUnitResult) continue;
-    misuses.addAll(stateMisuses(result.unit, rel(path)));
-    warnings.addAll(stateWarnings(result.unit, rel(path)));
+    if (!(usedPattern?.hasMatch(source) ?? false) &&
+        !cache.perFile('silent', path, () => mayFailSilently(source))) {
+      continue;
+    }
+    final key = graph.keyOf(path);
+    var facts = cache.unitFacts(path, key);
+    if (facts == null) {
+      final result = await memo.resolvedUnit(path, graph.rootOf(path));
+      if (result is! ResolvedUnitResult) continue;
+      facts = UnitFacts(
+        stateMisuses(result.unit, rel(path)),
+        stateWarnings(result.unit, rel(path)),
+      );
+      cache.putUnitFacts(path, key, facts);
+    }
+    misuses.addAll(facts.misuses);
+    warnings.addAll(facts.warnings);
   }
 
   // The pages' action methods: files that may declare a page.
   final pages = <(ClassElement, String)>[];
   for (final path in sources.keys.toList()..sort()) {
-    if (!mayDeclareActions(sources[path]!)) continue;
-    final result = await resolvedLibrary(path);
-    if (result is! ResolvedLibraryResult) continue;
-    for (final c in result.element.classes) {
+    if (!cache.perFile(
+      'actions',
+      path,
+      () => mayDeclareActions(sources[path]!),
+    )) {
+      continue;
+    }
+    final library = await memo.library(path);
+    if (library == null) continue;
+    for (final c in library.classes) {
       if (isPageClass(c)) pages.add((c, rel(path)));
     }
   }
@@ -157,16 +245,17 @@ Future<int> writeAppEntries(
     if (!source.contains('WatchRow') && !source.contains('Watch.list')) {
       continue;
     }
-    final result = await resolvedUnit(path);
-    if (result is! ResolvedUnitResult) continue;
-    for (final lambda in rowLambdasIn(result.unit, rel(path))) {
-      if (lambda.message case final message?) {
+    final facts = await _rowFacts(path, rel(path), cache, graph, memo);
+    if (facts == null) continue;
+    for (final event in facts.events) {
+      if (event.message case final message?) {
         problems.add(EntryProblem(rel(path), message));
-      } else {
-        rowItems.add(lambda.item!);
-        rowProperties.add(lambda.property!);
-        if (lambda.states case final n?) rowStates[lambda.property!] = n;
+        continue;
       }
+      final item = await _rowItem(event, memo);
+      if (item != null) rowItems.add(item);
+      rowProperties.add(event.property!);
+      if (event.states case final n?) rowStates[event.property!] = n;
     }
   }
   final states = statesLibrary(
@@ -259,21 +348,70 @@ Future<int> writeAppEntries(
   return 0;
 }
 
+/// The row lambdas of [path] (shown as [shown]), kept for the library's
+/// key. Null when the file does not resolve.
+Future<RowFacts?> _rowFacts(
+  String path,
+  String shown,
+  EntriesCache cache,
+  AppGraph graph,
+  ResolveMemo memo,
+) async {
+  final key = graph.keyOf(path);
+  if (cache.rowFacts(path, key) case final known?) return known;
+  final result = await memo.resolvedUnit(path, graph.rootOf(path));
+  if (result is! ResolvedUnitResult) return null;
+  final events = <RowEvent>[];
+  for (final lambda in rowLambdasIn(result.unit, shown)) {
+    if (lambda.message case final message?) {
+      events.add(RowEvent.problem(message));
+    } else {
+      final item = lambda.item!;
+      events.add(
+        RowEvent.property(
+          '${item.library.uri}',
+          item.name!,
+          lambda.property!,
+          lambda.states,
+        ),
+      );
+    }
+  }
+  final facts = RowFacts(events);
+  cache.putRowFacts(path, key, facts);
+  return facts;
+}
+
+/// The row class a kept row lambda reads a property of, from the analysis.
+Future<InterfaceElement?> _rowItem(RowEvent event, ResolveMemo memo) async {
+  final library = await memo.libraryByUri(event.itemLibrary!);
+  final name = event.itemName!;
+  return library?.getClass(name) ??
+      library?.getEnum(name) ??
+      library?.getMixin(name) ??
+      library?.getExtensionType(name);
+}
+
 /// Every resolved unit of the package in [app] (absolute), shown relative
-/// to it.
+/// to it. [cache] shares what was resolved with the other steps of the
+/// update.
 Future<List<LiteUnit>> _appUnits(
   String app,
-  AnalysisContextCollection collection,
-) async {
+  AnalysisContextCollection collection, {
+  EntriesCache? cache,
+}) async {
   final units = <LiteUnit>[];
   final prefix = '$app/';
   for (final context in collection.contexts) {
     final files = context.contextRoot.analyzedFiles().toList()..sort();
+    final memo = cache?.memoFor(context.currentSession);
     for (final path in files) {
       // Parts come with their library; generated libraries (the app's
       // messages) are the app's code.
       if (!path.endsWith('.dart')) continue;
-      final result = await context.currentSession.getResolvedLibrary(path);
+      final result = memo == null
+          ? await context.currentSession.getResolvedLibrary(path)
+          : await memo.resolvedLibrary(path);
       if (result is! ResolvedLibraryResult) continue;
       for (final unit in result.units) {
         final p = unit.path;
@@ -331,10 +469,39 @@ Future<int> writeLiteStates(
   required StringSink out,
   required StringSink err,
   AnalysisContextCollection? analysis,
+  EntriesCache? cache,
+}) async {
+  cache ??= EntriesCache();
+  try {
+    return await _writeLiteStates(
+      app,
+      outPath: outPath,
+      readable: readable,
+      out: out,
+      err: err,
+      analysis: analysis,
+      cache: cache,
+    );
+  } finally {
+    cache.finish();
+  }
+}
+
+Future<int> _writeLiteStates(
+  String app, {
+  required String outPath,
+  required bool readable,
+  required StringSink out,
+  required StringSink err,
+  required AnalysisContextCollection? analysis,
+  required EntriesCache cache,
 }) async {
   final lib = '$app/lib';
   final collection = analysis ?? appAnalysis(lib);
-  final units = await _appUnits(app, collection);
+  // Every library: the translator reads the whole app (what a state reaches
+  // is found while it translates, and some of its choices depend on every
+  // class of the app).
+  final units = await _appUnits(app, collection, cache: cache);
   // A data class that crosses the wire to a state (a `state(...)` field,
   // a `query`, `events<T>` or `command` type) that another package declares
   // (a workspace package's model): the registry lists it

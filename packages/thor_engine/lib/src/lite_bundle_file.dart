@@ -6,12 +6,23 @@ import 'atomic_write.dart';
 import 'lite_bundle.dart';
 import 'lite_site.dart';
 
+/// What [writeLiteBundle] made last, per output file, so a run whose inputs
+/// are the same text leaves the bundle as it is (`thor dev`'s worker keeps
+/// one for its whole life).
+class LiteBundleMemo {
+  final _made = <String, ({String inputs, String line})>{};
+
+  /// Forgets everything (the runtime or its parts may have changed).
+  void clear() => _made.clear();
+}
+
 /// Writes the lite engine's bundle of the app in [appDir] into [outPath]:
 /// what `dart run thor_engine:lite_bundle` does (thor dev's builder
 /// worker runs it in its own process). [statePath] is the app's states in
 /// JS (thor_builder's lite_state); with [siteDir] (a static site) a
 /// feature's part ships only if a page has its markup. Returns the line
-/// the command prints.
+/// the command prints. With a [memo], a bundle made from the same states,
+/// parts and languages as the last one is not made again.
 Future<String> writeLiteBundle({
   required String statePath,
   required String appDir,
@@ -19,6 +30,7 @@ Future<String> writeLiteBundle({
   String? siteDir,
   bool minify = true,
   bool dev = false,
+  LiteBundleMemo? memo,
 }) async {
   final stateJs = File(statePath).readAsStringSync();
   final entry = File('$appDir/.dart_tool/thor/engine.dart');
@@ -40,13 +52,39 @@ Future<String> writeLiteBundle({
     // The kept states are Maps in the order of the text (part json).
     if (dev) ...['json', 'dev_state'],
   }.toList();
+  // What the bundle is made of, as text: the same text, the same bundle.
+  final inputs = [
+    minify,
+    parts.join(','),
+    _locales(appDir).join(','),
+    stateJs,
+  ].join('\u0000');
+  final made = memo?._made[outPath];
+  if (made != null && made.inputs == inputs && File(outPath).existsSync()) {
+    return made.line;
+  }
   final js = await _compose(appDir, parts, stateJs, minify);
   writeFileIfChanged(File(outPath), js);
   final gz = gzip.encode(utf8.encode(js)).length;
   final extras = parts.isEmpty ? '' : ' + ${parts.join(', ')}';
-  return '$outPath: lite engine$extras, '
+  final line =
+      '$outPath: lite engine$extras, '
       '${(js.length / 1024).toStringAsFixed(1)} KB, '
       '${(gz / 1024).toStringAsFixed(1)} KB gz';
+  memo?._made[outPath] = (inputs: inputs, line: line);
+  return line;
+}
+
+/// The app's languages: the ARB files of lib/l10n (app_pt_BR.arb → pt_BR).
+List<String> _locales(String appDir) {
+  final l10n = Directory('$appDir/lib/l10n');
+  return [
+    if (l10n.existsSync())
+      for (final f in l10n.listSync())
+        if (RegExp(r'^[A-Za-z]+_(.+)\.arb$').firstMatch(f.uri.pathSegments.last)
+            case final m?)
+          m.group(1)!,
+  ];
 }
 
 /// The bundle of [parts] (in bundle order) and [stateJs] for the app in
@@ -57,15 +95,7 @@ Future<String> _compose(
   String stateJs,
   bool minify,
 ) async {
-  // The app's languages: the ARB files of lib/l10n (app_pt_BR.arb → pt_BR).
-  final l10n = Directory('$appDir/lib/l10n');
-  final locales = [
-    if (l10n.existsSync())
-      for (final f in l10n.listSync())
-        if (RegExp(r'^[A-Za-z]+_(.+)\.arb$').firstMatch(f.uri.pathSegments.last)
-            case final m?)
-          m.group(1)!,
-  ];
+  final locales = _locales(appDir);
   final lite = await Isolate.resolvePackageUri(
     Uri.parse('package:thor_engine/lite/runtime.js'),
   );
