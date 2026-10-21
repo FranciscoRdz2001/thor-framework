@@ -22,7 +22,7 @@ Future<List<Client>> load(PageRequest request) async {
 }
 ```
 
-En `build`, el mismo dato es `state.dataOf<Company>()`. Lo que lanza un `load` termina la petición: `NotFound` y `HttpError` muestran la [página de error](navegacion.md#páginas-de-error) y `Redirect` lleva a otra página. Lo que necesitan todas las páginas, como el usuario con sesión, va en un [middleware](navegacion.md#middleware), no en un layout.
+En `build`, el mismo dato es `state.dataOf<Company>()`. Lo que lanza un `load` termina la petición: `NotFound` y `HttpError` muestran la [página de error](navegacion.md#páginas-de-error) y `Redirect` lleva a otra página. Lo que necesitan todas las páginas, como el usuario con sesión, va en un [middleware](navegacion.md#middleware), no en un layout. Un `ThorPage<void>` también puede sobrescribir `load`, solo por lo que hace (poner una cabecera o una cookie, revisar algo, lanzar): su resultado es nada.
 
 ## Acciones de formulario
 
@@ -174,7 +174,7 @@ class ProductsPage extends ThorPage<List<Product>> {
 - Una acción o un command que termina bien la vacía en todos los isolates; uno que falla (4xx o 5xx) no, aunque haya escrito antes de fallar. Si la acción escribe en varios pasos, hazlos en una transacción.
 - Una caché delante del servidor (CDN, proxy) no se entera: púrgala tú al escribir.
 - Un layout puede dar el formato del título de las páginas que contiene: `PageMeta(title: 'Shop', titleTemplate: '%s · Shop')`. Open Graph, JSON-LD y el sitemap están en [SEO](seo.md).
-- `cacheControl:` es el otro lado: lo que la página le dice a navegadores y CDN (`public, max-age=60, stale-while-revalidate=600`), para un CDN delante del servidor. Solo se aplica a una página pública; una personal, una que pone una cookie, tiene nonce de CSP o falla sigue con `private, no-cache`, y un `Cache-Control` puesto en `request.response.headers` gana.
+- `cacheControl:` es el otro lado: lo que la página le dice a navegadores y CDN (`public, max-age=60, stale-while-revalidate=600`), para un CDN delante del servidor. Solo se aplica a una página pública; una personal, una que pone una cookie, tiene nonce de CSP o falla sigue con `private, no-cache`, y un `Cache-Control` puesto en `request.response.headers` gana. Un `load` que no pudo traer sus datos (el backend cayó y la página dibujó un estado vacío con `200`) llama a `request.response.noStore()` y esa respuesta sale `no-store` y no entra en la caché de páginas (`cache:`), aunque la página diga que es pública; `request.response.cacheControl(CacheControl(…))` pone otra política solo para esa respuesta.
 
 ```dart no-check
 class ProductsPage extends ThorPage<List<Product>> {

@@ -61,6 +61,21 @@ void main() {
         build: (s) => 'own',
       ),
       PageRoute<String, void>(
+        path: 'nostore',
+        cache: const Duration(minutes: 5),
+        cacheControl: _swr,
+        load: (r) => r.response.noStore(),
+        build: (s) => 'nostore',
+      ),
+      PageRoute<String, void>(
+        path: 'shorter',
+        cacheControl: _swr,
+        load: (r) => r.response.cacheControl(
+          const CacheControl(maxAge: Duration(seconds: 5)),
+        ),
+        build: (s) => 'shorter',
+      ),
+      PageRoute<String, void>(
         path: 'missing',
         cacheControl: _swr,
         load: (r) => throw const NotFound(),
@@ -110,6 +125,21 @@ void main() {
       'public, max-age=60, stale-while-revalidate=600',
     );
     expect(await header('/plain'), 'no-cache');
+  });
+
+  test(
+    'a load can switch the page to no-store, or to another policy',
+    () async {
+      expect(await header('/nostore'), 'no-store');
+      expect(await header('/shorter'), 'public, max-age=5');
+    },
+  );
+
+  test('a no-store page is not kept in the page cache', () async {
+    final first = await handler.handle(_get('/nostore'));
+    final again = await handler.handle(_get('/nostore'));
+    expect(first.headers['etag'], isNull);
+    expect(again.headers['cache-control'], 'no-store');
   });
 
   test('a conditional request still gets it on the 304', () async {
