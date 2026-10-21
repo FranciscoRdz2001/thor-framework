@@ -1505,7 +1505,6 @@ router	WidgetRenderer.assetPaths	Future<Iterable<String>> assetPaths()
 router	WidgetRenderer.declaresCall	bool declaresCall(String id)
 router	WidgetRenderer.errorBuilder	Widget Function(ErrorState)? errorBuilder
 router	WidgetRenderer.errorPage	Widget errorPage(ErrorState state)
-router	WidgetRenderer.fonts	List<FontFace> fonts
 router	WidgetRenderer.head	List<Widget> head
 router	WidgetRenderer.images	ImageManifest get images
 router	WidgetRenderer.inRequestScope	Future<T> inRequestScope<T>(Future<T> Function() body)
@@ -1514,7 +1513,7 @@ router	WidgetRenderer.linksFor	Future<List<LinkHint>> linksFor(PageRequest reque
 router	WidgetRenderer.linksFound	List<LinkHint> linksFound(RenderContext context)
 router	WidgetRenderer.locale	Locale locale
 router	WidgetRenderer.navigation	PageNavigation? navigation
-router	WidgetRenderer.new	WidgetRenderer({Widget Function(Widget)? app, Locale locale = const Locale('en'), List<Widget> head = const [], List<StyleRule> styles = const [], Widget Function(ErrorState)? errorBuilder, bool shareStyles = false, List<Widget> specimens = const [], List<LinkHint> preload = const [], List<FontFace> fonts = const [], PageNavigation? navigation, ImageManifest? images})
+router	WidgetRenderer.new	WidgetRenderer({Widget Function(Widget)? app, Locale locale = const Locale('en'), List<Widget> head = const [], List<StyleRule> styles = const [], Widget Function(ErrorState)? errorBuilder, bool shareStyles = false, List<Widget> specimens = const [], List<LinkHint> preload = const [], PageNavigation? navigation, ImageManifest? images})
 router	WidgetRenderer.preload	List<LinkHint> preload
 router	WidgetRenderer.queriesFound	Set<String> queriesFound(RenderContext context)
 router	WidgetRenderer.queryErrorsFound	List<(Object, StackTrace)> queryErrorsFound(RenderContext context)
@@ -20565,6 +20564,7 @@ thor_ui	ThorStyleRegistry.dependsOnPlace	void dependsOnPlace()
 thor_ui	ThorStyleRegistry.fieldId	String fieldId(String base)
 thor_ui	ThorStyleRegistry.flushed	bool get flushed
 thor_ui	ThorStyleRegistry.flutterSrc	String? get flutterSrc
+thor_ui	ThorStyleRegistry.fontPreloads	List<FontFace> get fontPreloads
 thor_ui	ThorStyleRegistry.forgetLateStates	void forgetLateStates()
 thor_ui	ThorStyleRegistry.imagePreloads	List<ImagePreload> get imagePreloads
 thor_ui	ThorStyleRegistry.lateStates	Set<ThorState> get lateStates

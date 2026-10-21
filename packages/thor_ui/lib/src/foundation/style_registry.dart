@@ -35,6 +35,7 @@ import 'bound_lengths.dart';
 import 'child_rules.dart' show ThorBuiltIn;
 import 'css_rules.dart' show StyleRule, renderStyleRules;
 import 'debug_inspector.dart';
+import 'font_usage.dart';
 import 'image_preload.dart';
 import 'localizations.dart';
 import 'material_localizations.dart';
@@ -1292,8 +1293,40 @@ class ThorStyleRegistry {
   /// thor's classes read them, so a page publishes the ones it reads.
   Set<String> _textVars = const {};
 
-  // The theme's font files fetched with the page.
+  // The theme's faces that ask for a preload (`FontFace.preload`).
   List<FontFace> _fontPreloads = const [];
+  List<FontFace> _fontFaces = const [];
+
+  /// The faces of the theme that ask for a `preload` and that this page's
+  /// CSS uses: the family named in a `font-family` (the theme's stack on
+  /// `:root`, a `TextStyle.fontFamily`, in any variant: hover, breakpoint,
+  /// a dialog or popover drawn in the page) and, when the family has more
+  /// than one face, a `font-weight` (and `font-style`) the face covers. A
+  /// preload nothing uses is a console warning and a wasted request.
+  ///
+  /// The head's `<link rel=preload>` and the `Link` header come from this
+  /// one list. Read it after the page is drawn.
+  List<FontFace> get fontPreloads {
+    final wanted = _fontPreloads;
+    if (wanted.isEmpty) return const [];
+    final css = StringBuffer();
+    for (final rule in _pageRules) {
+      css.write(rule.replaceAll(_fontFaceRule, ''));
+    }
+    for (final (_, inner) in _rules.values) {
+      css.write(inner);
+    }
+    for (final module in _modules) {
+      css.write(module.css);
+    }
+    return usedFontFaces(
+      wanted,
+      _fontFaces,
+      breakpoints.resolve(css.toString()),
+    );
+  }
+
+  static final _fontFaceRule = RegExp(r'@font-face\s*\{[^}]*\}');
 
   final _imagePreloads = <ImagePreload>{};
 
@@ -1858,6 +1891,7 @@ class ThorApp extends StatelessWidget implements ThorBuiltIn {
     if (base == null) return;
     registry
       ..breakpoints = base.breakpoints
+      .._fontFaces = base.fonts
       .._fontPreloads = [
         for (final f in base.fonts)
           if (f.preload) f,
@@ -2217,7 +2251,7 @@ class _StyleFlush extends StatelessWidget implements ThorBuiltIn {
     registry.markShipped();
     final headEnd = Document.head(
       children: [
-        for (final font in registry._fontPreloads)
+        for (final font in registry.fontPreloads)
           Widget.element(
             tag: 'link',
             attributes: {
