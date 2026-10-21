@@ -357,12 +357,57 @@ se construyen (`Styled(style:)`, `TextStyle`) o escribe una regla en tu propia
 hoja, que gana a los estilos de los widgets:
 
 ```dart
-css('.article', [
-  css('h1, h2, h3').props(
-    const StyleProps(textStyle: TextStyle(fontFamily: 'Gabarito')),
-  ),
-]);
+import 'package:thor_ui/html.dart' show css;
+import 'package:thor_ui/thor_ui.dart';
+
+final articleStyles = [
+  css('.article', [
+    css('h1, h2, h3').props(
+      const StyleProps(textStyle: TextStyle(fontFamily: 'Gabarito')),
+    ),
+  ]),
+];
 ```
+
+## Márgenes y cajas en línea
+
+Un `Column` o `Row` es una caja flex, como en Flutter: el margen inferior de un
+hijo y el superior del siguiente se suman, no se fusionan como en el contenido
+de bloque de HTML. Separa las cosas a la manera de Flutter, con `spacing:`,
+`SizedBox` o `Padding`, y deja un solo valor por hueco:
+
+```dart
+Column(
+  spacing: 20,
+  children: [Text('Título'), Text('Subtítulo'), Grid()],
+)
+```
+
+El contenido que debe fluir como HTML, porque fusiona márgenes o pone una caja
+pequeña en una línea de texto (una píldora junto a un título), lo pide con
+`display: Display.block` en su contenedor. Los hijos pasan a ser cajas de
+bloque o en línea: dale `Display.inlineFlex` a uno para que se quede en la
+línea.
+
+```dart
+Styled(
+  style: const StyleProps(display: Display.block),
+  child: Column(
+    children: [
+      Styled(
+        style: const StyleProps(display: Display.inlineFlex),
+        child: Row(children: [Text('Nuevo')]),
+      ),
+      Text('Título'),
+    ],
+  ),
+)
+```
+
+> **Diferencia con Flutter:** Flutter no fusiona márgenes ni tiene cajas en
+> línea (lo más cercano es `WidgetSpan`, y el `Text.rich` de Thor no dibuja
+> widgets dentro de una línea). `Display.block` es la vuelta al flujo del
+> navegador, para marcado portado tal cual.
 
 ## Patrones con degradados
 
