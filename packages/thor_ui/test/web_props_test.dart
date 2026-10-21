@@ -438,6 +438,7 @@ void main() {
 
   group('ThemeData page rules', () {
     final theme = ThemeData(
+      fontFamily: 'Figtree',
       fonts: const [
         FontFace(
           'Figtree',

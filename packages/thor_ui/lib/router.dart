@@ -64,15 +64,7 @@ import 'src/foundation/style_registry.dart'
 import 'src/router/late_pieces.dart';
 import 'src/widgets/feedback.dart' show FlashScope;
 import 'thor_ui.dart'
-    show
-        BuildContext,
-        Center,
-        FontFace,
-        StatelessWidget,
-        Text,
-        ThemeMode,
-        ThorApp,
-        Widget;
+    show BuildContext, Center, FontFace, StatelessWidget, Text, ThorApp, Widget;
 
 // What an app writes. Dev, export and test plumbing (`ThorDev`, `DevHosts`,
 // `exportSite`, `ThorHttpTransport`, `ResponseDraft`, the router index…) is
@@ -228,7 +220,6 @@ class WidgetRenderer
     this.shareStyles = false,
     this.specimens = const [],
     this.preload = const [],
-    this.fonts = const [],
     this.navigation,
     ImageManifest? images,
   }) : _imagesGiven = images {
@@ -259,25 +250,11 @@ class WidgetRenderer
          shareStyles: shareStyles,
          specimens: specimens,
          preload: preload,
-         fonts: _themeFonts(app),
          navigation: app.navigation,
          images: images,
        );
 
   static bool _initialized = false;
-
-  /// The faces the theme [app] shows (the dark one when the app is always
-  /// dark, like the page's own preloads) that ask for a `preload`.
-  static List<FontFace> _themeFonts(ThorApp app) {
-    final dark = app.darkTheme;
-    final base = app.themeMode == ThemeMode.dark && dark != null
-        ? dark
-        : app.theme;
-    return [
-      for (final f in base?.fonts ?? const <FontFace>[])
-        if (f.preload) f,
-    ];
-  }
 
   /// Wraps each page: `(page) => ThorApp(theme: lightTheme, child: page)`.
   final Widget Function(Widget page)? app;
@@ -324,12 +301,6 @@ class WidgetRenderer
   /// the document (the fonts): in each page's `Link` header, with the
   /// shared stylesheets ([shareStyles]). See [EarlyHints].
   final List<LinkHint> preload;
-
-  /// Font faces to preload with every page: in its `Link` header (and the
-  /// early answer), next to the `<link rel=preload>` the page itself has.
-  /// `WidgetRenderer.router` takes the `preload: true` faces of the app's
-  /// theme; give them here when the app is built with [app].
-  final List<FontFace> fonts;
 
   /// The app's `ThorApp(navigation:)`, for the rules a header carries
   /// ([SpeculationDelivery.header]); `WidgetRenderer.router` takes it from
@@ -440,9 +411,6 @@ class WidgetRenderer
         for (final layout in layouts)
           if (_moduleSheets[layout] case final module?)
             LinkHint.style(module.href),
-      for (final f in fonts)
-        if (f.preload && !preload.any((l) => l.href == f.url))
-          LinkHint.font(f.url, type: f.mimeType),
       ...preload,
       if (_rulesFile case (final href, _)) LinkHint.speculationRules(href),
     ];
@@ -711,8 +679,15 @@ class WidgetRenderer
       _late[context] = latePieces(deferRun, nonce: context.cspNonceToken);
     }
     final main = registry?.imagePreloads ?? const <ImagePreload>[];
-    if (main.isNotEmpty) {
+    // The faces the page uses: the head's preloads, in the `Link` header.
+    final fonts = [
+      for (final f in registry?.fontPreloads ?? const <FontFace>[])
+        if (!preload.any((l) => l.href == f.url))
+          LinkHint.font(f.url, type: f.mimeType),
+    ];
+    if (main.isNotEmpty || fonts.isNotEmpty) {
       _found[context] = [
+        ...fonts,
         for (final i in main)
           LinkHint.image(
             i.href,

@@ -1390,8 +1390,17 @@ class FontFace {
   /// What shows while it loads.
   final FontDisplay display;
 
-  /// Fetched with the page (`<link rel="preload">`): the face of the first
-  /// screen's text, so it doesn't swap in late.
+  /// Fetched with the page (`<link rel="preload">` and the `Link` header):
+  /// the face of the first screen's text, so it doesn't swap in late.
+  ///
+  /// Only when the page uses it: its CSS names the [family] in a
+  /// `font-family` (in any variant: hover, a breakpoint, a dialog or popover
+  /// drawn in the page) and, when the theme has several faces of the family,
+  /// a `font-weight` this face covers (400 always counts) and, for an
+  /// italic face, a `font-style: italic`. A page that doesn't use it
+  /// doesn't preload it: the browser warns about a preload nothing reads.
+  /// `// web:` a weight only the browser's own styles set (`<strong>`) is
+  /// not seen; that face loads when first used, not with the page.
   final bool preload;
 
   /// The characters this file covers (`U+0000-00FF, U+2013`): a subset
