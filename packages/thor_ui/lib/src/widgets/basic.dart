@@ -590,7 +590,7 @@ class AspectRatio extends StatelessWidget
     debugName: 'AspectRatio',
     fillsWidth: true,
     fillsHeight: true,
-    css: {...boxCss, 'aspect-ratio': cssNum(aspectRatio)},
+    css: {...boxCss, 'aspect-ratio': cssAspectRatio(aspectRatio)},
     childRules: ChildRules.box,
     children: [?child],
   );

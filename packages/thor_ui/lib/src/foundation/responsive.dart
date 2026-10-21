@@ -14,6 +14,7 @@ import '../web/style.dart'
         GridTracks,
         ListStyleType,
         ObjectFit,
+        TextTransform,
         UserSelect,
         WhiteSpace;
 import '../widgets/basic.dart' show boxCss;
@@ -91,6 +92,13 @@ class StyleProps extends ConstAdaptable<StyleProps> {
     this.widthLength,
     this.heightLength,
     this.aspectRatio,
+    this.inset,
+    this.scrollPadding,
+    this.textTransform,
+    this.textOverflow,
+    this.lineClamp,
+    this.textUnderlineOffset,
+    this.backgroundClip,
     this.display,
     this.cursor,
     this.textAlign,
@@ -332,8 +340,38 @@ class StyleProps extends ConstAdaptable<StyleProps> {
   /// A height in any unit or content size; [height] is logical pixels.
   final Length? heightLength;
 
-  /// Width over height (`AspectRatio`'s `aspectRatio`).
+  /// Width over height (`AspectRatio`'s `aspectRatio`). A ratio that is a
+  /// small fraction is written as one (`4 / 3` for `4 / 3`, not `1.3333`).
   final double? aspectRatio;
+
+  /// The distance to the four edges of the containing box at once (`inset`),
+  /// for a box with a [position]: `0.px` covers it, `Length.auto` resets.
+  final Length? inset;
+
+  /// Room kept inside the scroller when it scrolls to a child
+  /// (`scroll-padding`): an anchor or a snap point under a sticky bar. The
+  /// scroller's counterpart of [scrollMargin].
+  final EdgeInsetsGeometry? scrollPadding;
+
+  /// Capital letters from lowercase text and back (`text-transform`).
+  final TextTransform? textTransform;
+
+  /// What happens to a line cut by the box (`text-overflow`): needs one
+  /// line (`white-space: nowrap`) and `overflow: hidden`, which
+  /// `Text(overflow:)` writes for you.
+  final TextOverflow? textOverflow;
+
+  /// Cuts the text at this many lines with an ellipsis (`line-clamp`).
+  /// `Text(maxLines:, overflow: TextOverflow.ellipsis)` is the Flutter way;
+  /// this is for HTML no widget builds.
+  final int? lineClamp;
+
+  /// Distance between the text and its underline (`text-underline-offset`).
+  final Length? textUnderlineOffset;
+
+  /// How far the background reaches (`background-clip`):
+  /// `BackgroundClip.text` shows it through the letters.
+  final BackgroundClip? backgroundClip;
 
   /// How the box lays out its children (`display`).
   final Display? display;
@@ -657,7 +695,24 @@ class StyleProps extends ConstAdaptable<StyleProps> {
     'view-transition-name': ?viewTransitionName,
     if (widthLength case final v?) 'width': v.css,
     if (heightLength case final v?) 'height': v.css,
-    if (aspectRatio case final v?) 'aspect-ratio': cssNum(v),
+    if (aspectRatio case final v?) 'aspect-ratio': cssAspectRatio(v),
+    if (inset case final v?) 'inset': v.css,
+    if (scrollPadding case final p?) ...p.toCss('scroll-padding'),
+    if (textTransform case final v?) 'text-transform': v.css,
+    if (textOverflow case final v?)
+      'text-overflow': v == TextOverflow.ellipsis ? 'ellipsis' : 'clip',
+    if (lineClamp case final n?) ...{
+      'display': '-webkit-box',
+      '-webkit-box-orient': 'vertical',
+      '-webkit-line-clamp': '$n',
+      'line-clamp': '$n',
+      'overflow': 'hidden',
+    },
+    if (textUnderlineOffset case final v?) 'text-underline-offset': v.css,
+    if (backgroundClip case final v?) ...{
+      if (v == BackgroundClip.text) '-webkit-background-clip': 'text',
+      'background-clip': v.css,
+    },
     if (display case final v?) 'display': v.css,
     // Offstage wins over `display`.
     if (offstage ?? false) 'display': 'none',

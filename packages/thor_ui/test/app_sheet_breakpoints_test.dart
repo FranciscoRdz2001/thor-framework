@@ -16,9 +16,7 @@ Future<String> page(ThemeData theme, List<StyleRule> styles) async {
   final handler = RouteHandler<Widget>(
     renderer: r,
     onError: (request, error, stack) {},
-    routes: [
-      routePage<void>(path: '', build: (c, s) => const Text('x')),
-    ],
+    routes: [routePage<void>(path: '', build: (c, s) => const Text('x'))],
   );
   final res = await handler.handle(
     PageRequest(
@@ -36,9 +34,7 @@ void main() {
 
   test('WindowSizeClass.media takes the app breakpoints', () async {
     final html = await page(ThemeData(breakpoints: site), [
-      WindowSizeClass.medium.media(breakpoints: site, [
-        css('.a').props(rule),
-      ]),
+      WindowSizeClass.medium.media(breakpoints: site, [css('.a').props(rule)]),
       WindowSizeClass.large.media([css('.b').props(rule)]),
     ]);
     expect(html, contains('(min-width: 640px)'));

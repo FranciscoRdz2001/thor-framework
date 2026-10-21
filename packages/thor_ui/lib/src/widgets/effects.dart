@@ -1,5 +1,6 @@
 import 'package:thor_style/thor_style.dart';
 
+import '../foundation/html_attributes.dart' show HtmlAttributes;
 import '../foundation/parent_data.dart';
 import '../foundation/style_registry.dart' show ConditionalCss, CssCondition;
 import 'basic.dart' show buttonResetCss, listResetCss;
@@ -236,6 +237,7 @@ class Semantics extends ParentDataWrapper {
     this.columnIndex,
     this.columnCount,
     this.liveRegion = false,
+    this.current,
     this.identifier,
     this.value,
     this.hint,
@@ -305,6 +307,11 @@ class Semantics extends ParentDataWrapper {
   /// (`aria-live="polite"`), like Flutter's `liveRegion`: a status line, or
   /// the value under a selection that moves while the focus stays put.
   final bool liveRegion;
+
+  /// `// web:` not in Flutter: which item of a set [child] is, as a screen
+  /// reader says it (`aria-current`): the page in a breadcrumb or a menu, the
+  /// step of a process, today in a calendar. Null leaves it out.
+  final SemanticsCurrent? current;
 
   /// The current value announced for [child]: a slider's "50 percent"
   /// (`aria-valuetext`, which ARIA allows only on range roles: sliders,
@@ -450,7 +457,7 @@ class Semantics extends ParentDataWrapper {
           // browser's heading margins, size and weight don't leak in, also
           // when the child isn't a Text (a Row, a Column, a Link).
           ? _headingResetCss
-          : role == SemanticsRole.list
+          : role == SemanticsRole.list || role == SemanticsRole.orderedList
           ? listResetCss
           : button
           ? buttonResetCss
@@ -503,9 +510,38 @@ class Semantics extends ParentDataWrapper {
         if (columnIndex != null) 'aria-colindex': '$columnIndex',
         if (columnCount != null) 'aria-colcount': '$columnCount',
         if (liveRegion) 'aria-live': 'polite',
+        'aria-current': ?current?.value,
       },
     );
   }
+}
+
+/// `// web:` not in Flutter: the values of `aria-current` ([Semantics.current]).
+enum SemanticsCurrent {
+  /// The page the user is on (`aria-current="page"`): the last item of a
+  /// breadcrumb, the link of a menu that points here.
+  page('page'),
+
+  /// The step of a process (`aria-current="step"`).
+  step('step'),
+
+  /// The place of a flow (`aria-current="location"`).
+  location('location'),
+
+  /// The current date (`aria-current="date"`).
+  date('date'),
+
+  /// The current time (`aria-current="time"`).
+  time('time'),
+
+  /// The current item of a set that is none of the above
+  /// (`aria-current="true"`).
+  item('true');
+
+  const SemanticsCurrent(this.value);
+
+  /// The attribute's value.
+  final String value;
 }
 
 /// Flutter's `SemanticsSortKey`: the order a node is read in.
@@ -547,7 +583,15 @@ enum SemanticsRole {
   none(),
 
   /// A list (`<ul>`, without bullets or indent).
+  ///
+  /// `// web:` the marker and the indent of a prose list are
+  /// `Styled(style: StyleProps(listStyleType: ListStyleType.disc, padding: …))`
+  /// around it.
   list(tag: 'ul'),
+
+  /// `// web:` not in Flutter: a list whose order matters, like the steps of a
+  /// process (`<ol>`, without numbers or indent: see [list]).
+  orderedList(tag: 'ol'),
 
   /// An item of a [list] (`<li>`).
   listItem(tag: 'li'),
@@ -733,6 +777,13 @@ enum SemanticsRole {
   /// `// web:` not in Flutter: the caption of a [figure] (`<figcaption>`).
   figureCaption(tag: 'figcaption'),
 
+  /// `// web:` not in Flutter: text of strong importance, in bold
+  /// (`<strong>`).
+  strong(tag: 'strong'),
+
+  /// `// web:` not in Flutter: text stressed, in italics (`<em>`).
+  emphasis(tag: 'em'),
+
   /// `// web:` not in Flutter: a quotation from another source
   /// (`<blockquote>`).
   blockquote(tag: 'blockquote'),
@@ -858,4 +909,31 @@ class AbsorbPointer extends ParentDataWrapper {
   @override
   WrapData get wrapData =>
       absorbing ? const WrapData(attributes: {'inert': ''}) : const WrapData();
+}
+
+/// `// web:` not in Flutter (it has no attributes): sets attributes on the
+/// element of [child], with no element of its own.
+///
+/// ```dart
+/// ElementAttributes(
+///   HtmlAttributes(data: {'track': 'cta', 'track-id': 'hero'}),
+///   child: Semantics(role: SemanticsRole.listItem, child: Link(…)),
+/// )
+/// ```
+///
+/// For analytics markers, test hooks and `aria-*` that [Semantics] does not
+/// cover. It fuses into the element, so a `data-*` on a list item keeps the
+/// `<li>` (a wrapper element would break the list). An attribute the element
+/// already has is replaced by this one; `class`, `style` and event handlers
+/// are refused by [HtmlAttributes]. For values that change on the page use
+/// `WatchAttributes`.
+class ElementAttributes extends ParentDataWrapper {
+  /// Puts [attributes] on the element of [child].
+  const ElementAttributes(this.attributes, {super.key, required super.child});
+
+  /// The attributes to write.
+  final HtmlAttributes attributes;
+
+  @override
+  WrapData get wrapData => WrapData(attributes: attributes);
 }

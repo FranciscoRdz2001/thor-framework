@@ -81,14 +81,20 @@ final class Css {
   /// `// web:` the widths of widgets are the theme's four size classes; this
   /// is the escape for the app stylesheet. The widths of the size classes
   /// themselves: `WindowSizeClass.medium.media`.
-  StyleRule minWidth(num px, List<StyleRule> rules) =>
-      _GroupRule('@media', 'screen and (min-width: ${cssPx(px.toDouble())})', rules);
+  StyleRule minWidth(num px, List<StyleRule> rules) => _GroupRule(
+    '@media',
+    'screen and (min-width: ${cssPx(px.toDouble())})',
+    rules,
+  );
 
   /// `@media screen and (max-width: <px>) { rules }`: up to and including a
   /// viewport width (`css.maxWidth(919.98, …)` is "below 920"; a fraction
   /// avoids the 1px overlap with `css.minWidth(920, …)`).
-  StyleRule maxWidth(num px, List<StyleRule> rules) =>
-      _GroupRule('@media', 'screen and (max-width: ${cssPx(px.toDouble())})', rules);
+  StyleRule maxWidth(num px, List<StyleRule> rules) => _GroupRule(
+    '@media',
+    'screen and (max-width: ${cssPx(px.toDouble())})',
+    rules,
+  );
 
   /// `@layer <name> { rules }` (an anonymous layer without [name]).
   ///

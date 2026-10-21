@@ -120,6 +120,28 @@ base class Length with Adaptable<Length> {
       _fallback = fallback,
       _args = null;
 
+  /// The notch or the system bar at the top of the screen
+  /// (`env(safe-area-inset-top)`, 0 where there is none).
+  ///
+  /// `// web:` not in Flutter (its `MediaQuery.paddingOf` is read in `build`);
+  /// the browser knows these, so they are CSS lengths, combinable
+  /// (`Length.safeAreaBottom + 16.px`). For a whole box use `SafeArea`.
+  static const safeAreaTop = Length._expr('env(safe-area-inset-top, 0px)');
+
+  /// The right edge's safe area (`env(safe-area-inset-right)`).
+  static const safeAreaRight = Length._expr('env(safe-area-inset-right, 0px)');
+
+  /// The home indicator at the bottom (`env(safe-area-inset-bottom)`).
+  static const safeAreaBottom = Length._expr(
+    'env(safe-area-inset-bottom, 0px)',
+  );
+
+  /// The left edge's safe area (`env(safe-area-inset-left)`).
+  static const safeAreaLeft = Length._expr('env(safe-area-inset-left, 0px)');
+
+  /// The value of the parent (`inherit`): `font-size: inherit` in a reset.
+  static const inherit = Length._expr('inherit');
+
   /// No length.
   static const zero = Length._expr('0');
 
