@@ -424,27 +424,7 @@ class _ChainedEvaluation<T> extends Animatable<T> {
 /// [a] to [b] at [t], like Flutter's `Color.lerp` (null = transparent
 /// version of the other). Colors from the theme (variables, CSS) become a
 /// `color-mix()`.
-Color? lerpColor(Color? a, Color? b, double t) {
-  if (a == null && b == null) return null;
-  a ??= _transparent(b!);
-  b ??= _transparent(a);
-  if (t == 0) return a;
-  if (t == 1) return b;
-  if (!a.hasChannels || !b.hasChannels) {
-    final p = ((1 - t) * 100).clamp(0, 100);
-    return Color.css('color-mix(in srgb, ${a.css} ${cssNum(p)}%, ${b.css})');
-  }
-  int ch(int x, int y) => (x + (y - x) * t).round().clamp(0, 255);
-  return Color.fromARGB(
-    ch(a.alpha, b.alpha),
-    ch(a.red, b.red),
-    ch(a.green, b.green),
-    ch(a.blue, b.blue),
-  );
-}
-
-Color _transparent(Color c) =>
-    c.hasChannels && c.value != 0 ? c.withAlpha(0) : c.withOpacity(0);
+Color? lerpColor(Color? a, Color? b, double t) => Color.lerp(a, b, t);
 
 // ---------------------------------------------------------------------------
 // Server-side planning: a chain of animations → keyframes of the controller.

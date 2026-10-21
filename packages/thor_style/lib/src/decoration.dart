@@ -282,7 +282,31 @@ class RadialGradient extends Gradient {
     required super.colors,
     super.stops,
     super.tile,
-  });
+  }) : radiusX = null,
+       radiusY = null;
+
+  /// Creates an elliptical gradient: [radiusX] and [radiusY] are shares of
+  /// the box's width and height (`1.2` and `1.0` are 120% and 100%), so it
+  /// stretches with the box. [center] is where it starts.
+  ///
+  /// `// web:` not in Flutter (its radial gradients are circles, scaled by a
+  /// transform); CSS has `radial-gradient(120% 100% at 26% 16%, …)`. The
+  /// [stops] are shares of the radius, as in the circle.
+  const RadialGradient.ellipse({
+    this.center = Alignment.center,
+    required double this.radiusX,
+    required double this.radiusY,
+    required super.colors,
+    super.stops,
+    super.tile,
+  }) : radius = 0.5;
+
+  /// The horizontal and vertical radius of an [RadialGradient.ellipse], as
+  /// shares of the box; null on a circle.
+  final double? radiusX;
+
+  /// See [radiusX].
+  final double? radiusY;
 
   /// Center of the gradient circle.
   final Alignment center;
@@ -293,6 +317,10 @@ class RadialGradient extends Gradient {
 
   @override
   String get css {
+    if (radiusX case final rx?) {
+      return 'radial-gradient(${cssNum(rx * 100)}% ${cssNum(radiusY! * 100)}% '
+          'at ${center.cssPosition}, ${_stops()})';
+    }
     // web: CSS has no radius relative to the shortest side, so the stops are
     // laid on a keyword radius whose length is known. Centered, the nearest
     // side is half the shortest one (exact on any box). Off-center the
@@ -318,10 +346,13 @@ class RadialGradient extends Gradient {
       other is RadialGradient &&
           other.center == center &&
           other.radius == radius &&
+          other.radiusX == radiusX &&
+          other.radiusY == radiusY &&
           _sameBase(other);
 
   @override
-  int get hashCode => Object.hash(RadialGradient, center, radius, _baseHash);
+  int get hashCode =>
+      Object.hash(RadialGradient, center, radius, radiusX, radiusY, _baseHash);
 }
 
 /// Several gradients painted on top of each other in one box (the first is

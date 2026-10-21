@@ -171,6 +171,36 @@ class Color with Adaptable<Color> {
     );
   }
 
+  /// [a] to [b] at [t], like Flutter's `Color.lerp` (null is the other
+  /// color, transparent).
+  ///
+  /// `// web:` a color the server doesn't know (a theme variable, a CSS
+  /// expression) can't be mixed here: the result is a `color-mix(in srgb)`
+  /// the browser resolves, which keeps following the theme.
+  /// `Color.lerp(accent, Colors.white, 0.8)` is "accent tinted towards
+  /// white".
+  static Color? lerp(Color? a, Color? b, double t) {
+    if (a == null && b == null) return null;
+    a ??= _transparentOf(b!);
+    b ??= _transparentOf(a);
+    if (t == 0) return a;
+    if (t == 1) return b;
+    if (!a.hasChannels || !b.hasChannels) {
+      final p = ((1 - t) * 100).clamp(0, 100);
+      return Color.css('color-mix(in srgb, ${a.css} ${cssNum(p)}%, ${b.css})');
+    }
+    int ch(int x, int y) => (x + (y - x) * t).round().clamp(0, 255);
+    return Color.fromARGB(
+      ch(a.alpha, b.alpha),
+      ch(a.red, b.red),
+      ch(a.green, b.green),
+      ch(a.blue, b.blue),
+    );
+  }
+
+  static Color _transparentOf(Color c) =>
+      c.hasChannels && c.value != 0 ? c.withAlpha(0) : c.withOpacity(0);
+
   /// Returns a copy with the alpha channel replaced by [a] (0-255).
   ///
   /// On a variable or CSS color the browser mixes it, like [withOpacity].
