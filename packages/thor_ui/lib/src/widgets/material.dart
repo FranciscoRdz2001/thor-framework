@@ -2772,7 +2772,9 @@ class DialogTrigger extends ParentDataWrapper {
   /// `controller` still name it, if the app wants to point at it elsewhere).
   ///
   /// `// web:` Flutter's `showDialog` pushes a route when pressed; the
-  /// dialog here is part of the markup, next to the button.
+  /// dialog here is part of the markup, next to the button. It may be
+  /// wrapped in `Styled`, `Semantics`, `ElementAttributes`… (they fuse into
+  /// its `<dialog>`), to give it a class or attributes.
   final Widget? dialog;
 
   /// Id of the dialog to open (the `id` of its `<dialog>`).
@@ -2837,7 +2839,13 @@ class DialogTrigger extends ParentDataWrapper {
     // An app component that builds the dialog is the dialog: the
     // preview shows which one it is, and the first of its kind built below
     // takes the id.
-    final r = resolveComponent(d)!;
+    // `Styled`, `Semantics` and the like fuse into the dialog's own element,
+    // so they may wrap it: the dialog is what they hold.
+    var inner = d;
+    while (inner is ParentDataWrapper) {
+      inner = inner.child;
+    }
+    final r = resolveComponent(inner)!;
     final (prefix, id, key, controller) = switch (r) {
       AlertDialog() => ('dlg', r.id, r.key, r.controller),
       Dialog() => ('dlg', r.id, r.key, r.controller),
@@ -2860,7 +2868,7 @@ class DialogTrigger extends ParentDataWrapper {
       PresetDialogId(
         id: panelId,
         dialog: r,
-        byType: !identical(r, d),
+        byType: !identical(r, inner),
         scope: DialogScope.maybeOf(context),
         child: d,
       ),
