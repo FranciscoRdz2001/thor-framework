@@ -730,6 +730,9 @@ Flutter's `ImageFilter` for a box: `blur` and the color filters the browser appl
 - `ImageFilter.contrast(double amount)` — Contrast: `0` flat grey, `1` as is.
 - `ImageFilter.grayscale(double amount)` — Share of grey: `0` as is, `1` fully grey.
 - `ImageFilter.invert(double amount)` — Share of inverted colors: `0` as is, `1` a negative (a dark-mode version of a black-on-white diagram).
+- `ImageFilter.sepia(double amount)` — Share of sepia tone: `0` as is, `1` fully sepia.
+- `ImageFilter.hueRotate(double degrees)` — Turns every hue by [degrees] around the color wheel.
+- `ImageFilter.opacity(double amount)` — Opacity of the filtered result: `0` invisible, `1` as is.
 - `ImageFilter.compose({required ImageFilter outer, required ImageFilter inner})` — [inner] applies first, then [outer] (Flutter's `ImageFilter.compose`).
 
 ### `IndexedStack` · class

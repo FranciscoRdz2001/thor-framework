@@ -45,6 +45,21 @@ void main() {
     expect(css['backdrop-filter'], 'saturate(1.2) blur(4px)');
   });
 
+  test('a frosted header: saturate then blur', () async {
+    final html = await renderDocument(
+      ThorApp(
+        child: BackdropFilter(
+          filter: ImageFilter.compose(
+            outer: ImageFilter.blur(sigmaX: 12),
+            inner: ImageFilter.saturate(1.4),
+          ),
+          child: const SizedBox(width: 10, height: 10),
+        ),
+      ),
+    );
+    expect(html, contains('backdrop-filter: saturate(1.4) blur(12px)'));
+  });
+
   test('a disabled state matches :disabled and aria-disabled', () async {
     final html = await renderDocument(
       ThorApp(

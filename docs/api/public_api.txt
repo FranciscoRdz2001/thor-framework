@@ -5377,8 +5377,11 @@ thor_style	ImageFilter.contrast	ImageFilter.contrast(double amount)
 thor_style	ImageFilter.css	String css
 thor_style	ImageFilter.grayscale	ImageFilter.grayscale(double amount)
 thor_style	ImageFilter.hashCode	int get hashCode
+thor_style	ImageFilter.hueRotate	ImageFilter.hueRotate(double degrees)
 thor_style	ImageFilter.invert	ImageFilter.invert(double amount)
+thor_style	ImageFilter.opacity	ImageFilter.opacity(double amount)
 thor_style	ImageFilter.saturate	ImageFilter.saturate(double amount)
+thor_style	ImageFilter.sepia	ImageFilter.sepia(double amount)
 thor_style	Interval	class
 thor_style	Interval.begin	double begin
 thor_style	Interval.curve	Curve curve
@@ -17650,8 +17653,11 @@ thor_ui	ImageFilter.contrast	ImageFilter.contrast(double amount)
 thor_ui	ImageFilter.css	String css
 thor_ui	ImageFilter.grayscale	ImageFilter.grayscale(double amount)
 thor_ui	ImageFilter.hashCode	int get hashCode
+thor_ui	ImageFilter.hueRotate	ImageFilter.hueRotate(double degrees)
 thor_ui	ImageFilter.invert	ImageFilter.invert(double amount)
+thor_ui	ImageFilter.opacity	ImageFilter.opacity(double amount)
 thor_ui	ImageFilter.saturate	ImageFilter.saturate(double amount)
+thor_ui	ImageFilter.sepia	ImageFilter.sepia(double amount)
 thor_ui	ImageLoadError	class
 thor_ui	ImageLoadError.new	ImageLoadError(String url)
 thor_ui	ImageLoadError.toString	String toString()

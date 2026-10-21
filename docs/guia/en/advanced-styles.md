@@ -62,7 +62,7 @@ Styled(
 | `overflowX`, `overflowY` | `Overflow` | inner scrolling when the content doesn't fit |
 | `minWidth`, `maxWidth`, `minHeight`, `maxHeight` | `Length` | limits in any unit |
 | `zIndex` | `int` | order among overlapping elements |
-| `backdropFilter` | `ImageFilter` | filters what is behind (`ImageFilter.blur(sigmaX: 8)`); or `BackdropFilter` |
+| `backdropFilter` | `ImageFilter` | filters what is behind (`ImageFilter.blur(sigmaX: 8)`; also `saturate`, `brightness`, `contrast`, `grayscale`, `invert`, `sepia`, `hueRotate`, `opacity`, chained with `ImageFilter.compose`); or `BackdropFilter` |
 | `scrollbarWidth`, `scrollbarThumbColor`, `scrollbarTrackColor` | `ScrollbarWidth`, `Color` | the element's scrollbar |
 | `opacity`, `scale`, `offset`, `turns` | numbers | only with `.when()`; a fixed value goes in `Opacity` or `Transform` |
 

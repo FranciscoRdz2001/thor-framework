@@ -62,7 +62,7 @@ Styled(
 | `overflowX`, `overflowY` | `Overflow` | desplazamiento interno cuando el contenido no cabe |
 | `minWidth`, `maxWidth`, `minHeight`, `maxHeight` | `Length` | límites en cualquier unidad |
 | `zIndex` | `int` | orden entre elementos superpuestos |
-| `backdropFilter` | `ImageFilter` | filtra lo que hay detrás (`ImageFilter.blur(sigmaX: 8)`); o `BackdropFilter` |
+| `backdropFilter` | `ImageFilter` | filtra lo que hay detrás (`ImageFilter.blur(sigmaX: 8)`; también `saturate`, `brightness`, `contrast`, `grayscale`, `invert`, `sepia`, `hueRotate`, `opacity`, encadenados con `ImageFilter.compose`); o `BackdropFilter` |
 | `scrollbarWidth`, `scrollbarThumbColor`, `scrollbarTrackColor` | `ScrollbarWidth`, `Color` | la barra de desplazamiento del elemento |
 | `opacity`, `scale`, `offset`, `turns` | números | solo con `.when()`; un valor fijo va en `Opacity` o `Transform` |
 

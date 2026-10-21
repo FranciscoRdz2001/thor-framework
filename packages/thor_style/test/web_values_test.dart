@@ -43,6 +43,9 @@ void main() {
   test('image filters chain, the inner one first', () {
     expect(ImageFilter.blur(sigmaX: 8).css, 'blur(8px)');
     expect(ImageFilter.saturate(0).css, 'saturate(0)');
+    expect(ImageFilter.sepia(.5).css, 'sepia(0.5)');
+    expect(ImageFilter.hueRotate(90).css, 'hue-rotate(90deg)');
+    expect(ImageFilter.opacity(.8).css, 'opacity(0.8)');
     expect(
       ImageFilter.compose(
         outer: ImageFilter.blur(sigmaX: 4),
