@@ -885,6 +885,9 @@ final class link extends StatelessWidget {
     this.rel,
     this.type,
     this.as,
+    this.sizes,
+    this.media,
+    this.crossOrigin,
     this.id,
     this.classes,
     this.styles,
@@ -903,6 +906,16 @@ final class link extends StatelessWidget {
 
   /// The `as` attribute.
   final String? as;
+
+  /// The `sizes` attribute: the icon sizes (`'96x96'`, `'180x180'`, `'any'`)
+  /// of a `rel: 'icon'` or `'apple-touch-icon'` link.
+  final String? sizes;
+
+  /// The `media` attribute: a media query the linked resource applies to.
+  final String? media;
+
+  /// The `crossorigin` attribute (`'anonymous'`, `'use-credentials'`).
+  final String? crossOrigin;
 
   /// The element's id.
   final String? id;
@@ -928,6 +941,9 @@ final class link extends StatelessWidget {
       'rel': ?rel,
       'type': ?type,
       'as': ?as,
+      'sizes': ?sizes,
+      'media': ?media,
+      'crossorigin': ?crossOrigin,
     },
   );
 }

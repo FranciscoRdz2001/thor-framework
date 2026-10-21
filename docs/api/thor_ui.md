@@ -4977,7 +4977,7 @@ A rule of the app's stylesheet (`styles:` of `initializeThor` or `WidgetRenderer
 
 `<link>`.
 
-- `link({required String href, String? rel, String? type, String? as, String? id, String? classes, Styles? styles, Map<String, String>? attributes, Key? key})` — A `<link>` element.
+- `link(…)` — A `<link>` element.
 
 ### `meta` · class
 

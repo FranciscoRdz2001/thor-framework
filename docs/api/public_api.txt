@@ -299,10 +299,13 @@ html	link.as	String? as
 html	link.attributes	Map<String, String>? attributes
 html	link.build	Widget build(BuildContext context)
 html	link.classes	String? classes
+html	link.crossOrigin	String? crossOrigin
 html	link.href	String href
 html	link.id	String? id
-html	link.new	link({required String href, String? rel, String? type, String? as, String? id, String? classes, Styles? styles, Map<String, String>? attributes, Key? key})
+html	link.media	String? media
+html	link.new	link({required String href, String? rel, String? type, String? as, String? sizes, String? media, String? crossOrigin, String? id, String? classes, Styles? styles, Map<String, String>? attributes, Key? key})
 html	link.rel	String? rel
+html	link.sizes	String? sizes
 html	link.styles	Styles? styles
 html	link.type	String? type
 html	meta	class
