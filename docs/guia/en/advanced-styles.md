@@ -347,6 +347,22 @@ Styled(
 )
 ```
 
+`Styled(descendants:)` styles only the markup no widget built. A Thor element
+inside it (a `Text`, a `Semantics(headingLevel:)`, a `Container`) is a limit:
+the rule skips it and what it holds, because that element already has its own
+class, and a rule from outside would fight it. To restyle the headings or
+links that widgets draw, give the elements their style where they are built
+(`Styled(style:)`, `TextStyle`), or write a rule in your own stylesheet, which
+wins over the widgets' styles:
+
+```dart
+css('.article', [
+  css('h1, h2, h3').props(
+    const StyleProps(textStyle: TextStyle(fontFamily: 'Gabarito')),
+  ),
+]);
+```
+
 ## Gradient patterns
 
 A gradient with `tile:` repeats as a tile: a dotted or striped background with

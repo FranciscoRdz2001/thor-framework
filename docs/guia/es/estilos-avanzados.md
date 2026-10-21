@@ -348,6 +348,22 @@ Styled(
 )
 ```
 
+`Styled(descendants:)` da estilo solo al HTML que ningún widget dibujó. Un
+elemento de Thor dentro (un `Text`, un `Semantics(headingLevel:)`, un
+`Container`) es un límite: la regla lo salta, y también lo que contiene, porque
+ese elemento ya tiene su propia clase y una regla de fuera pelearía con ella.
+Para cambiar los títulos o enlaces que dibujan widgets, dales el estilo donde
+se construyen (`Styled(style:)`, `TextStyle`) o escribe una regla en tu propia
+hoja, que gana a los estilos de los widgets:
+
+```dart
+css('.article', [
+  css('h1, h2, h3').props(
+    const StyleProps(textStyle: TextStyle(fontFamily: 'Gabarito')),
+  ),
+]);
+```
+
 ## Patrones con degradados
 
 Un degradado con `tile:` se repite en mosaico: un fondo punteado o a rayas sin
