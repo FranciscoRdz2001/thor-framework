@@ -195,14 +195,16 @@ El servidor pinta el valor del código y el navegador pone el guardado al arranc
 
 Un ViewModel puede guardar un valor distinto por tienda, documento o cuenta: `localScope:` nombra un campo que el servidor llena para la página, y la clave de almacenamiento es `thor-s.<local>:<su valor>`.
 
-```dart no-check
+```dart
 class CartViewModel extends ThorState {
   final store = state('');                       // la página lo fija al slug de la tienda
-  final items = state(<String>[], local: 'cart', localScope: store);
+  late final items = state(<String>[], local: 'cart', localScope: store);
 }
+
+final cart = CartViewModel();
 ```
 
-La página o el layout lo fija al construirse (`cart.store.value = slug;`, como la localización en [Idiomas](idiomas.md)). El navegador lee el alcance cuando el estado arranca, así que la página de otra tienda parte de su propia clave. Un alcance vacío deja el valor solo en memoria. Declara el campo de alcance antes del que lo usa, en la misma clase.
+La página o el layout lo fija al construirse (`cart.store.value = slug;`, como la localización en [Idiomas](idiomas.md)). El navegador lee el alcance cuando el estado arranca, así que la página de otra tienda parte de su propia clave. Un alcance vacío deja el valor solo en memoria. Declara el campo de alcance antes del que lo usa, en la misma clase, y el que lo usa como `late final` (un inicializador normal no puede leer otro campo).
 
 ## Lo que Thor no hace
 

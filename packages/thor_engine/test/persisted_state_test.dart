@@ -124,6 +124,14 @@ void main() {
   });
 
   group('localScope', () {
+    test('compiles as a late final field of a ThorState', () {
+      // A plain initializer cannot read `store` (no `this` yet): the field
+      // that names the scope is `late final`.
+      final view = _ScopedState();
+      view.store.value = 'shop-a';
+      expect(view.items.localKey, 'cart:shop-a');
+    });
+
     test('names the storage key after the scope field', () {
       final store = state('shop-a');
       final cart = state(<String>[], local: 'cart', localScope: store);
@@ -151,4 +159,9 @@ void main() {
       );
     });
   });
+}
+
+class _ScopedState extends ThorState {
+  final store = state('');
+  late final items = state(<String>[], local: 'cart', localScope: store);
 }

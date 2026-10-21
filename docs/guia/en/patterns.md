@@ -195,14 +195,16 @@ The server paints the value in the code and the browser applies the stored one w
 
 One ViewModel can keep a separate value per store, document or account: `localScope:` names a field the server fills for the page, and the storage key is `thor-s.<local>:<its value>`.
 
-```dart no-check
+```dart
 class CartViewModel extends ThorState {
   final store = state('');                       // the page sets it to the store's slug
-  final items = state(<String>[], local: 'cart', localScope: store);
+  late final items = state(<String>[], local: 'cart', localScope: store);
 }
+
+final cart = CartViewModel();
 ```
 
-The page or layout sets it while building (`cart.store.value = slug;`, as with the locale in [Localization](localization.md)). The browser reads the scope when the state starts, so the page of another store starts from its own key. An empty scope keeps the value in memory only. Declare the scope field before the one that uses it, in the same class.
+The page or layout sets it while building (`cart.store.value = slug;`, as with the locale in [Localization](localization.md)). The browser reads the scope when the state starts, so the page of another store starts from its own key. An empty scope keeps the value in memory only. Declare the scope field before the one that uses it, in the same class, and the one that uses it as `late final` (a plain initializer cannot read another field).
 
 ## What Thor doesn't do
 
