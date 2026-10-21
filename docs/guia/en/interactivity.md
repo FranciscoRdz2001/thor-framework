@@ -98,6 +98,59 @@ Watch(orders.pendingLabel)
 
 The editor flags it and `thor dev` shows it in the console.
 
+## Browser features
+
+Three browser features reach a ViewModel as callbacks, with no JavaScript to write. Each one is a wrapper around the widget it works on, and the widgets work without them: they simply do nothing until the engine is there.
+
+**Visible on screen.** `VisibilityDetector` calls a method with `true` when its child shows and `false` when it leaves; `margin` starts it before it shows and `once` stops after the first time. The usual use is infinite scroll: a one-pixel sentinel after the last row, and a "Load more" link inside it for pages without JavaScript.
+
+```dart no-check
+class FeedViewModel extends ThorState {
+  final rows = state(<String>[]);
+  final hasMore = state(true);
+
+  void seen(bool visible) {
+    if (visible && hasMore.value) loadMore();
+  }
+}
+
+VisibilityDetector(
+  onVisibilityChanged: feed.seen,
+  margin: 400,
+  child: const SizedBox(height: 1),
+)
+```
+
+It reports changes: a sentinel that is still on screen after its rows loaded is not reported again, so remove it when there is nothing more (`if (hasMore)`) or let the new rows push it away.
+
+**Location.** `GeolocationRequest` asks for the position when its child is tapped (browsers only allow it on a tap and on a secure page). The answer is two methods of the ViewModel; the position never travels to the server by itself, so cached pages stay the same for everyone.
+
+```dart no-check
+class NearbyViewModel extends ThorState {
+  void found(double latitude, double longitude, double accuracy) {}
+  void failed(String reason) {} // denied, unavailable, timeout or unsupported
+}
+
+GeolocationRequest(
+  onPosition: nearby.found,
+  onError: nearby.failed,
+  child: TextButton(onPressed: () {}, child: const Text('Use my location')),
+)
+```
+
+**Share.** `ShareRequest` opens the device's share sheet with a title, a text and a link (the current page by default). Where the browser has no share sheet, a child that is a link keeps its `href` and a child that is not copies the text and the link; `onResult` says which (`shared`, `cancelled`, `link`, `copied` or `failed`).
+
+```dart no-check
+ShareRequest(
+  title: place.name,
+  url: placeRoute.link().toString(),
+  onResult: place.shared, // void shared(String result) shows "Link copied"
+  child: TextButton(onPressed: () {}, child: const Text('Share')),
+)
+```
+
+> **Difference from Flutter:** these are packages there (`visibility_detector`, `geolocator`, `share_plus`) that return values to Dart; here the browser calls a ViewModel method. They need the lite engine, which is the default.
+
 ## Next steps
 
 :::cards

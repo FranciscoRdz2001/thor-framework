@@ -31,6 +31,7 @@ abstract class _HoverMembers extends ThorState {
         arity: 1,
         call: (a) => s.expanded(a == 'true'),
       ),
+      ThorMember('seen', s.seen, arity: 1, call: (a) => s.seen(a == 'true')),
       ThorMember(
         'tagged',
         s.tagged,
@@ -49,6 +50,7 @@ class _Hover extends _HoverMembers {
   void leave() {}
   void focused(bool hasFocus) {}
   void expanded(bool open) {}
+  void seen(bool visible) {}
   void tagged(String tag, bool open) {}
 }
 
@@ -77,6 +79,25 @@ void main() {
       const MouseRegion(cursor: SystemMouseCursors.click, child: _box),
     );
     expect(html, isNot(contains('data-t-ev')));
+  });
+
+  test('VisibilityDetector marks the visible event and its options', () async {
+    final html = await renderHtml(
+      VisibilityDetector(
+        onVisibilityChanged: _hover.seen,
+        threshold: 0.5,
+        margin: 400,
+        once: true,
+        child: _box,
+      ),
+    );
+    expect(RegExp('<div').allMatches(html), hasLength(1));
+    expect(html, contains('data-t-ev="visible:Hover.seen"'));
+    expect(html, contains('data-t-vis="0.5|400|1"'));
+    final plain = await renderHtml(
+      VisibilityDetector(onVisibilityChanged: _hover.seen, child: _box),
+    );
+    expect(plain, contains('data-t-vis="0|0|0"'));
   });
 
   test('Focus marks onFocusChange next to its tabindex', () async {

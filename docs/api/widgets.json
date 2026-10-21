@@ -6669,6 +6669,64 @@
   ]
  },
  {
+  "name": "GeolocationRequest",
+  "topic": "controles",
+  "summary": "Asks the browser for the visitor's position when its child is tapped.",
+  "doc": "Asks the browser for the visitor's position when its child is tapped.\n\n```dart\n// ViewModel: void found(double latitude, double longitude, double accuracy)\n//            void failed(String reason)\nGeolocationRequest(\n  onPosition: nearby.found,\n  onError: nearby.failed, // 'denied', 'unavailable', 'timeout' or 'unsupported'\n  child: OutlinedButton(onPressed: null, child: Text('Use my location')),\n)\n```\n\n`// web:` Flutter has no built-in location (the `geolocator` package\nreturns a `Future<Position>`); here the tap calls\n`navigator.geolocation.getCurrentPosition`, which asks the visitor and\nonly works on a secure page. The answer reaches methods of a\n`ThorState`: [onPosition] with the latitude, longitude and accuracy (in\nmetres) and [onError] with the reason. Only a tap asks (a page that asks\nat load is refused by most browsers and by most visitors); the position\nnever travels to the server by itself, so a cached page stays the same\nfor everyone and the state decides what to do with it (a `query`\nargument, a link to `?lat=&lng=`). A second tap while one is waiting is\nignored.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "GeolocationRequest",
+    "signature": "GeolocationRequest({\n  Key? key,\n  void Function(double, double, double)? onPosition,\n  void Function(String)? onError,\n  bool highAccuracy = false,\n  Duration? timeout,\n  Duration? maximumAge,\n  required Widget child,\n})",
+    "summary": "Wraps [child]: tapping it asks for the position.",
+    "params": [
+     {
+      "name": "onPosition",
+      "type": "void Function(double, double, double)?",
+      "required": false,
+      "default": null,
+      "doc": "Called with the position: latitude and longitude in degrees, accuracy in metres."
+     },
+     {
+      "name": "onError",
+      "type": "void Function(String)?",
+      "required": false,
+      "default": null,
+      "doc": "Called with why there is none: `denied` (the visitor said no), `unavailable`, `timeout` or `unsupported` (no geolocation here)."
+     },
+     {
+      "name": "highAccuracy",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Asks for the best position the device can give (GPS: slower, uses more battery)."
+     },
+     {
+      "name": "timeout",
+      "type": "Duration?",
+      "required": false,
+      "default": null,
+      "doc": "How long to wait for the answer, or null for the browser's default."
+     },
+     {
+      "name": "maximumAge",
+      "type": "Duration?",
+      "required": false,
+      "default": null,
+      "doc": "A position this old (or newer) is good enough, or null to always ask the device again."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": null
+     }
+    ]
+   }
+  ]
+ },
+ {
   "name": "Gesture",
   "topic": "controles",
   "summary": "Every touch and mouse gesture in one widget: tap, double tap, long press (hold), swipe (to dismiss), drag and pinch, plus press feedback.",
@@ -13584,6 +13642,57 @@
   ]
  },
  {
+  "name": "ShareRequest",
+  "topic": "controles",
+  "summary": "Opens the device's share sheet when its child is tapped.",
+  "doc": "Opens the device's share sheet when its child is tapped.\n\n```dart\nShareRequest(\n  title: 'Tacos El Güero',\n  text: 'The best tacos in town',\n  url: '/places/tacos-el-guero',\n  onResult: place.shared, // void shared(String result)\n  child: const Link(href: 'https://wa.me/?text=...', child: Text('Share')),\n)\n```\n\n`// web:` Flutter's `share_plus` shares from Dart; here the tap calls the\nbrowser's `navigator.share`, which needs a tap and a secure page, and\nexists on phones and a few desktops. Where it does not, a child that is a\nlink keeps its own `href` (the page's fallback, also what it does without\nJavaScript: a `wa.me` or `mailto:` link); a child with no link copies the\ntext and the link to the clipboard. [onResult] says what happened:\n`shared`, `cancelled` (the visitor closed the sheet), `link` (the child's\nlink was followed), `copied` or `failed`, so a state can show \"Link\ncopied\". [url] may be a path; without it the current page is shared.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "ShareRequest",
+    "signature": "ShareRequest({\n  Key? key,\n  String? title,\n  String? text,\n  String? url,\n  void Function(String)? onResult,\n  required Widget child,\n})",
+    "summary": "Wraps [child]: tapping it shares.",
+    "params": [
+     {
+      "name": "title",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The subject of what is shared."
+     },
+     {
+      "name": "text",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The message."
+     },
+     {
+      "name": "url",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The link, absolute or a path of this site; the current page by default."
+     },
+     {
+      "name": "onResult",
+      "type": "void Function(String)?",
+      "required": false,
+      "default": null,
+      "doc": "Called with how it went: `shared`, `cancelled`, `link`, `copied` or `failed`."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": null
+     }
+    ]
+   }
+  ]
+ },
+ {
   "name": "Shortcuts",
   "topic": "controles",
   "summary": "Flutter's `Shortcuts`: key presses inside [child] (while the focus is in it) become [Intent]s, and the nearest [Actions] around the focus that has an action for the intent's type runs it.",
@@ -16994,6 +17103,57 @@
       "required": false,
       "default": "false",
       "doc": "When hidden, keep the layout space instead of collapsing it (`visibility: hidden`)."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": null
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "VisibilityDetector",
+  "topic": "controles",
+  "summary": "Reports when its child enters or leaves the viewport: an infinite list's \"load more\" sentinel, a reveal-on-scroll, a view counter.",
+  "doc": "Reports when its child enters or leaves the viewport: an infinite list's\n\"load more\" sentinel, a reveal-on-scroll, a view counter.\n\n```dart\n// a ViewModel method: void seen(bool visible) { if (visible) loadMore(); }\nVisibilityDetector(\n  onVisibilityChanged: feed.seen,\n  margin: 400, // starts 400 px before it shows\n  child: const SizedBox(height: 1),\n)\n```\n\nWithout JavaScript nothing is reported, so the child is also the page's\nway without it: a \"Load more\" link (`?cursor=`) the same list answers.\n\n`// web:` Flutter has no such widget (the `visibility_detector` package\nis the nearest, and reports a `VisibilityInfo`); here the browser's\n`IntersectionObserver` calls a method of a `ThorState` with `true` or\n`false`. It reports changes: an element that starts out of view says\nnothing until it shows, and one that shows says `true` once (until it\nleaves and comes back), so a sentinel that stays in view after its rows\nloaded is not reported again; remove it (`if (hasMore)`) or let the next\nrows push it away. The engine starts when the first change is reported.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "VisibilityDetector",
+    "signature": "VisibilityDetector({\n  Key? key,\n  required void Function(bool) onVisibilityChanged,\n  double threshold = 0,\n  double margin = 0,\n  bool once = false,\n  required Widget child,\n})",
+    "summary": "Wraps [child], reporting to [onVisibilityChanged].",
+    "params": [
+     {
+      "name": "onVisibilityChanged",
+      "type": "void Function(bool)",
+      "required": true,
+      "default": null,
+      "doc": "Called with `true` when [child] shows and `false` when it stops showing: a method of a `ThorState` that takes a `bool`."
+     },
+     {
+      "name": "threshold",
+      "type": "double",
+      "required": false,
+      "default": "0",
+      "doc": "The share of [child] that must show to count (0: one pixel; 1: all)."
+     },
+     {
+      "name": "margin",
+      "type": "double",
+      "required": false,
+      "default": "0",
+      "doc": "Logical pixels around the viewport that count as showing: `400` reports 400 px before the child scrolls into view."
+     },
+     {
+      "name": "once",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Reports only the first appearance (`true` once) and stops watching."
      },
      {
       "name": "child",

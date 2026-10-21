@@ -707,6 +707,67 @@ globalThis.queueMicrotask = () => {};
       );
     });
 
+    test('geolocation and share ship for their widgets, with no feature', () {
+      expect(litePartsFor(stateJs: '', engineEntry: ''), isEmpty);
+      expect(
+        litePartsFor(
+          stateJs: '',
+          engineEntry: '',
+          sources: 'GeolocationRequest(onPosition: n.found, child: b)',
+        ),
+        ['geolocation'],
+      );
+      expect(
+        litePartsFor(
+          stateJs: '',
+          engineEntry: '',
+          sources: 'ShareRequest(url: u, child: b)',
+        ),
+        ['share'],
+      );
+      // A static site: by its markup.
+      expect(
+        litePartsFor(
+          stateJs: '',
+          engineEntry: '',
+          pages: [
+            '<button data-t-geo="ok:A.b"></button>',
+            '<a data-t-share-d="{}"></a>',
+          ],
+        ),
+        ['geolocation', 'share'],
+      );
+    });
+
+    test('visibility ships only for a VisibilityDetector', () {
+      const entry = 'ElementEventsFeature()';
+      expect(
+        litePartsFor(
+          stateJs: '',
+          engineEntry: entry,
+          sources: 'MouseRegion(onEnter: s.hover, child: x)',
+        ),
+        ['element_events'],
+      );
+      expect(
+        litePartsFor(
+          stateJs: '',
+          engineEntry: entry,
+          sources: 'VisibilityDetector(onVisibilityChanged: f.seen, child: x)',
+        ),
+        ['element_events', 'visibility'],
+      );
+      // A static site: by its markup.
+      expect(
+        litePartsFor(
+          stateJs: '',
+          engineEntry: entry,
+          pages: ['<div data-t-ev="visible:A.b"></div>'],
+        ),
+        ['element_events', 'visibility'],
+      );
+    });
+
     test('page_view ships only for an onPageChanged (not for the other '
         'element events)', () {
       const entry = 'ElementEventsFeature()';

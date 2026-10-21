@@ -2368,6 +2368,8 @@ thor_engine	fieldAttr	getter
 thor_engine	fillKey	function
 thor_engine	firstDayOffset	function
 thor_engine	focusNodeAttr	getter
+thor_engine	geolocationAttr	getter
+thor_engine	geolocationOptionsAttr	getter
 thor_engine	gestureActiveAttr	getter
 thor_engine	gestureAttr	getter
 thor_engine	gestureOutAttr	getter
@@ -2452,6 +2454,8 @@ thor_engine	safeAttributeValue	function
 thor_engine	safeCssColor	function
 thor_engine	scaleAttr	getter
 thor_engine	scrollControllerAttr	getter
+thor_engine	shareAttr	getter
+thor_engine	shareDataAttr	getter
 thor_engine	shortcutMatches	function
 thor_engine	shortcutSpec	function
 thor_engine	shortcutsAttr	getter
@@ -2481,6 +2485,7 @@ thor_engine	variantAttr	getter
 thor_engine	variantAttributes	getter
 thor_engine	variantIndexAttr	getter
 thor_engine	variantTemplateAttr	getter
+thor_engine	visibilityAttr	getter
 thor_server	ActionMessage	abstract class
 thor_server	ActionMessage.actionMessage	String? get actionMessage
 thor_server	ActionMessage.new	ActionMessage()
@@ -8573,6 +8578,14 @@ thor_ui	FutureBuilder.builder	Widget Function(BuildContext, AsyncSnapshot<T>) bu
 thor_ui	FutureBuilder.future	Future<T>? future
 thor_ui	FutureBuilder.initialData	T? initialData
 thor_ui	FutureBuilder.new	FutureBuilder<T>({Key? key, required Future<T>? future, required Widget Function(BuildContext, AsyncSnapshot<T>) builder, T? initialData})
+thor_ui	GeolocationRequest	class
+thor_ui	GeolocationRequest.highAccuracy	bool highAccuracy
+thor_ui	GeolocationRequest.maximumAge	Duration? maximumAge
+thor_ui	GeolocationRequest.new	GeolocationRequest({Key? key, void Function(double, double, double)? onPosition, void Function(String)? onError, bool highAccuracy = false, Duration? timeout, Duration? maximumAge, required Widget child})
+thor_ui	GeolocationRequest.onError	void Function(String)? onError
+thor_ui	GeolocationRequest.onPosition	void Function(double, double, double)? onPosition
+thor_ui	GeolocationRequest.timeout	Duration? timeout
+thor_ui	GeolocationRequest.wrapData	WrapData get wrapData
 thor_ui	Gesture	class
 thor_ui	Gesture.drag	Drag drag
 thor_ui	Gesture.feedback	Press? feedback
@@ -19308,6 +19321,13 @@ thor_ui	Shadow.css	String get css
 thor_ui	Shadow.hashCode	int get hashCode
 thor_ui	Shadow.new	Shadow({Color color = const Color(0xFF000000), Offset offset = Offset.zero, double blurRadius = 0})
 thor_ui	Shadow.offset	Offset offset
+thor_ui	ShareRequest	class
+thor_ui	ShareRequest.new	ShareRequest({Key? key, String? title, String? text, String? url, void Function(String)? onResult, required Widget child})
+thor_ui	ShareRequest.onResult	void Function(String)? onResult
+thor_ui	ShareRequest.text	String? text
+thor_ui	ShareRequest.title	String? title
+thor_ui	ShareRequest.url	String? url
+thor_ui	ShareRequest.wrapData	WrapData get wrapData
 thor_ui	ShortcutActivator	abstract class
 thor_ui	ShortcutActivator.new	ShortcutActivator()
 thor_ui	ShortcutActivator.spec	String get spec
@@ -20841,6 +20861,13 @@ thor_ui	Visibility.maintainSize	bool maintainSize
 thor_ui	Visibility.new	Visibility({Key? key, bool visible = true, bool maintainSize = false, required Widget child})
 thor_ui	Visibility.visible	bool visible
 thor_ui	Visibility.wrapData	WrapData get wrapData
+thor_ui	VisibilityDetector	class
+thor_ui	VisibilityDetector.margin	double margin
+thor_ui	VisibilityDetector.new	VisibilityDetector({Key? key, required void Function(bool) onVisibilityChanged, double threshold = 0, double margin = 0, bool once = false, required Widget child})
+thor_ui	VisibilityDetector.onVisibilityChanged	void Function(bool) onVisibilityChanged
+thor_ui	VisibilityDetector.once	bool once
+thor_ui	VisibilityDetector.threshold	double threshold
+thor_ui	VisibilityDetector.wrapData	WrapData get wrapData
 thor_ui	VisualDensity	class
 thor_ui	VisualDensity.==	bool ==(Object other)
 thor_ui	VisualDensity.baseSizeAdjustment	Offset get baseSizeAdjustment

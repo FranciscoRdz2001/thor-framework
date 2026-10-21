@@ -1814,6 +1814,12 @@ What a `Form` gives the named fields below it: the values and the messages of a 
 
 - `FormScope({Key? key, FormInvalid? failed, Map<String, Object?> defaults = const {}, FormSchema? schema, required Widget child})` — Publishes [failed], [defaults] and [schema] to [child].
 
+### `GeolocationRequest` · class
+
+Asks the browser for the visitor's position when its child is tapped.
+
+- `GeolocationRequest(…)` — Wraps [child]: tapping it asks for the position.
+
 ### `Gesture` · class
 
 Every touch and mouse gesture in one widget: tap, double tap, long press (hold), swipe (to dismiss), drag and pinch, plus press feedback.
@@ -2082,6 +2088,12 @@ Flutter's `SegmentedButton<T>`: a row of [segments] to choose one value (or seve
 Flutter's `SelectableDayPredicate`: whether [day] can be picked.
 
 
+### `ShareRequest` · class
+
+Opens the device's share sheet when its child is tapped.
+
+- `ShareRequest({Key? key, String? title, String? text, String? url, void Function(String)? onResult, required Widget child})` — Wraps [child]: tapping it shares.
+
 ### `ShortcutActivator` · abstract class
 
 Flutter's `ShortcutActivator`: what a key press must be to trigger a shortcut.
@@ -2230,6 +2242,12 @@ A validation rule of a [TextFormField].
 Flutter's `Velocity`: a speed in logical pixels per second.
 
 - `Velocity({required Offset pixelsPerSecond})` — A velocity of [pixelsPerSecond].
+
+### `VisibilityDetector` · class
+
+Reports when its child enters or leaves the viewport: an infinite list's "load more" sentinel, a reveal-on-scroll, a view counter.
+
+- `VisibilityDetector({Key? key, required void Function(bool) onVisibilityChanged, double threshold = 0, double margin = 0, bool once = false, required Widget child})` — Wraps [child], reporting to [onVisibilityChanged].
 
 ### `WidgetPropertyResolver` · typedef
 
