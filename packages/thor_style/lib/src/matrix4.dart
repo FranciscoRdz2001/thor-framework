@@ -176,6 +176,7 @@ class Matrix4 with Adaptable<Matrix4> {
 class _AdaptiveMatrix4 extends Matrix4 {
   _AdaptiveMatrix4(this.adaptive) : super._(adaptive.base._m);
 
+  @override
   final Adaptive<Matrix4> adaptive;
 
   @override

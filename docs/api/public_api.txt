@@ -4656,6 +4656,7 @@ thor_studio	highlightSource	function
 thor_studio	highlightToHtml	function
 thor_studio	studioThemeChoiceName	getter
 thor_style	Adaptable	abstract class
+thor_style	Adaptable.adaptive	Adaptive<T>? get adaptive
 thor_style	Adaptable.new	Adaptable<T>()
 thor_style	Adaptable.when	T when({T? medium, T? expanded, T? large, T? extraLarge, T? dark, T? open, T? hover, T? focused, T? focusWithin, T? disabled, T? pressed, T? groupHover, Map<String, T> groupHovers = const {}, Map<num, T> container = const {}})
 thor_style	Adaptable.withVariants	T withVariants(Adaptive<T> variants)
@@ -6033,6 +6034,7 @@ thor_ui	Actions.actions	Map<Type, Action<Intent>> actions
 thor_ui	Actions.new	Actions({Key? key, required Map<Type, Action<Intent>> actions, required Widget child})
 thor_ui	Actions.wrapData	WrapData get wrapData
 thor_ui	Adaptable	abstract class
+thor_ui	Adaptable.adaptive	Adaptive<T>? get adaptive
 thor_ui	Adaptable.new	Adaptable<T>()
 thor_ui	Adaptable.when	T when({T? medium, T? expanded, T? large, T? extraLarge, T? dark, T? open, T? hover, T? focused, T? focusWithin, T? disabled, T? pressed, T? groupHover, Map<String, T> groupHovers = const {}, Map<num, T> container = const {}})
 thor_ui	Adaptable.withVariants	T withVariants(Adaptive<T> variants)

@@ -640,6 +640,7 @@ class _AdaptiveDecoration extends BoxDecoration {
         shape: adaptive.base.shape,
       );
 
+  @override
   final Adaptive<BoxDecoration> adaptive;
 
   @override

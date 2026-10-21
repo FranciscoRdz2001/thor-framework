@@ -844,6 +844,7 @@ class _AdaptiveTextStyle extends TextStyle {
         heightLength: adaptive.base.heightLength,
       );
 
+  @override
   final Adaptive<TextStyle> adaptive;
 
   @override
