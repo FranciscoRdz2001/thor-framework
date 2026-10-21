@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'adaptive.dart';
 import 'css.dart';
 
 /// Flutter's `Matrix4` (the subset a CSS transform needs): a 4x4 matrix in
@@ -11,8 +12,15 @@ import 'css.dart';
 ///
 /// `// web:` Flutter's is `vector_math`'s `Matrix4` (mutable, with the full
 /// API); this one is immutable and only builds, multiplies and prints.
-class Matrix4 {
+/// It is [Adaptable] (`.when(hover: Matrix4.translationValues(0, -2, 0))`):
+/// a CSS `transform` can change per state or breakpoint in the element's
+/// class, where Flutter would rebuild with another matrix.
+class Matrix4 with Adaptable<Matrix4> {
   const Matrix4._(this._m);
+
+  @override
+  Matrix4 withVariants(Adaptive<Matrix4> variants) =>
+      _AdaptiveMatrix4(variants);
 
   /// The identity matrix (no transform).
   factory Matrix4.identity() => const Matrix4._(_identity);
@@ -80,6 +88,19 @@ class Matrix4 {
   /// This matrix times [other]: [other] applies to a point first, like
   /// Flutter (`translate * scale` scales, then moves).
   Matrix4 operator *(Matrix4 other) {
+    final a = _variants, b = other._variants;
+    if (a != null && b != null) {
+      return _AdaptiveMatrix4(a.zip(b, (x, y) => x._times(y)));
+    }
+    if (a != null) return _AdaptiveMatrix4(a.map((x) => x._times(other)));
+    if (b != null) return _AdaptiveMatrix4(b.map(_times));
+    return _times(other);
+  }
+
+  // The variants of a matrix built with `.when()`, else null.
+  Adaptive<Matrix4>? get _variants => null;
+
+  Matrix4 _times(Matrix4 other) {
     final out = List<double>.filled(16, 0);
     for (var col = 0; col < 4; col++) {
       for (var row = 0; row < 4; row++) {
@@ -136,6 +157,7 @@ class Matrix4 {
   @override
   bool operator ==(Object other) {
     if (other is! Matrix4) return false;
+    if (other._variants != _variants) return false;
     for (var i = 0; i < 16; i++) {
       if (_m[i] != other._m[i]) return false;
     }
@@ -145,6 +167,25 @@ class Matrix4 {
   @override
   int get hashCode => Object.hashAll(_m);
 
+  @override
+  String toString() => 'Matrix4($css)';
+}
+
+// A matrix built with `.when()`: `css` carries the variants of the
+// `transform` (the base matrix is what the plain accessors read).
+class _AdaptiveMatrix4 extends Matrix4 {
+  _AdaptiveMatrix4(this.adaptive) : super._(adaptive.base._m);
+
+  final Adaptive<Matrix4> adaptive;
+
+  @override
+  Adaptive<Matrix4>? get _variants => adaptive;
+
+  @override
+  String get css => adaptive.css((m) => m.css);
+
+  // Equality (by the base matrix and the variants) and `hashCode` (the base
+  // matrix) are the plain matrix's.
   @override
   String toString() => 'Matrix4($css)';
 }
@@ -168,6 +209,9 @@ CssDeclarations? composeTransforms(
 ) {
   final o = outer['transform'], i = inner['transform'];
   if (o == null || i == null || o == 'none' || i == 'none') return null;
+  // A value that changes per state or breakpoint can't join a list: the
+  // caller keeps its own precedence.
+  if (isAdaptive(o) || isAdaptive(i)) return null;
   final oo = outer['transform-origin'], io = inner['transform-origin'];
   final same = (oo ?? '50% 50%') == (io ?? '50% 50%');
   if (same) {

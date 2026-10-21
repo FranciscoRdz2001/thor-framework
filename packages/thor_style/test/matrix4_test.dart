@@ -45,4 +45,39 @@ void main() {
     // -0 does not leak as "-0".
     expect(Matrix4.rotationZ(3.141592653589793).css, isNot(contains('-0,')));
   });
+
+  test('a matrix changes per state and breakpoint with .when()', () {
+    final m = Matrix4.identity().when(
+      hover: Matrix4.translationValues(0, -2, 0),
+      medium: Matrix4.diagonal3Values(2, 2, 1),
+    );
+    final css = m.css;
+    expect(isAdaptive(css), isTrue);
+    expect(css, contains('matrix(1, 0, 0, 1, 0, -2)'));
+    expect(css, contains('matrix(2, 0, 0, 2, 0, 0)'));
+    expect(m.toString(), startsWith('Matrix4('));
+  });
+
+  test('multiplying keeps the variants', () {
+    final m = Matrix4.translationValues(
+      1,
+      0,
+      0,
+    ).when(hover: Matrix4.translationValues(5, 0, 0));
+    final moved = m * Matrix4.translationValues(0, 3, 0);
+    expect(moved.css, contains('matrix(1, 0, 0, 1, 1, 3)'));
+    expect(moved.css, contains('matrix(1, 0, 0, 1, 5, 3)'));
+    final left = Matrix4.translationValues(0, 3, 0) * m;
+    expect(left.css, contains('matrix(1, 0, 0, 1, 5, 3)'));
+  });
+
+  test('a variant transform is not joined to another one', () {
+    final m = Matrix4.identity().when(
+      hover: Matrix4.translationValues(0, -2, 0),
+    );
+    expect(
+      composeTransforms({'transform': m.css}, {'transform': 'scale(2)'}),
+      isNull,
+    );
+  });
 }

@@ -5337,6 +5337,7 @@ thor_style	FontWeight.w900	FontWeight w900
 thor_style	Gradient	sealed class
 thor_style	Gradient.colors	List<Color> colors
 thor_style	Gradient.css	String get css
+thor_style	Gradient.layers	List<Gradient> get layers
 thor_style	Gradient.new	Gradient({required List<Color> colors, List<double>? stops, Size? tile})
 thor_style	Gradient.stops	List<double>? stops
 thor_style	Gradient.tile	Size? tile
@@ -5371,6 +5372,12 @@ thor_style	Interval.curve	Curve curve
 thor_style	Interval.end	double end
 thor_style	Interval.new	Interval(double begin, double end, {Curve curve = Curves.linear})
 thor_style	Interval.transformInternal	double transformInternal(double t)
+thor_style	LayeredGradient	class
+thor_style	LayeredGradient.==	bool ==(Object other)
+thor_style	LayeredGradient.css	String get css
+thor_style	LayeredGradient.hashCode	int get hashCode
+thor_style	LayeredGradient.layers	List<Gradient> get layers
+thor_style	LayeredGradient.new	LayeredGradient(List<Gradient> gradients)
 thor_style	Length	class
 thor_style	Length.*	Length *(num factor)
 thor_style	Length.+	Length +(Length other)
@@ -5474,6 +5481,7 @@ thor_style	Matrix4.rotationY	Matrix4.rotationY(double radians)
 thor_style	Matrix4.rotationZ	Matrix4.rotationZ(double radians)
 thor_style	Matrix4.toString	String toString()
 thor_style	Matrix4.translationValues	Matrix4.translationValues(double x, double y, double z)
+thor_style	Matrix4.withVariants	Matrix4 withVariants(Adaptive<Matrix4> variants)
 thor_style	Offset	class
 thor_style	Offset.*	Offset *(double operand)
 thor_style	Offset.+	Offset +(Offset other)
@@ -8599,6 +8607,7 @@ thor_ui	GlobalKey.new	GlobalKey<T>()
 thor_ui	Gradient	sealed class
 thor_ui	Gradient.colors	List<Color> colors
 thor_ui	Gradient.css	String get css
+thor_ui	Gradient.layers	List<Gradient> get layers
 thor_ui	Gradient.new	Gradient({required List<Color> colors, List<double>? stops, Size? tile})
 thor_ui	Gradient.stops	List<double>? stops
 thor_ui	Gradient.tile	Size? tile
@@ -17853,6 +17862,12 @@ thor_ui	KeyRepeatEvent	class
 thor_ui	KeyRepeatEvent.new	KeyRepeatEvent({required LogicalKeyboardKey logicalKey, String? character})
 thor_ui	KeyUpEvent	class
 thor_ui	KeyUpEvent.new	KeyUpEvent({required LogicalKeyboardKey logicalKey, String? character})
+thor_ui	LayeredGradient	class
+thor_ui	LayeredGradient.==	bool ==(Object other)
+thor_ui	LayeredGradient.css	String get css
+thor_ui	LayeredGradient.hashCode	int get hashCode
+thor_ui	LayeredGradient.layers	List<Gradient> get layers
+thor_ui	LayeredGradient.new	LayeredGradient(List<Gradient> gradients)
 thor_ui	LayoutBuilder	class	@tombstone
 thor_ui	LayoutBuilder.build	Widget build(BuildContext context)	@tombstone
 thor_ui	LayoutBuilder.builder	Widget Function(BuildContext, BoxConstraints) builder	@tombstone
@@ -18243,6 +18258,7 @@ thor_ui	Matrix4.rotationY	Matrix4.rotationY(double radians)
 thor_ui	Matrix4.rotationZ	Matrix4.rotationZ(double radians)
 thor_ui	Matrix4.toString	String toString()
 thor_ui	Matrix4.translationValues	Matrix4.translationValues(double x, double y, double z)
+thor_ui	Matrix4.withVariants	Matrix4 withVariants(Adaptive<Matrix4> variants)
 thor_ui	MaxColumnWidth	class
 thor_ui	MaxColumnWidth.a	TableColumnWidth a
 thor_ui	MaxColumnWidth.b	TableColumnWidth b
