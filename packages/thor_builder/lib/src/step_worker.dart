@@ -28,9 +28,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
-import 'package:thor_engine/lite.dart' show writeLiteBundle;
+import 'package:thor_engine/lite.dart' show LiteBundleMemo, writeLiteBundle;
 
 import 'app_steps.dart';
+import 'entries_cache.dart';
 
 /// One app's warm analysis, and the steps run on it.
 class StepWorker {
@@ -41,6 +42,16 @@ class StepWorker {
   final String app;
   final String _lib;
   AnalysisContextCollection? _analysis;
+
+  /// What the steps keep from one update to the next (see
+  /// [EntriesCache]): the findings of the libraries a save did not touch.
+  final _cache = EntriesCache(retainResolved: true);
+
+  /// What the steps keep (for the tests to count what they resolved).
+  EntriesCache get cache => _cache;
+
+  /// The bundles made, so one whose states and parts did not change stays.
+  final _bundles = LiteBundleMemo();
 
   /// The size and time of every Dart file of `lib/` as last analyzed.
   var _stamps = <String, String>{};
@@ -83,6 +94,7 @@ class StepWorker {
                 out: output,
                 err: output,
                 analysis: analysis,
+                cache: _cache,
               );
             case 'lite_state':
               final out = request['out'] as String? ?? 'build/lite/state.js';
@@ -94,6 +106,7 @@ class StepWorker {
                 out: output,
                 err: output,
                 analysis: analysis,
+                cache: _cache,
               );
             case 'lite_bundle':
               // No analysis: thor_engine's bundle, without a `dart run`.
@@ -106,6 +119,7 @@ class StepWorker {
                   outPath: abs(request['out'] as String),
                   minify: request['minify'] != false,
                   dev: request['dev'] == true,
+                  memo: _bundles,
                 ),
               );
               code = 0;
@@ -131,7 +145,12 @@ class StepWorker {
     final config = _packageConfig();
     final stamp = config == null ? null : _stamp(config);
     var analysis = _analysis;
+    // A package the app depends on changed (a file outside the app; the
+    // app's own are found below): what was kept of its libraries may no
+    // longer hold.
+    if (changed.any((path) => !path.startsWith('$app/'))) _clearKept();
     if (analysis == null || stamp != _config) {
+      _clearKept();
       await analysis?.dispose();
       analysis = _analysis = appAnalysis(_lib);
       _config = stamp;
@@ -153,6 +172,11 @@ class StepWorker {
       await context.applyPendingFileChanges();
     }
     return analysis;
+  }
+
+  void _clearKept() {
+    _cache.clear();
+    _bundles.clear();
   }
 
   Map<String, String> _libStamps() => {
