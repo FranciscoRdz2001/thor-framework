@@ -88,7 +88,9 @@ html	Css.colorProperty	NestedStyleRule colorProperty(String name, {required Colo
 html	Css.components	StyleRule components(List<StyleRule> rules)
 html	Css.keyframes	StyleRule keyframes(String name, Map<String, StyleProps> frames)
 html	Css.layer	StyleRule layer(List<StyleRule> rules, {String? name})
+html	Css.maxWidth	StyleRule maxWidth(num px, List<StyleRule> rules)
 html	Css.media	StyleRule media(String query, List<StyleRule> rules)
+html	Css.minWidth	StyleRule minWidth(num px, List<StyleRule> rules)
 html	Css.states	StyleRule states(List<StyleRule> rules)
 html	Css.supports	StyleRule supports(String condition, List<StyleRule> rules)
 html	HtmlAttributes	class
@@ -21005,7 +21007,7 @@ thor_ui	WindowSizeClass.compact	WindowSizeClass compact
 thor_ui	WindowSizeClass.expanded	WindowSizeClass expanded
 thor_ui	WindowSizeClass.extraLarge	WindowSizeClass extraLarge
 thor_ui	WindowSizeClass.large	WindowSizeClass large
-thor_ui	WindowSizeClass.media	StyleRule media(List<StyleRule> rules)
+thor_ui	WindowSizeClass.media	StyleRule media(List<StyleRule> rules, {Breakpoints breakpoints = const Breakpoints()})
 thor_ui	WindowSizeClass.medium	WindowSizeClass medium
 thor_ui	WindowSizeClass.minWidth	double minWidth
 thor_ui	WindowSizeClass.new	WindowSizeClass(double minWidth)

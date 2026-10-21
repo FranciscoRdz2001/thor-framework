@@ -214,6 +214,22 @@ final List<StyleRule> appStyles = [
 Una regla varía con su selector y con `WindowSizeClass.media`; `.when()` es
 para los widgets.
 
+Un ancho que no es una clase de tamaño va en una hoja con
+`css.minWidth(920, [...])` o `css.maxWidth(919.98, [...])`. Una hoja es un solo
+texto para todas las peticiones, así que `WindowSizeClass.media` usa los
+anchos por defecto salvo que reciba los de la app: guárdalos en una `const` y
+pásala al tema y a la hoja.
+
+```dart no-check
+const siteBreakpoints = Breakpoints(medium: 640, expanded: 768, large: 1024);
+// ThemeData(breakpoints: siteBreakpoints)
+WindowSizeClass.medium.media(breakpoints: siteBreakpoints, [...]);
+css.minWidth(920, [css('.card').props(const StyleProps(padding: EdgeInsets.all(20)))]);
+```
+
+Los widgets (`.when(...)`) ven las cuatro clases de tamaño del tema; para
+cualquier otro ancho de su propia caja usa `.when(container: {920: …})`.
+
 > **Importante:** Las reglas de tus hojas ganan siempre a los estilos de los
 > widgets. Úsalas para clases propias, no para cambiar todos los elementos de
 > un tipo, y no pongas una transición sobre un elemento que ya anima un

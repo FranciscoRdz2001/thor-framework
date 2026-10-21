@@ -173,11 +173,27 @@ enum WindowSizeClass {
   /// `Breakpoints` may change it).
   final double minWidth;
 
-  /// `@media screen and (min-width: …) { rules }` for an app stylesheet,
-  /// with the default width (app stylesheets are static: to follow the
-  /// theme's breakpoints use `Responsive`).
-  StyleRule media(List<StyleRule> rules) =>
-      css.media('screen and (min-width: ${cssPx(minWidth)})', rules);
+  /// `@media screen and (min-width: …) { rules }` for an app stylesheet.
+  ///
+  /// An app stylesheet is static (one text for every request and theme), so
+  /// it uses the default width unless it is given the app's own
+  /// [breakpoints]: keep them in one `const` shared by the theme and the
+  /// sheets.
+  ///
+  /// ```dart
+  /// const siteBreakpoints = Breakpoints(medium: 640, expanded: 768);
+  /// // ThemeData(breakpoints: siteBreakpoints)
+  /// WindowSizeClass.medium.media(breakpoints: siteBreakpoints, [...])
+  /// ```
+  ///
+  /// For a width that is no size class (`920`) see `css.minWidth`.
+  StyleRule media(
+    List<StyleRule> rules, {
+    Breakpoints breakpoints = const Breakpoints(),
+  }) => css.media(
+    'screen and (min-width: ${cssPx(breakpoints[this])})',
+    rules,
+  );
 }
 
 /// The widths of the [WindowSizeClass]es, part of the theme
