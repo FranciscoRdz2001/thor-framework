@@ -115,9 +115,16 @@ Map<String, Object?> _run(
       '${_bundle(minify: minify)}\n(async () => {\n'
       'await step();\nconst s = thor.use("CartState");\nconst out = {};\n'
       '$script\nawait step(5);\nout.unhandled = __unhandled;\nconsole.log(JSON.stringify(out));\n})();';
-  final r = Process.runSync('node', ['-e', js]);
-  if (r.exitCode != 0) fail('node failed:\n${r.stderr}');
-  return jsonDecode((r.stdout as String).trim()) as Map<String, Object?>;
+  // Through a file, not `-e`: Linux caps one argument at 128 KiB.
+  final dir = Directory.systemTemp.createTempSync('thor_cmd_');
+  try {
+    final file = File('${dir.path}/page.js')..writeAsStringSync(js);
+    final r = Process.runSync('node', [file.path]);
+    if (r.exitCode != 0) fail('node failed:\n${r.stderr}');
+    return jsonDecode((r.stdout as String).trim()) as Map<String, Object?>;
+  } finally {
+    dir.deleteSync(recursive: true);
+  }
 }
 
 void main() {
