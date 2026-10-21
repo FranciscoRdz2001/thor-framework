@@ -1980,6 +1980,10 @@ thor_engine	PageNavigator.pop	void pop({String fallback = '/'})
 thor_engine	PageNavigator.popHandler	void Function(String)? popHandler
 thor_engine	PageNavigator.reload	void reload()
 thor_engine	PageNavigator.reloadHandler	void Function()? reloadHandler
+thor_engine	PageRegion	abstract class
+thor_engine	PageRegion.handler	void Function(String)? handler
+thor_engine	PageRegion.new	PageRegion()
+thor_engine	PageRegion.refresh	void refresh(String id)
 thor_engine	PatchOp	class
 thor_engine	PatchOp.==	bool ==(Object other)
 thor_engine	PatchOp.attr	String attr
@@ -18799,6 +18803,10 @@ thor_ui	PageNavigator.popHandler	void Function(String)? popHandler
 thor_ui	PageNavigator.reload	void reload()
 thor_ui	PageNavigator.reloadHandler	void Function()? reloadHandler
 thor_ui	PagePost	typedef
+thor_ui	PageRegion	abstract class
+thor_ui	PageRegion.handler	void Function(String)? handler
+thor_ui	PageRegion.new	PageRegion()
+thor_ui	PageRegion.refresh	void refresh(String id)
 thor_ui	PageTransition	class
 thor_ui	PageTransition.==	bool ==(Object other)
 thor_ui	PageTransition.css	String? get css

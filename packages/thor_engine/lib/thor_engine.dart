@@ -20,6 +20,7 @@ export 'src/patch.dart';
 export 'src/protocol.dart';
 export 'src/query.dart';
 export 'src/reactive.dart' hide collectEffects;
+export 'src/regions.dart';
 export 'src/row_probes.dart';
 export 'src/server_error.dart';
 export 'src/thor_state.dart';

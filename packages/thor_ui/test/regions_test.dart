@@ -455,12 +455,14 @@ void main() {
     Future<Map<String, Object?>> run(
       String path,
       List<String> urls,
-      String steps,
-    ) async {
+      String steps, {
+      Map<String, Object> extra = const {},
+    }) async {
       final h = handler();
       final page = bodyOf((await h.handle(get(path))).text);
-      final fragments = <String, String>{
+      final fragments = <String, Object>{
         for (final u in urls) u: (await h.handle(get(u))).text,
+        ...extra,
       };
       final program =
           '''
@@ -473,17 +475,20 @@ globalThis.MutationObserver = class { observe() {} };
 const streams = [];
 D.documentElement.dispatchEvent = (e) => streams.push(e);
 globalThis.navigator = {};
-globalThis.location = { href: 'http://site.test${path.split('?').first}' };
+globalThis.location = { href: 'http://site.test$path' };
 globalThis.history = { state: null, replaceState: (s, t, u) => calls.push(['replaceState', u]) };
 globalThis.FormData = class {
   constructor(f) { this.p = f.querySelectorAll('input').map((i) => [i.getAttribute('name'), i.value ?? '']); }
   [Symbol.iterator]() { return this.p[Symbol.iterator](); }
 };
 let fail = false;
+const delays = [];
 globalThis.fetch = (u, o) => {
   calls.push(['fetch', u]);
   if (fail) return Promise.reject(new Error('offline'));
-  return Promise.resolve({ ok: true, headers: { get: () => null }, text: () => Promise.resolve(input.fragments[u]) });
+  const v = input.fragments[u], body = Array.isArray(v) ? v.shift() : v;
+  const ms = delays.shift() || 0;
+  return new Promise((res) => setTimeout(() => res({ ok: true, headers: { get: () => null }, text: () => Promise.resolve(body) }), ms));
 };
 const root = miniDom.parseHtml(input.page);
 D.body.append(...root.childNodes);
@@ -558,6 +563,111 @@ eval(input.script);
         );
         expect(out['events'], 1);
         expect(out['sync'], isIn([0, null]));
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a refresh event asks the region again from the page\'s URL',
+      () async {
+        final out = await run(
+          '/people?q=gus',
+          ['/people?q=gus&thor-piece=results'],
+          r'''
+          const region = D.querySelector('[data-thor-region="results"]');
+          out.before = text(region);
+          listeners['thor:region'].forEach((f) => f({ detail: 'results' }));
+          out.busy = region.getAttribute('aria-busy');
+          await tick();
+          out.after = text(region);
+          out.busyAfter = region.getAttribute('aria-busy');
+          out.calls = calls.map((c) => c.join(' '));
+          // not a region, or not an id: nothing is asked
+          listeners['thor:region'].forEach((f) => f({ detail: 'nope' }));
+          listeners['thor:region'].forEach((f) => f({ detail: 'a"]b' }));
+          listeners['thor:region'].forEach((f) => f({ detail: null }));
+          await tick();
+          out.callsAfter = calls.length;
+        ''',
+          extra: {'/people?q=gus&thor-piece=results': 'fresh rows'},
+        );
+        expect(out['before'], 'person gus');
+        expect(out['busy'], 'true');
+        expect(out['after'], 'fresh rows');
+        expect(out['busyAfter'], isNull);
+        expect(out['calls'], ['fetch /people?q=gus&thor-piece=results']);
+        expect(out['callsAfter'], 1);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a refresh drops the answer of an earlier one still on its way',
+      () async {
+        final out = await run(
+          '/people?q=gus',
+          [],
+          r'''
+          const region = D.querySelector('[data-thor-region="results"]');
+          delays.push(120, 0);
+          const ask = () => listeners['thor:region'].forEach((f) => f({ detail: 'results' }));
+          ask(); // slow: the stale one
+          ask(); // fast: the newer one
+          await tick(250);
+          out.after = text(region);
+          out.calls = calls.length;
+        ''',
+          extra: {
+            '/people?q=gus&thor-piece=results': ['old answer', 'new answer'],
+          },
+        );
+        expect(out['after'], 'new answer');
+        expect(out['calls'], 2);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a failed refresh keeps the content and clears the busy mark',
+      () async {
+        final out = await run('/people?q=gus', [], r'''
+          const region = D.querySelector('[data-thor-region="results"]');
+          const before = text(region);
+          fail = true;
+          listeners['thor:region'].forEach((f) => f({ detail: 'results' }));
+          await tick();
+          out.same = text(region) == before;
+          out.busy = region.getAttribute('aria-busy');
+        ''');
+        expect(out['same'], isTrue);
+        expect(out['busy'], isNull);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a region a link filled is refreshed from the link\'s fragment',
+      () async {
+        final out = await run(
+          '/shop',
+          ['/shop/mug?thor-piece=detail'],
+          r'''
+          const link = D.querySelector('[data-thor-lazy-as="into"]');
+          const dialog = D.getElementById('product');
+          dialog.matches = () => false;
+          dialog.showModal = () => { dialog.open = true; };
+          const region = D.querySelector('[data-thor-region="product-body"]');
+          click(link);
+          await tick();
+          calls.length = 0;
+          listeners['thor:region'].forEach((f) => f({ detail: 'product-body' }));
+          await tick();
+          out.calls = calls.map((c) => c.join(' '));
+          out.text = text(region);
+        ''',
+        );
+        expect(out['calls'], ['fetch /shop/mug?thor-piece=detail']);
+        expect(out['text'], 'Mug in detail');
       },
       skip: hasNode ? false : 'node is not installed',
     );

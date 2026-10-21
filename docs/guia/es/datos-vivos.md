@@ -254,6 +254,42 @@ La respuesta lleva entonces el valor, tal como el servidor lo calculó para esa 
 - Funciona con el motor lite; un estado que aún no arrancó arranca con el valor nuevo.
 - Sin `syncState` (el predeterminado) nada cambia: un estado que la página tiene conserva su valor.
 
+### Refrescar una región desde un ViewModel
+
+`PageRegion.refresh('id')` le pide al navegador que dibuje de nuevo una `Region` desde un método de un ViewModel, sin formulario ni enlace de por medio: al terminar un comando, o con un temporizador para sondear.
+
+```dart no-check
+class TrackingViewModel extends ThorState {
+  Timer? _poll;
+
+  @override
+  void onHydrated() {
+    // El `load` de la página lee el pedido; la región es lo que cambia.
+    _poll = Timer.periodic(
+      const Duration(seconds: 10),
+      (t) => PageRegion.refresh('tracking'),
+    );
+  }
+
+  @override
+  void dispose() => _poll?.cancel();
+
+  void cancelled() => PageRegion.refresh('tracking'); // tras un comando
+}
+
+// en la página
+Region(id: 'tracking', syncState: true, child: OrderTimeline(order))
+```
+
+El navegador pide la URL actual de la página más `thor-piece=tracking` y cambia el contenido por la respuesta. Reglas:
+
+- Un refresco nuevo cancela el que sigue en camino, así que una respuesta lenta nunca sobrescribe una más reciente.
+- Una región que la página no tiene, o una petición que falla, no cambia nada (el contenido se queda; el siguiente refresco lo intenta de nuevo).
+- Una región que llenó un `Link(fetch:)` se refresca desde el fragmento que muestra, no desde la URL de la página.
+- El id es el `id` de una `Region` de la página, no una ruta (`results:people`).
+- Agrega `syncState: true` cuando la región lee estados que cambian con cada respuesta, como en el ejemplo.
+- El servidor nunca corre un temporizador: el sondeo es el reloj del navegador, y el `load` de la página corre en cada petición, así que mantenlo ligero o con caché. Un flujo que el servidor empuja (`events()`) no necesita sondeo.
+
 ## Siguientes pasos
 
 :::cards

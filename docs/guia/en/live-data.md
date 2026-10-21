@@ -254,6 +254,42 @@ The answer then carries the value, as the server computed it for that request, o
 - It works with the lite engine; a state that has not started yet starts from the new value.
 - Without `syncState` (the default) nothing changes: a state the page has keeps its value.
 
+### Refreshing a region from a ViewModel
+
+`PageRegion.refresh('id')` asks the browser to draw a `Region` again from a ViewModel method, with no form or link involved: after a command finishes, or on a timer to poll.
+
+```dart no-check
+class TrackingViewModel extends ThorState {
+  Timer? _poll;
+
+  @override
+  void onHydrated() {
+    // The page's `load` reads the order; the region is what changes.
+    _poll = Timer.periodic(
+      const Duration(seconds: 10),
+      (t) => PageRegion.refresh('tracking'),
+    );
+  }
+
+  @override
+  void dispose() => _poll?.cancel();
+
+  void cancelled() => PageRegion.refresh('tracking'); // after a command
+}
+
+// in the page
+Region(id: 'tracking', syncState: true, child: OrderTimeline(order))
+```
+
+The browser asks for the page's current URL plus `thor-piece=tracking`, and swaps the answer. Rules:
+
+- A new refresh cancels the one still on its way, so a slow answer never overwrites a newer one.
+- A region the page does not have, or a request that fails, changes nothing (the content stays; the next refresh tries again).
+- A region that a `Link(fetch:)` filled is refreshed from the fragment it shows, not from the page's URL.
+- The id is the `id` of a `Region` of the page, not a path (`results:people`).
+- Add `syncState: true` when the region reads states that change with every answer, as in the example.
+- The server never runs a timer: polling is the browser's clock, and the page's `load` runs for every request, so keep it light or cached. A stream the server pushes (`events()`) needs no polling.
+
 ## Next steps
 
 :::cards

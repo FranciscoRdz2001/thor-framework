@@ -3811,6 +3811,12 @@ Goes to another page from a state method, like following a link: the browser loa
 
 - `PageNavigator()`
 
+### `PageRegion` · abstract class
+
+Refreshes the parts of the page that the server draws alone (a `Region`): the browser asks the page again for the region, from the page's current URL, and swaps the answer in.
+
+- `PageRegion()`
+
 ### `QueryBuilder` · class
 
 Flutter's `FutureBuilder` for a `query`: [builder] draws the query's [AsyncSnapshot], on the server for the first paint and, in the browser, by switching among the states the server shipped.

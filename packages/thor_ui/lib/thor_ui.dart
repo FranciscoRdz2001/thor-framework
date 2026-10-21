@@ -40,6 +40,7 @@ export 'package:thor_engine/thor_engine.dart'
         LogicalKeyboardKey,
         PageController,
         PageNavigator,
+        PageRegion,
         ScrollController,
         ScrollPosition,
         ServerCommand,

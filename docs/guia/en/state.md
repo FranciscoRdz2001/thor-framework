@@ -266,6 +266,7 @@ To ask or notify from a ViewModel method without declaring a dialog, use `confir
 | Move the cursor or select | `name.selection = TextSelection(baseOffset: 0, extentOffset: 3)` |
 | A `select` or a segmented button that follows a field (also a `local:` one, which the browser changes at load) | `DropdownButton(valueWatch: editor.deviceId, …)`, `DropdownButtonFormField(valueWatch: …)`, `SegmentedButton(selectedWatch: …)`; the method returns the value as text (an enum's name) |
 | Go to another URL from a method | `PageNavigator.go(url)`, with the URL built on the server ([Routes and navigation](navigation.md)) |
+| Draw a `Region` of the page again from a method | `PageRegion.refresh('id')` ([Live data](live-data.md#refreshing-a-region-from-a-viewmodel)) |
 | Submit a form to the server | [Forms](forms.md) |
 
 ### `PageView` and `PageController`
