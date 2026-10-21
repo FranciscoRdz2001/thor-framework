@@ -4,7 +4,6 @@ library;
 import 'package:test/test.dart';
 import 'package:thor_ui/testing.dart';
 import 'package:thor_ui/thor_ui.dart';
-import 'package:thor_ui/web.dart' show Display;
 
 // web: Thor's Row and Column are flex boxes (as in Flutter: no margin
 // collapsing, no inline boxes). A box that must flow like HTML block content,
@@ -29,18 +28,18 @@ void main() {
 
   test('a block Column holds an inline-flex Row in its line of text', () async {
     final html = await page(
-      Styled(
-        style: const StyleProps(display: Display.block),
+      const Styled(
+        style: StyleProps(display: Display.block),
         child: Column(
           children: [
             Styled(
-              style: const StyleProps(display: Display.inlineFlex),
+              style: StyleProps(display: Display.inlineFlex),
               child: Semantics(
                 identifier: 'pill',
-                child: const Row(children: [Text('New')]),
+                child: Row(children: [Text('New')]),
               ),
             ),
-            Semantics(identifier: 'after', child: const Text('Title')),
+            Semantics(identifier: 'after', child: Text('Title')),
           ],
         ),
       ),

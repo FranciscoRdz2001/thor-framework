@@ -21,11 +21,11 @@ void main() {
     'a list role draws no markers until listStyleType asks for them',
     () async {
       final plain = await page(
-        Semantics(
+        const Semantics(
           role: SemanticsRole.list,
           child: Column(
             children: [
-              Semantics(role: SemanticsRole.listItem, child: const Text('a')),
+              Semantics(role: SemanticsRole.listItem, child: Text('a')),
             ],
           ),
         ),
@@ -33,13 +33,13 @@ void main() {
       expect(ruleOf(plain, 'ul'), contains('list-style: none'));
 
       final marked = await page(
-        Styled(
-          style: const StyleProps(listStyleType: ListStyleType.disc),
+        const Styled(
+          style: StyleProps(listStyleType: ListStyleType.disc),
           child: Semantics(
             role: SemanticsRole.list,
             child: Column(
               children: [
-                Semantics(role: SemanticsRole.listItem, child: const Text('a')),
+                Semantics(role: SemanticsRole.listItem, child: Text('a')),
               ],
             ),
           ),
@@ -57,13 +57,13 @@ void main() {
 
   test('an ordered list takes its markers the same way', () async {
     final html = await page(
-      Styled(
-        style: const StyleProps(listStyleType: ListStyleType.decimal),
+      const Styled(
+        style: StyleProps(listStyleType: ListStyleType.decimal),
         child: Semantics(
           role: SemanticsRole.orderedList,
           child: Column(
             children: [
-              Semantics(role: SemanticsRole.listItem, child: const Text('a')),
+              Semantics(role: SemanticsRole.listItem, child: Text('a')),
             ],
           ),
         ),
@@ -84,7 +84,7 @@ void main() {
         final html = await page(
           Semantics(
             role: role,
-            child: Column(children: const [Text('x')]),
+            child: const Column(children: [Text('x')]),
           ),
         );
         expect(ruleOf(html, tag), contains('margin: 0'), reason: tag);
