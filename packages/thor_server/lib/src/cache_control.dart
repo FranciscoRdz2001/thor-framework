@@ -48,15 +48,14 @@ final class CacheControl {
   final Duration? staleIfError;
 
   /// The header value: `public, max-age=60, stale-while-revalidate=600`.
-  String get header =>
-      [
-        'public',
-        'max-age=${maxAge.inSeconds}',
-        if (sharedMaxAge case final d?) 's-maxage=${d.inSeconds}',
-        if (staleWhileRevalidate case final d?)
-          'stale-while-revalidate=${d.inSeconds}',
-        if (staleIfError case final d?) 'stale-if-error=${d.inSeconds}',
-      ].join(', ');
+  String get header => [
+    'public',
+    'max-age=${maxAge.inSeconds}',
+    if (sharedMaxAge case final d?) 's-maxage=${d.inSeconds}',
+    if (staleWhileRevalidate case final d?)
+      'stale-while-revalidate=${d.inSeconds}',
+    if (staleIfError case final d?) 'stale-if-error=${d.inSeconds}',
+  ].join(', ');
 
   @override
   bool operator ==(Object other) =>

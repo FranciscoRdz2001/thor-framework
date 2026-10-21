@@ -2648,8 +2648,8 @@ class RouteHandler<P> {
     }
     final headers = <HttpHeader, String>{
       HttpHeader.contentType: 'text/html; charset=utf-8',
-      HttpHeader.cacheControl: _publicCaching(request, queriesOf, status) ??
-          'no-cache',
+      HttpHeader.cacheControl:
+          _publicCaching(request, queriesOf, status) ?? 'no-cache',
       ...request.response.headers,
     };
     _addLinks(headers, _merge(links, found));
