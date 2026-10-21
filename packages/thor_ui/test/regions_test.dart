@@ -1,0 +1,592 @@
+@TestOn('vm')
+library;
+
+// `Region`, `LoadMore`, `Form(live:)` and `Link(fetch:)`: parts of a page the
+// server draws alone (a GET to the same page with `?thor-piece=id`). A
+// listing paged by a cursor, a search that updates its results and a dialog
+// that shows any item: the page's own `load` reads the query, the page draws
+// the pieces, and the answer to a fragment request is just that piece.
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:test/test.dart';
+import 'package:thor_ui/router.dart';
+import 'package:thor_ui/src/engine/lazy_script.dart' show lazyScript;
+import 'package:thor_ui/testing.dart';
+import 'package:thor_ui/thor_ui.dart';
+
+const _all = [
+  'ana',
+  'beto',
+  'carla',
+  'diego',
+  'elena',
+  'fede',
+  'gus',
+  'hugo',
+  'ines',
+];
+
+class _Rows {
+  const _Rows(this.items, this.next);
+  final List<String> items;
+  final String? next;
+}
+
+void main() {
+  initializeThorTests();
+  var loads = 0;
+  late List<Object> errors;
+
+  // Pages of 4 names, by `?cursor=<offset>`, filtered by `?q=`.
+  _Rows rows(PageRequest request) {
+    loads++;
+    final q = request.uri.queryParameters['q'] ?? '';
+    final start =
+        int.tryParse(request.uri.queryParameters['cursor'] ?? '') ?? 0;
+    final all = [
+      for (final n in _all)
+        if (n.contains(q)) n,
+    ];
+    final end = start + 4;
+    return _Rows(
+      all.sublist(start.clamp(0, all.length), end.clamp(0, all.length)),
+      end < all.length ? '$end' : null,
+    );
+  }
+
+  RouteHandler<Widget> handler() => RouteHandler<Widget>(
+    renderer: WidgetRenderer(app: (page) => ThorApp(child: page)),
+    onError: (request, error, stack) => errors.add(error),
+    routes: [
+      PageRoute<Widget, _Rows>(
+        path: 'people',
+        load: rows,
+        build: (s) => Column(
+          children: [
+            const Text('header'),
+            const Form(
+              formMethod: FormMethod.get,
+              live: 'results',
+              // ignore: thor_lints/text_field_without_label
+              child: TextFormField(name: 'q'),
+            ),
+            Region(
+              id: 'results',
+              child: Column(
+                children: [
+                  LoadMore(
+                    id: 'people',
+                    next: s.data.next,
+                    items: [for (final n in s.data.items) Text('person $n')],
+                    child: const Text('More people'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      PageRoute<Widget, void>(
+        path: 'shop',
+        build: (s) => const Column(
+          children: [
+            Text('catalog'),
+            Dialog(
+              id: 'product',
+              child: Region(id: 'product-body', child: Text('empty')),
+            ),
+            Link(
+              href: RouteUrl('/shop/mug'),
+              fetch: FragmentFetch(
+                piece: 'detail',
+                into: 'product-body',
+                open: 'product',
+              ),
+              child: Text('Mug'),
+            ),
+          ],
+        ),
+      ),
+      PageRoute<Widget, void>(
+        path: 'shop/mug',
+        build: (s) => const Column(
+          children: [
+            Text('page chrome'),
+            Region(id: 'detail', child: Text('Mug in detail')),
+          ],
+        ),
+      ),
+    ],
+  );
+
+  PageRequest get(String path) => PageRequest(
+    method: HttpMethod.get,
+    uri: Uri.parse('http://site.test$path'),
+    headers: {HttpHeader.host: 'site.test'},
+  );
+
+  setUp(() {
+    loads = 0;
+    errors = [];
+  });
+
+  group('LoadMore', () {
+    test('the page has the first rows and a real link to the next', () async {
+      final html = (await handler().handle(get('/people'))).text;
+      for (final n in ['ana', 'beto', 'carla', 'diego']) {
+        expect(html, contains('person $n'));
+      }
+      expect(html, isNot(contains('person elena')));
+      expect(html, contains('href="/people?cursor=4"'));
+      expect(html, contains('rel="next"'));
+      expect(
+        html,
+        contains(
+          'data-thor-lazy="/people?cursor=4&amp;thor-piece=results%3Apeople"',
+        ),
+      );
+      expect(html, contains('data-thor-lazy-as="replace"'));
+      expect(html, contains('data-thor-lazy-on="click"'));
+      expect(html, contains('More people'));
+      expect(RegExp(RegExp.escape(lazyScript)).allMatches(html), hasLength(1));
+    });
+
+    test('the fragment is the next rows and the next control', () async {
+      // (the list is in the `results` region: its piece is `results:people`)
+      final r = await handler().handle(
+        get('/people?cursor=4&thor-piece=results:people'),
+      );
+      expect(r.status, 200);
+      final html = r.text;
+      for (final n in ['elena', 'fede', 'gus', 'hugo']) {
+        expect(html, contains('person $n'));
+      }
+      expect(html, isNot(contains('person ana')));
+      expect(html, isNot(contains('header')));
+      expect(html, isNot(contains('<html')));
+      expect(
+        html,
+        contains(
+          'data-thor-lazy="/people?cursor=8&amp;thor-piece=results%3Apeople"',
+        ),
+      );
+      expect(html, contains('href="/people?cursor=8"'));
+      expect(r.headers['x-robots-tag'], contains('noindex'));
+      expect(loads, 1, reason: 'one backend read for the fragment');
+      expect(errors, isEmpty);
+    });
+
+    test('the last page has no control', () async {
+      final r = await handler().handle(
+        get('/people?cursor=8&thor-piece=results:people'),
+      );
+      expect(r.text, contains('person ines'));
+      expect(r.text, isNot(contains('More people')));
+      expect(r.text, isNot(contains('data-thor-lazy')));
+    });
+
+    test('the rest of the query is kept in the next page', () async {
+      final r = await handler().handle(
+        get('/people?q=e&thor-piece=results:people'),
+      );
+      expect(r.status, 200);
+      expect(r.text, contains('person beto'));
+      // `e` matches beto, diego, elena, fede, hugo, ines: five rows.
+      expect(r.text, contains('person beto'));
+      expect(r.text, contains('href="/people?q=e&amp;cursor=4"'));
+    });
+
+    test('a visible trigger asks by itself', () async {
+      Widget list(LoadMoreTrigger t) => LoadMore(
+        id: 'v',
+        items: const [Text('row')],
+        next: '2',
+        trigger: t,
+        child: const Text('More'),
+      );
+      final h = RouteHandler<Widget>(
+        renderer: WidgetRenderer(app: (page) => ThorApp(child: page)),
+        onError: (request, error, stack) {},
+        routes: [
+          PageRoute<Widget, void>(
+            path: 'scroll',
+            build: (s) => list(LoadMoreTrigger.visible),
+          ),
+        ],
+      );
+      final html = (await h.handle(get('/scroll'))).text;
+      expect(html, contains('data-thor-lazy-on="visible"'));
+    });
+
+    test('a bad id or param is refused', () async {
+      final h = RouteHandler<Widget>(
+        renderer: WidgetRenderer(app: (page) => ThorApp(child: page)),
+        onError: (request, error, stack) => errors.add(error),
+        routes: [
+          PageRoute<Widget, void>(
+            path: 'bad',
+            build: (s) => const LoadMore(
+              id: 'a b',
+              items: [],
+              next: '1',
+              child: Text('More'),
+            ),
+          ),
+        ],
+      );
+      final r = await h.handle(get('/bad'));
+      expect(r.status, 500);
+      expect('${errors.single}', contains('THOR-R035'));
+    });
+
+    test('outside a routed page it is just the rows', () async {
+      final html = await renderHtml(
+        const ThorApp(
+          child: LoadMore(
+            id: 'x',
+            items: [Text('one'), Text('two')],
+            next: '3',
+            child: Text('More'),
+          ),
+        ),
+      );
+      expect(html, contains('one'));
+      expect(html, contains('two'));
+      expect(html, isNot(contains('data-thor-lazy')));
+    });
+  });
+
+  group('Region and Form(live:)', () {
+    test('the form asks for the region, and the page carries both', () async {
+      final html = (await handler().handle(get('/people?q=a'))).text;
+      expect(html, contains('data-thor-live="results"'));
+      expect(html, contains('data-thor-live-ms="350"'));
+      expect(html, contains('method="get"'));
+      expect(html, contains('data-thor-region="results"'));
+      // The region holds what the page drew for this query.
+      expect(html, contains('person ana'));
+    });
+
+    test('the fragment is the region alone, drawn for the query', () async {
+      final r = await handler().handle(get('/people?q=gus&thor-piece=results'));
+      expect(r.status, 200);
+      expect(r.text, contains('person gus'));
+      expect(r.text, isNot(contains('person ana')));
+      expect(r.text, isNot(contains('header')));
+      expect(r.text, isNot(contains('<form')));
+      expect(r.text, isNot(contains('data-thor-region')));
+      expect(loads, 1);
+    });
+
+    test('a new search keeps its query in the control it brings', () async {
+      final r = await handler().handle(get('/people?q=e&thor-piece=results'));
+      expect(
+        r.text,
+        contains(
+          'data-thor-lazy="/people?q=e&amp;cursor=4'
+          '&amp;thor-piece=results%3Apeople"',
+        ),
+      );
+    });
+
+    test('the region asked for is not drawn twice', () async {
+      var builds = 0;
+      final h = RouteHandler<Widget>(
+        renderer: WidgetRenderer(app: (page) => ThorApp(child: page)),
+        onError: (request, error, stack) {},
+        routes: [
+          PageRoute<Widget, void>(
+            path: 'once',
+            build: (s) => Region(
+              id: 'r',
+              child: Builder(
+                builder: (context) {
+                  builds++;
+                  return const Text('inside');
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+      await h.handle(get('/once?thor-piece=r'));
+      expect(builds, 1);
+    });
+
+    test('an unknown region is a 404', () async {
+      final r = await handler().handle(get('/people?thor-piece=nope'));
+      expect(r.status, 404);
+    });
+
+    test('live needs a GET form', () {
+      expect(
+        () => Form(live: 'results', child: const Text('x')),
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    test('a region outside a routed page is just its content', () async {
+      final html = await renderHtml(
+        const ThorApp(
+          child: Region(id: 'x', child: Text('plain')),
+        ),
+      );
+      expect(html, contains('plain'));
+      expect(html, isNot(contains('data-thor-region')));
+    });
+  });
+
+  group('Link(fetch:)', () {
+    test(
+      'the link names the region of the other page and where it goes',
+      () async {
+        final html = (await handler().handle(get('/shop'))).text;
+        expect(html, contains('href="/shop/mug"'));
+        expect(html, contains('data-thor-lazy="/shop/mug?thor-piece=detail"'));
+        expect(html, contains('data-thor-lazy-as="into"'));
+        expect(html, contains('data-thor-lazy-into="product-body"'));
+        expect(html, contains('data-thor-lazy-open="product"'));
+        expect(html, contains('data-thor-lazy-on="click"'));
+        expect(html, contains('data-thor-region="product-body"'));
+        expect(
+          RegExp(RegExp.escape(lazyScript)).allMatches(html),
+          hasLength(1),
+        );
+      },
+    );
+
+    test('the other page answers its region alone', () async {
+      final r = await handler().handle(get('/shop/mug?thor-piece=detail'));
+      expect(r.status, 200);
+      expect(r.text, contains('Mug in detail'));
+      expect(r.text, isNot(contains('page chrome')));
+    });
+
+    test('a query in the href is kept', () {
+      const link = Link(
+        href: RouteUrl('/shop/mug?color=red#top'),
+        fetch: FragmentFetch(piece: 'detail', into: 'b'),
+        child: Text('x'),
+      );
+      final attrs = link.wrapData.attributes;
+      expect(attrs['data-thor-lazy'], '/shop/mug?color=red&thor-piece=detail');
+      expect(attrs.containsKey('data-thor-lazy-open'), isFalse);
+    });
+  });
+
+  group('the loader script, in node over the server\'s own HTML', () {
+    final hasNode = () {
+      try {
+        return Process.runSync('node', ['--version']).exitCode == 0;
+      } on ProcessException {
+        return false;
+      }
+    }();
+
+    // The body of a page, up to its scripts, as the browser would parse it.
+    String bodyOf(String html) =>
+        RegExp(r'<body[^>]*>([\s\S]*?)<script').firstMatch(html)![1]!;
+
+    /// Runs [steps] (JS, with `$` = the harness) against [page]'s body, the
+    /// loader and the fragments the server answers for [urls].
+    Future<Map<String, Object?>> run(
+      String path,
+      List<String> urls,
+      String steps,
+    ) async {
+      final h = handler();
+      final page = bodyOf((await h.handle(get(path))).text);
+      final fragments = <String, String>{
+        for (final u in urls) u: (await h.handle(get(u))).text,
+      };
+      final program =
+          '''
+require('fs');
+eval(require('fs').readFileSync('test/support/mini_dom.js', 'utf8'));
+const input = JSON.parse(process.argv[1]);
+const D = document, calls = [], listeners = {};
+D.addEventListener = (t, f) => (listeners[t] ||= []).push(f);
+globalThis.MutationObserver = class { observe() {} };
+globalThis.navigator = {};
+globalThis.location = { href: 'http://site.test${path.split('?').first}' };
+globalThis.history = { state: null, replaceState: (s, t, u) => calls.push(['replaceState', u]) };
+globalThis.FormData = class {
+  constructor(f) { this.p = f.querySelectorAll('input').map((i) => [i.getAttribute('name'), i.value ?? '']); }
+  [Symbol.iterator]() { return this.p[Symbol.iterator](); }
+};
+let fail = false;
+globalThis.fetch = (u, o) => {
+  calls.push(['fetch', u]);
+  if (fail) return Promise.reject(new Error('offline'));
+  return Promise.resolve({ ok: true, headers: { get: () => null }, text: () => Promise.resolve(input.fragments[u]) });
+};
+const root = miniDom.parseHtml(input.page);
+D.body.append(...root.childNodes);
+const tick = (ms = 20) => new Promise((r) => setTimeout(r, ms));
+const click = (el, extra = {}) => {
+  const ev = { target: el, defaultPrevented: false, button: 0, preventDefault() { this.defaultPrevented = true; }, ...extra };
+  listeners.click.forEach((f) => f(ev));
+  return ev;
+};
+const words = (n) => n.nodeType === 3 ? [n.data] : n.localName === 'style' ? [] : n.childNodes.flatMap(words);
+const text = (el) => words(el).join(' ').replace(/\\s+/g, ' ').trim();
+const out = {};
+eval(input.script);
+(async () => { $steps; console.log(JSON.stringify(out)); })();
+''';
+      final result = Process.runSync('node', [
+        '-e',
+        program,
+        jsonEncode({
+          'page': page,
+          'fragments': fragments,
+          'script': lazyScript,
+        }),
+      ]);
+      expect(result.exitCode, 0, reason: '${result.stderr}');
+      return jsonDecode((result.stdout as String).trim().split('\n').last)
+          as Map<String, Object?>;
+    }
+
+    test(
+      'Load more: the next rows and control replace the link',
+      () async {
+        final out = await run(
+          '/people',
+          [
+            '/people?cursor=4&thor-piece=results%3Apeople',
+            '/people?cursor=8&thor-piece=results%3Apeople',
+          ],
+          r'''
+          const region = D.querySelector('[data-thor-region="results"]');
+          const more = () => region.querySelector('[data-thor-lazy]');
+          out.before = text(region);
+          const first = more();
+          const ev = click(first);
+          out.prevented = ev.defaultPrevented;
+          await tick();
+          out.after = text(region);
+          out.href = more().getAttribute('href');
+          out.old = first.parentNode == null;
+          out.focused = D.activeElement.textContent;
+          click(more());
+          await tick();
+          out.last = text(region);
+          out.controls = region.querySelectorAll('[data-thor-lazy]').length;
+          out.calls = calls.filter((c) => c[0] == 'fetch').map((c) => c[1]);
+        ''',
+        );
+        expect(out['before'], contains('person diego More people'));
+        expect(out['prevented'], isTrue);
+        expect(out['after'], contains('person diego person elena'));
+        expect(out['after'], contains('person hugo More people'));
+        expect(out['href'], '/people?cursor=8');
+        expect(out['old'], isTrue);
+        expect(out['focused'], 'person elena');
+        expect(out['last'], contains('person ines'));
+        expect(out['controls'], 0, reason: 'the last page has no control');
+        expect(out['calls'], [
+          '/people?cursor=4&thor-piece=results%3Apeople',
+          '/people?cursor=8&thor-piece=results%3Apeople',
+        ]);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a modified click, or a failed request, goes to the link',
+      () async {
+        final out = await run('/people', [], r'''
+        const a = D.querySelector('[data-thor-lazy]');
+        a.href = '/people?cursor=4';
+        out.ctrl = click(a, { ctrlKey: true }).defaultPrevented;
+        out.middle = click(a, { button: 1 }).defaultPrevented;
+        out.fetched = calls.length;
+        fail = true;
+        click(a);
+        await tick();
+        out.went = location.href;
+        out.state = a.getAttribute('data-thor-lazy-state');
+      ''');
+        expect(out['ctrl'], isFalse);
+        expect(out['middle'], isFalse);
+        expect(out['fetched'], 0);
+        expect(out['went'], '/people?cursor=4');
+        expect(out['state'], 'error');
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a live form: debounced, one answer, same URL, same field',
+      () async {
+        final out = await run(
+          '/people',
+          ['/people?q=gus&thor-piece=results'],
+          r'''
+          const form = D.querySelector('form');
+          const input = form.querySelector('input');
+          input.form = form;
+          const region = D.querySelector('[data-thor-region="results"]');
+          const type = (v) => {
+            input.value = v;
+            listeners.input.forEach((f) => f({ target: input }));
+          };
+          type('g'); type('gu'); type('gus');
+          out.beforeWait = calls.length;
+          await tick(450);
+          out.after = text(region);
+          out.calls = calls.map((c) => c.join(' '));
+          out.sameInput = form.querySelector('input') === input;
+          const ev = { target: form, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+          listeners.submit.forEach((f) => f(ev));
+          out.enterPrevented = ev.defaultPrevented;
+        ''',
+        );
+        expect(out['beforeWait'], 0, reason: 'nothing asked while typing');
+        expect(out['after'], 'person gus');
+        expect(out['calls'], [
+          'fetch /people?q=gus&thor-piece=results',
+          'replaceState /people?q=gus',
+        ]);
+        expect(out['sameInput'], isTrue);
+        expect(out['enterPrevented'], isTrue);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a link with fetch: fills the region once and opens the dialog',
+      () async {
+        final out = await run(
+          '/shop',
+          ['/shop/mug?thor-piece=detail'],
+          r'''
+          const link = D.querySelector('[data-thor-lazy-as="into"]');
+          const dialog = D.getElementById('product');
+          dialog.matches = (s) => s != ':popover-open' && false;
+          dialog.showModal = () => { dialog.open = true; calls.push(['showModal']); };
+          const region = D.querySelector('[data-thor-region="product-body"]');
+          out.before = text(region);
+          click(link);
+          await tick();
+          out.after = text(region);
+          dialog.open = false;
+          click(link);
+          await tick();
+          out.calls = calls.map((c) => c.join(' '));
+        ''',
+        );
+        expect(out['before'], 'empty');
+        expect(out['after'], 'Mug in detail');
+        expect(out['calls'], [
+          'fetch /shop/mug?thor-piece=detail',
+          'showModal',
+          'showModal',
+        ]);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+  });
+}

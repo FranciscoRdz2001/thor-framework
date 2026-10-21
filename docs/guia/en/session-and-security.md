@@ -59,7 +59,13 @@ Group(
 - The `style` attributes Thor writes are allowed by `style-src-attr 'unsafe-inline'`, which never allows `<style>` elements.
 - Event attributes (`oninput`, `onclick`…) do not support a nonce. To keep them: `scriptSrcAttr: [CspSource.unsafeHashes, ...CspSource.thorHandlers]`.
 - In a hand-written response, `request.cspNonce` is the nonce.
-- A page with a nonce goes out without an `ETag` and with `Cache-Control: private`: do not put it behind a shared cache.
+- A page with a nonce goes out without an `ETag` and with `Cache-Control: private`: do not put it behind a shared cache. For a public page (`cacheControl:`), use hashes instead of the nonce:
+
+```dart no-check
+contentSecurityPolicy(const ContentSecurityPolicy(nonce: false, hashes: true))
+```
+
+  With `hashes: true` the header lists the SHA-256 of each inline `<script>` and `<style>` of the finished page, so the body is the same for everyone: it keeps its `ETag` and its `public` cache. The price: the middleware reads the whole body (a page that streams its deferred values goes out whole), and a `<style>` or `<script>` that arrives later in the fragment of a lazy piece is not in the header. A page that changes on every request is not for this mode.
 - The policy covers the group's pages, not static files or global errors.
 
 A static site has no server to set a nonce. Each piece of Thor's inline code is constant and is allowed by its hash in `script-src`; event attributes also require `'unsafe-hashes'`. Without its hash, each one degrades without breaking the page:
@@ -72,7 +78,7 @@ A static site has no server to set a nonce. Each piece of Thor's inline code is 
 | `Popover`, `MenuAnchor` with `closeOnNavigate` | `onclick`: closes on navigation | they do not close on navigation |
 | `Drawer` with `closeOnNavigate` | `onclick`: closes on navigation | it does not close on navigation |
 | `FutureBuilder` with `defer` | places the data that arrives later | the data arrives, but the skeletons remain |
-| `LazyPiece` | requests the part on demand | the part is not requested |
+| `LazyPiece`, `Region`, `LoadMore`, `Form(live:)`, `Link(fetch:)` | requests the part on demand and puts it in place | the part is not requested; the links and the form work as plain HTML |
 | `ExpansionTile(permanentFrom:)` | removes the header from the Tab order from the breakpoint | the header still receives focus with Tab |
 | `Form` | submit state, focus on the first error, preserved position | the form submits without those three things |
 | `LinearProgressIndicator.upload()` | shows the upload progress | there is no bar; the form still submits |
@@ -91,7 +97,7 @@ script-src 'self' 'unsafe-hashes'
   'sha256-L/gjp/lXf1b++Z++rgw+P1gwp3nzVwoiQxErAc/1Brc='
   'sha256-RyS7b/uVe1C+1Gd8n4HR1kH+n+01SmpZRn+mOR9CJUk='
   'sha256-Mxg6UhxGzKjB5ugabTWXccqT/DAbMskkZQEV7uRLGC0='
-  'sha256-omYRSsAIVTFaZQZ5jkLRqAjKxDmfv/hmDNkTg3ETp8I='
+  'sha256-0FODyLHg0RJ98E2Or4V64ZVY1y/ew+r0Jp1L1MbiMvQ='
   'sha256-tiaf4Ty5SJfKEBWPKh/B6ZKlL80Xn7N9K+Q1zZFqvy4='
   'sha256-zlm6MXXoeDrl6SMrFRQc7NRm+ZLmsHjlpTuOW4kCA9g='
   'sha256-Asckod0Qy5jICUwq+JiuJxRdh6mNnBMYtL2+X0M9imE='

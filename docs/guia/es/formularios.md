@@ -201,6 +201,23 @@ Un formulario que navega (`onValid`, `onPost`, `action`) se marca solo al enviar
 
 `Form(disableOnSubmit: false)` lo desactiva, para una respuesta que no cambia de página, como una descarga. Los formularios `formMethod: FormMethod.dialog`, los que abren otra pestaña y los `mailto:` no se marcan. Sin JavaScript, el envío es el normal, sin el estado.
 
+### Un botón fuera del formulario
+
+El pie de un `Dialog` o un `Drawer` queda fuera del formulario que cierra. Dale al formulario un `id` y al botón su `formId` (el atributo `form` de HTML): envía ese formulario, con o sin JavaScript, y ya es un botón de envío.
+
+```dart
+Column(
+  children: [
+    Form(
+      id: 'filters',
+      formMethod: FormMethod.get,
+      child: TextFormField(name: 'q'),
+    ),
+    const FilledButton(formId: 'filters', child: Text('Aplicar')),
+  ],
+)
+```
+
 ### Quedarte donde estabas
 
 Si la acción responde con la misma página (un `422`, la página renderizada o un `Redirect` a su ruta), el usuario sigue donde estaba: la misma posición de desplazamiento y el foco en el botón pulsado.

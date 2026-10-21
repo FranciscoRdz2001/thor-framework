@@ -201,6 +201,23 @@ A form that navigates (`onValid`, `onPost`, `action`) marks itself automatically
 
 `Form(disableOnSubmit: false)` turns it off, for a response that does not change page, such as a download. Forms with `formMethod: FormMethod.dialog`, those that open another tab and `mailto:` ones are not marked. Without JavaScript, submission is the normal one, without the state.
 
+### A button outside the form
+
+The footer of a `Dialog` or a `Drawer` sits outside the form it closes. Give the form an `id` and the button its `formId` (the HTML `form` attribute): it submits that form, with or without JavaScript, and it is a submit button without more.
+
+```dart
+Column(
+  children: [
+    Form(
+      id: 'filters',
+      formMethod: FormMethod.get,
+      child: TextFormField(name: 'q'),
+    ),
+    const FilledButton(formId: 'filters', child: Text('Apply')),
+  ],
+)
+```
+
 ### Stay where you were
 
 If the action responds with the same page (a `422`, the rendered page or a `Redirect` to its route), the user stays where they were: the same scroll position and focus on the pressed button.

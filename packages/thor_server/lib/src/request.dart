@@ -5,6 +5,7 @@ import 'dart:io' show File;
 import 'dart:math' show Random;
 import 'dart:typed_data';
 
+import 'cache_control.dart';
 import 'cookies.dart';
 import 'errors.dart';
 import 'http_types.dart';
@@ -673,6 +674,19 @@ class ResponseDraft {
 
   /// Cookies to set.
   final List<SetCookie> cookies = [];
+
+  /// Tells browsers and CDNs not to keep this response (`Cache-Control:
+  /// no-store`), and keeps it out of the page cache (`cache:`) too. For a
+  /// page whose cache policy depends on its data: a `load` that could not
+  /// reach the backend calls it, and the page it draws is not kept even
+  /// though `PageRoute.cacheControl` says it is public.
+  void noStore() => headers[HttpHeader.cacheControl] = 'no-store';
+
+  /// Replaces the page's `cacheControl` for this response only (a shorter
+  /// freshness for a page that answered with partial data). Wins over
+  /// `PageRoute.cacheControl`.
+  void cacheControl(CacheControl control) =>
+      headers[HttpHeader.cacheControl] = control.header;
 
   /// Sets cookie [name]. Secure defaults: `HttpOnly`, `SameSite=Lax`,
   /// `Path=/`; `Secure` is added by the server in production.

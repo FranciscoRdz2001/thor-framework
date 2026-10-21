@@ -1326,7 +1326,7 @@ globalThis.queueMicrotask = (f) => f();
 $_header
 class CartState extends ThorState {
   final store = state('shop-a');
-  final items = state(<String>[], local: 'cart', localScope: store);
+  late final items = state(<String>[], local: 'cart', localScope: store);
 
   String label() => items.value.join(',');
   void add(String s) => items.value = [...items.value, s];
@@ -1334,14 +1334,14 @@ class CartState extends ThorState {
 
 class OtherCartState extends ThorState {
   final store = state('shop-b');
-  final items = state(<String>[], local: 'cart', localScope: store);
+  late final items = state(<String>[], local: 'cart', localScope: store);
 
   String label() => items.value.join(',');
 }
 
 class NoScopeState extends ThorState {
   final store = state('');
-  final items = state(<String>[], local: 'cart', localScope: store);
+  late final items = state(<String>[], local: 'cart', localScope: store);
 
   String label() => items.value.join(',');
   void add(String s) => items.value = [...items.value, s];
@@ -1411,10 +1411,10 @@ globalThis.queueMicrotask = (f) => f();
 $_header
 class BadState extends ThorState {
   final a = state('x');
-  final b = state(false, localScope: a);
-  final c = state(false, local: 'c', localScope: later);
+  late final b = state(false, localScope: a);
+  late final c = state(false, local: 'c', localScope: later);
   final later = state('y');
-  final d = state(false, local: 'd', localScope: 'literal');
+  late final d = state(false, local: 'd', localScope: 'literal');
 }
 ''');
     final text = errors.join('\n');

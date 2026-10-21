@@ -36,6 +36,14 @@ List<String> liteCheckArgs() => [
   '--check',
 ];
 
+/// Whether `thor analyze` also checks the lite subset: by default when the
+/// project has thor_builder (an app with states the browser runs), so
+/// `String.replaceAllMapped` or `Random` in code a state reaches is reported
+/// here and not by the first build; always when [asked] (`--lite`), never
+/// with `--no-lite`.
+bool runsLiteCheck({required bool? asked, required Set<String> dependencies}) =>
+    asked ?? dependencies.contains('thor_builder');
+
 /// The file `thor analyze` drops in `lib/` while it analyzes: a state that
 /// breaks the lite subset, so `thor_lite_subset` must report it when thor's
 /// analyzer plugin (thor_lints) is alive.
@@ -138,11 +146,11 @@ class AnalyzeCommand extends Command<int> with ProjectCommand<int> {
     );
     argParser.addFlag(
       'lite',
-      negatable: false,
       help:
           'Also check the package against the lite subset: its ThorState '
           'classes and every data class (a fromJson), as the build of an '
-          'app that uses them would. Needs thor_builder as a dev dependency.',
+          'app that uses them would. On by default when thor_builder is a '
+          'dependency; --no-lite skips it.',
     );
   }
 
@@ -204,7 +212,10 @@ class AnalyzeCommand extends Command<int> with ProjectCommand<int> {
       );
     }
     Say.ok('No issues.');
-    if (argResults!['lite'] as bool) {
+    final asked = argResults!.wasParsed('lite')
+        ? argResults!['lite'] as bool
+        : null;
+    if (runsLiteCheck(asked: asked, dependencies: project.dependencies)) {
       Say.step('Lite subset of ${project.name}');
       await exec('dart', liteCheckArgs(), dir: project.dir);
     }

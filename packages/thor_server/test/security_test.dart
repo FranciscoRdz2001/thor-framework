@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart' show sha256;
 import 'package:test/test.dart';
 import 'package:thor_server/src/csp.dart' show NonceInjector, cspNonceToken;
 import 'package:thor_server/src/host_check.dart';
@@ -99,6 +100,82 @@ void main() {
         'https://cdn.example.com',
       );
       expect(CspSource.scheme('HTTPS').value, 'https:');
+    });
+  });
+
+  group('hashes instead of a nonce', () {
+    String digest(String text) =>
+        base64.encode(sha256.convert(utf8.encode(text)).bytes);
+    const policy = ContentSecurityPolicy(nonce: false, hashes: true);
+    const page =
+        '<html><head><style>a{}</style><script>var x="<script>";</script>'
+        '<script src="/e.js"></script>'
+        '<script type="application/ld+json">{"a":1}</script>'
+        '<script type="speculationrules">{"prefetch":[]}</script>'
+        '</head><body><p>hi</p></body></html>';
+
+    ThorResponse html(String body, {String etag = '"h1"'}) => ThorResponse(
+      200,
+      headers: {
+        HttpHeader.contentType: 'text/html; charset=utf-8',
+        HttpHeader.etag: etag,
+        HttpHeader.cacheControl: 'public, max-age=60',
+      },
+      body: utf8.encode(body),
+    );
+
+    test('the header lists the hash of each inline script and style', () async {
+      final request = _get('/');
+      final response = await contentSecurityPolicy(policy)(
+        request,
+        () async => html(page),
+      );
+      final v = _header(response, 'content-security-policy')!;
+      expect(request.cspNonce, isNull);
+      expect(
+        v,
+        contains(
+          "script-src 'self' "
+          "'sha256-${digest('var x="<script>";')}' "
+          "'sha256-${digest('{"prefetch":[]}')}'",
+        ),
+      );
+      expect(v, contains("style-src 'self' 'sha256-${digest('a{}')}'"));
+      expect(v, isNot(contains('nonce')));
+      expect(v, isNot(contains(digest('{"a":1}'))));
+    });
+
+    test('the page stays public and keeps its ETag and body', () async {
+      final response = await contentSecurityPolicy(policy)(
+        _get('/'),
+        () async => html(page, etag: '"h2"'),
+      );
+      expect(_header(response, 'cache-control'), 'public, max-age=60');
+      expect(_header(response, 'etag'), '"h2"');
+      expect(_html(response), page);
+    });
+
+    test('a streamed page is read whole', () async {
+      final response = await contentSecurityPolicy(policy)(
+        _get('/'),
+        () async => ThorResponse(
+          200,
+          headers: {HttpHeader.contentType: 'text/html; charset=utf-8'},
+          stream: Stream.fromIterable([
+            utf8.encode('<style>b{}</st'),
+            utf8.encode('yle><p>x</p>'),
+          ]),
+        ),
+      );
+      expect(
+        _header(response, 'content-security-policy'),
+        contains("'sha256-${digest('b{}')}'"),
+      );
+      expect(_html(response), '<style>b{}</style><p>x</p>');
+    });
+
+    test('hashes need nonce: false', () {
+      expect(() => ContentSecurityPolicy(hashes: true), throwsA(anything));
     });
   });
 

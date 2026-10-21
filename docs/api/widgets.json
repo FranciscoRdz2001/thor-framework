@@ -4966,7 +4966,7 @@
   "constructors": [
    {
     "name": "ElevatedButton",
-    "signature": "ElevatedButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "ElevatedButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Creates an elevated button.",
     "params": [
      {
@@ -5012,6 +5012,13 @@
       "doc": null
      },
      {
+      "name": "formId",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
       "name": "onPost",
       "type": "FutureOr<ActionResult?> Function(PageRequest)?",
       "required": false,
@@ -5036,7 +5043,7 @@
    },
    {
     "name": "ElevatedButton.icon",
-    "signature": "ElevatedButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "ElevatedButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Flutter's `ElevatedButton.icon`: an [icon] before the [label].",
     "params": [
      {
@@ -5083,6 +5090,13 @@
      },
      {
       "name": "formAction",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
+      "name": "formId",
       "type": "String?",
       "required": false,
       "default": null,
@@ -5614,7 +5628,7 @@
   "constructors": [
    {
     "name": "FilledButton",
-    "signature": "FilledButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "FilledButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Creates a filled button.",
     "params": [
      {
@@ -5660,6 +5674,13 @@
       "doc": null
      },
      {
+      "name": "formId",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
       "name": "onPost",
       "type": "FutureOr<ActionResult?> Function(PageRequest)?",
       "required": false,
@@ -5684,7 +5705,7 @@
    },
    {
     "name": "FilledButton.icon",
-    "signature": "FilledButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "FilledButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Flutter's `FilledButton.icon`: an [icon] before the [label].",
     "params": [
      {
@@ -5737,6 +5758,13 @@
       "doc": null
      },
      {
+      "name": "formId",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
       "name": "onPost",
       "type": "FutureOr<ActionResult?> Function(PageRequest)?",
       "required": false,
@@ -5761,7 +5789,7 @@
    },
    {
     "name": "FilledButton.tonal",
-    "signature": "FilledButton.tonal({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "FilledButton.tonal({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Flutter's `FilledButton.tonal`: a filled button in the secondary container's colors, for a lower emphasis than the primary fill.",
     "params": [
      {
@@ -5807,6 +5835,13 @@
       "doc": null
      },
      {
+      "name": "formId",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
       "name": "onPost",
       "type": "FutureOr<ActionResult?> Function(PageRequest)?",
       "required": false,
@@ -5831,7 +5866,7 @@
    },
    {
     "name": "FilledButton.tonalIcon",
-    "signature": "FilledButton.tonalIcon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "FilledButton.tonalIcon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Flutter's `FilledButton.tonalIcon`: an [icon] before the [label].",
     "params": [
      {
@@ -5878,6 +5913,13 @@
      },
      {
       "name": "formAction",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
+      "name": "formId",
       "type": "String?",
       "required": false,
       "default": null,
@@ -6547,7 +6589,7 @@
   "constructors": [
    {
     "name": "Form",
-    "signature": "Form({\n  Key? key,\n  required Widget child,\n  S? schema,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<S>)? onValid,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  void Function()? onSubmit,\n  String? action,\n  FormMethod? formMethod,\n  FormEncoding encoding = FormEncoding.urlEncoded,\n  bool disableOnSubmit = true,\n  bool resetScroll = false,\n  Object? failed,\n  Object? defaults,\n  bool noValidate = false,\n  bool preserveQuery = true,\n  bool stay = false,\n  ConfirmSpec? confirm,\n})",
+    "signature": "Form({\n  Key? key,\n  required Widget child,\n  S? schema,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<S>)? onValid,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  void Function()? onSubmit,\n  String? action,\n  FormMethod? formMethod,\n  FormEncoding encoding = FormEncoding.urlEncoded,\n  bool disableOnSubmit = true,\n  bool resetScroll = false,\n  Object? failed,\n  Object? defaults,\n  bool noValidate = false,\n  bool preserveQuery = true,\n  bool stay = false,\n  ConfirmSpec? confirm,\n  String? id,\n  String? live,\n  Duration liveDelay = const Duration(milliseconds: 350),\n})",
     "summary": "Creates a form.",
     "params": [
      {
@@ -6661,6 +6703,27 @@
       "required": false,
       "default": null,
       "doc": "Ask before the form submits (`onPost`, `onValid`, `action` or `onSubmit`): the page's one native `<dialog>` shows the question and the form goes only on a yes. Without JavaScript it goes straight (see `FilledButton(confirm:)`)."
+     },
+     {
+      "name": "id",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The form's `id`, for a button that submits it from outside (`FilledButton(formId: 'filters')`): the footer of a `Dialog` or a `Drawer` sits outside the form it closes. Unique in the page."
+     },
+     {
+      "name": "live",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The id of a `Region` this form keeps up to date as it changes, with no reload: a search box over a server-drawn list. [FormMethod.get] only. After [liveDelay] without typing (and at once on Enter or a change of a select or a checkbox) the browser asks the page for the region with the form's fields as the query, puts the answer in the region and writes the same query in the address bar (`replaceState`: no new history entry). The fields stay where they are, so the caret and the focus are kept: keep the form outside the region. Without JavaScript the form submits and the page loads whole with the same query."
+     },
+     {
+      "name": "liveDelay",
+      "type": "Duration",
+      "required": false,
+      "default": "const Duration(milliseconds: 350)",
+      "doc": "The pause after the last change before a [live] form asks."
      }
     ]
    }
@@ -9697,7 +9760,7 @@
   "constructors": [
    {
     "name": "Link",
-    "signature": "Link({\n  Key? key,\n  RouteUrl href = const RouteUrl('#'),\n  bool newTab = false,\n  String? label,\n  bool prefetch = true,\n  bool current = false,\n  required Widget child,\n})",
+    "signature": "Link({\n  Key? key,\n  RouteUrl href = const RouteUrl('#'),\n  bool newTab = false,\n  String? label,\n  bool prefetch = true,\n  bool current = false,\n  FragmentFetch? fetch,\n  required Widget child,\n})",
     "summary": "Links `child` to [href].",
     "params": [
      {
@@ -9734,6 +9797,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether [href] is the page being shown (`aria-current=\"page\"`), e.g. the active entry of a sidebar."
+     },
+     {
+      "name": "fetch",
+      "type": "FragmentFetch?",
+      "required": false,
+      "default": null,
+      "doc": "Shows a region of the page [href] names, here, instead of going there (see [FragmentFetch]). Without JavaScript, or with a modified click, the link goes to [href] as always."
      },
      {
       "name": "child",
@@ -10281,6 +10351,64 @@
       "required": false,
       "default": null,
       "doc": "A part of the result that doesn't depend on [listenable]."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "LoadMore",
+  "topic": "estado",
+  "summary": "The next page of a list the server drew, appended to it: the rows of a listing, a \"Load more\" control after them, and no reload. The page's `load` reads the position (`?cursor=…`) and the page draws its [items] and the [next] cursor; the browser asks for the same page with the next cursor, the server answers only this piece (the next rows and the next control) and the browser puts it where the control was.",
+  "doc": "The next page of a list the server drew, appended to it: the rows of a\nlisting, a \"Load more\" control after them, and no reload. The page's\n`load` reads the position (`?cursor=…`) and the page draws its [items]\nand the [next] cursor; the browser asks for the same page with the next\ncursor, the server answers only this piece (the next rows and the next\ncontrol) and the browser puts it where the control was.\n\n```dart\nGrid(\n  children: [\n    LoadMore(\n      id: 'places',\n      items: [for (final p in state.data.items) PlaceCard(p)],\n      next: state.data.next, // null: the last page, no control\n      child: const Text('Load more'),\n    ),\n  ],\n)\n```\n\n[child] is the control: a `Text`, a `Container`, a chip (not a button: it\nbecomes the `<a>`). It is a real link to the same page with `?cursor=…`\n(`rel=\"next\"`), so without JavaScript, for a search engine, with a modified\nclick or if the request fails, the visitor goes to the next page. A\n[LoadMoreTrigger.visible] control loads by itself when it nears the\nscreen (infinite scroll).\n\n[items] and the control are the widget's siblings in its parent: put it in\nthe `Column`, `Grid` or `Wrap` that holds the rows. The control keeps the\nrest of the page's query (`?q=pizza&cursor=…`).\n\n`// web:` Flutter's `ListView.builder` asks the model for more; here the\nserver draws the rows, the page's `load` runs for each request (keep the\nrows' query cheap) and the state of the earlier rows stays in the browser.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "LoadMore",
+    "signature": "LoadMore({\n  Key? key,\n  required String id,\n  required List<Widget> items,\n  required String? next,\n  required Widget child,\n  String param = 'cursor',\n  LoadMoreTrigger trigger = LoadMoreTrigger.click,\n})",
+    "summary": "Rows [items] and a control for the page that follows [next].",
+    "params": [
+     {
+      "name": "id",
+      "type": "String",
+      "required": true,
+      "default": null,
+      "doc": "Names the list in the page: part of the fragment's URL."
+     },
+     {
+      "name": "items",
+      "type": "List<Widget>",
+      "required": true,
+      "default": null,
+      "doc": "The rows of this page."
+     },
+     {
+      "name": "next",
+      "type": "String?",
+      "required": true,
+      "default": null,
+      "doc": "The value of [param] for the next page, or null when there is none."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": "The control's content."
+     },
+     {
+      "name": "param",
+      "type": "String",
+      "required": false,
+      "default": "'cursor'",
+      "doc": "The query key that carries [next] (`?cursor=…`)."
+     },
+     {
+      "name": "trigger",
+      "type": "LoadMoreTrigger",
+      "required": false,
+      "default": "LoadMoreTrigger.click",
+      "doc": "What makes the browser fetch the next page."
      }
     ]
    }
@@ -11272,7 +11400,7 @@
   "constructors": [
    {
     "name": "OutlinedButton",
-    "signature": "OutlinedButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "OutlinedButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Creates an outlined button.",
     "params": [
      {
@@ -11318,6 +11446,13 @@
       "doc": null
      },
      {
+      "name": "formId",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
       "name": "onPost",
       "type": "FutureOr<ActionResult?> Function(PageRequest)?",
       "required": false,
@@ -11342,7 +11477,7 @@
    },
    {
     "name": "OutlinedButton.icon",
-    "signature": "OutlinedButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "OutlinedButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Flutter's `OutlinedButton.icon`: an [icon] before the [label].",
     "params": [
      {
@@ -11389,6 +11524,13 @@
      },
      {
       "name": "formAction",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
+      "name": "formId",
       "type": "String?",
       "required": false,
       "default": null,
@@ -12515,6 +12657,36 @@
       "required": false,
       "default": "false",
       "doc": "`// web:` how [filter] matches (it only applies while [filter] is true). False (default): the typed text, as a whole, appears in the option's text, any case, as Flutter's own example `optionsBuilder` does. True: every whitespace-separated word appears, in any order, ignoring case and accents (`new york` finds `York, New`; `cafe` finds `Café`). Flutter has no such filter built in (its `optionsBuilder` is the app's), so the default keeps its semantics."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Region",
+  "topic": "estado",
+  "summary": "A part of the page that can be asked for alone: the server draws the page as always and answers only this region (`GET` the page's URL plus `thor-piece=<id>`), and the browser puts the answer in place of the region's content. It is what a live search, a product shown in a dialog or any \"update this part\" needs, with the page's own `load` and `build` deciding what is inside.",
+  "doc": "A part of the page that can be asked for alone: the server draws the page\nas always and answers only this region (`GET` the page's URL plus\n`thor-piece=<id>`), and the browser puts the answer in place of the\nregion's content. It is what a live search, a product shown in a dialog or\nany \"update this part\" needs, with the page's own `load` and `build`\ndeciding what is inside.\n\n```dart\n// The page's load reads `?q=`; the region is its results.\nForm(\n  formMethod: FormMethod.get,\n  live: 'results',\n  child: TextFormField(name: 'q'),\n)\nRegion(id: 'results', child: ResultsList(state.data)),\n```\n\nWithout JavaScript the `Form` submits and the page loads whole. What fills\na region from outside: `Form(live:)` (replaces its content as the visitor\ntypes), `Link(fetch:)` (shows another page's region here) and, inside the\nregion, nothing: it is drawn by the page. The region's content may use\n`Watch`, buttons and the states of the page.\n\n`// web:` Flutter has no counterpart. The page's `load` runs for the\nfragment's request too (the region needs the page's data in scope): keep it\ncheap or give the page `cache:`, which keeps its fragments as well. The\n[id] names the region in the page (`[A-Za-z0-9_-.]`) and must not repeat. A\nstatic export draws the content with no region around it.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "Region",
+    "signature": "Region({\n  Key? key,\n  required String id,\n  required Widget child,\n})",
+    "summary": "A region called [id] that holds [child].",
+    "params": [
+     {
+      "name": "id",
+      "type": "String",
+      "required": true,
+      "default": null,
+      "doc": "Names the region in the page: part of the fragment's URL."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": "The content, drawn by the page and by the fragment's request."
      }
     ]
    }
@@ -15837,7 +16009,7 @@
   "constructors": [
    {
     "name": "TextButton",
-    "signature": "TextButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "TextButton({\n  Key? key,\n  void Function()? onPressed,\n  required Widget child,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Creates a text button.",
     "params": [
      {
@@ -15883,6 +16055,13 @@
       "doc": null
      },
      {
+      "name": "formId",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
       "name": "onPost",
       "type": "FutureOr<ActionResult?> Function(PageRequest)?",
       "required": false,
@@ -15907,7 +16086,7 @@
    },
    {
     "name": "TextButton.icon",
-    "signature": "TextButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
+    "signature": "TextButton.icon({\n  Key? key,\n  void Function()? onPressed,\n  required Widget icon,\n  required Widget label,\n  ButtonType? buttonType,\n  ButtonStyle? style,\n  String? href,\n  String? formAction,\n  String? formId,\n  FutureOr<ActionResult?> Function(PageRequest)? onPost,\n  FutureOr<ActionResult?> Function(PageRequest, FormValues<Never>)? onValid,\n  ConfirmSpec? confirm,\n})",
     "summary": "Flutter's `TextButton.icon`: an [icon] before the [label].",
     "params": [
      {
@@ -15954,6 +16133,13 @@
      },
      {
       "name": "formAction",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": null
+     },
+     {
+      "name": "formId",
       "type": "String?",
       "required": false,
       "default": null,

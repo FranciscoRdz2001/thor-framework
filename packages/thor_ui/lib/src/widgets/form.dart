@@ -669,13 +669,55 @@ class Form<S extends FormSchema> extends StatelessWidget
     this.preserveQuery = true,
     this.stay = false,
     this.confirm,
+    this.id,
+    this.live,
+    this.liveDelay = const Duration(milliseconds: 350),
   }) : assert(
          onValid == null || onPost == null,
          'a form posts to one action: onValid or onPost',
+       ),
+       assert(
+         live == null ||
+             (formMethod == FormMethod.get &&
+                 onValid == null &&
+                 onPost == null &&
+                 onSubmit == null),
+         'Form(live:) is a GET form that only updates a Region: give it '
+         'formMethod: FormMethod.get and no action',
        );
 
   /// The form's fields and controls.
   final Widget child;
+
+  // web: not in Flutter.
+  // web: not in Flutter.
+  /// The id of a `Region` this form keeps up to date as it changes, with no
+  /// reload: a search box over a server-drawn list. [FormMethod.get] only.
+  /// After [liveDelay] without typing (and at once on Enter or a change of a
+  /// select or a checkbox) the browser asks the page for the region with the
+  /// form's fields as the query, puts the answer in the region and writes the
+  /// same query in the address bar (`replaceState`: no new history entry).
+  /// The fields stay where they are, so the caret and the focus are kept:
+  /// keep the form outside the region. Without JavaScript the form submits
+  /// and the page loads whole with the same query.
+  ///
+  /// ```dart
+  /// Form(
+  ///   formMethod: FormMethod.get,
+  ///   live: 'results',
+  ///   child: SearchBar(name: 'q'),
+  /// ),
+  /// Region(id: 'results', child: Results(state.data)), // load reads ?q=
+  /// ```
+  final String? live;
+
+  /// The pause after the last change before a [live] form asks.
+  final Duration liveDelay;
+
+  /// The form's `id`, for a button that submits it from outside
+  /// (`FilledButton(formId: 'filters')`): the footer of a `Dialog` or a
+  /// `Drawer` sits outside the form it closes. Unique in the page.
+  final String? id;
 
   /// The fields [onValid] receives: the same schema the server checks
   /// before running it (`TextFormField(field:)` puts the same rules in the
@@ -814,6 +856,7 @@ class Form<S extends FormSchema> extends StatelessWidget
       ThorStyleRegistry.active(context)?.useFormScript();
     }
     if (stay) ThorStyleRegistry.active(context)?.useStayScript();
+    if (live != null) ThorStyleRegistry.active(context)?.useLazyScript();
     // The answer of a POST that carries the failed form shows its errors and
     // focuses the first: whatever the status the action chose (a soft `200`).
     // A GET never is one (`failed:` is the answer of an action), and a
@@ -851,6 +894,7 @@ class Form<S extends FormSchema> extends StatelessWidget
       ],
       childRules: ChildRules.box,
       attributes: {
+        'id': ?id,
         'action': ?_actionUrl(context),
         'method': formMethod?.value ?? FormMethod.post.value,
         // The `AutofillGroup` around it that asked the browser to forget.
@@ -866,6 +910,10 @@ class Form<S extends FormSchema> extends StatelessWidget
         if (!disableOnSubmit) 'data-t-nopending': '',
         if (resetScroll) 'data-t-reset': '',
         if (stay) 'data-t-stay': '',
+        if (live != null) ...{
+          'data-thor-live': live!,
+          'data-thor-live-ms': '${liveDelay.inMilliseconds}',
+        },
         if (noValidate) 'novalidate': '',
         ...confirmAttributes(ThorStyleRegistry.active(context), confirm),
         ...engineAttributes({'submit': onSubmit}),

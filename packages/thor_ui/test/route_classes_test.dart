@@ -130,6 +130,43 @@ class _UserLayout extends ThorLayout<String> {
       Column(children: [Text('user ${state.data}'), child]);
 }
 
+// A page with no data that still runs `load` (to set a header).
+class _HeaderPage extends ThorPage<void> {
+  const _HeaderPage();
+
+  @override
+  void load(PageRequest request) {
+    request.response.headers[const HttpHeader('x-from-load')] = 'yes';
+  }
+
+  @override
+  Widget build(BuildContext context, PageState<void> state) =>
+      const Text('header');
+}
+
+int flakyLoads = 0;
+
+// Public and cached, unless its load says the data failed.
+class _FlakyPage extends ThorPage<void> {
+  const _FlakyPage()
+    : super(
+        cache: const Duration(minutes: 5),
+        cacheControl: const CacheControl(maxAge: Duration(seconds: 60)),
+      );
+
+  @override
+  void load(PageRequest request) {
+    flakyLoads++;
+    if (request.uri.queryParameters.containsKey('fail')) {
+      request.response.noStore();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, PageState<void> state) =>
+      const Text('flaky');
+}
+
 class _ForgotLoad extends ThorPage<String> {
   const _ForgotLoad();
 
@@ -190,6 +227,8 @@ final ThorRouter router = ThorRouter([
       articleRoute,
       itemRoute,
       docsRoute,
+      ThorRoute('/header', const _HeaderPage()),
+      ThorRoute('/flaky', const _FlakyPage()),
       ThorRoute('/guarded', const _GuardedPage()),
       ThorRoute('/moved', const _MovedPage()),
       ThorRoute('/upload', const _UploadPage()),
@@ -247,6 +286,26 @@ void main() {
       expect(r.text, contains('hi ana'));
       expect(r.text, contains('article hello for ana'));
       expect(r.text, contains('<title>hello for ana · Site</title>'));
+    });
+
+    test('a ThorPage<void> runs its load', () async {
+      final r = await handler.handle(request('GET', '/header'));
+      expect(r.status, 200);
+      expect(r.headers['x-from-load'], 'yes');
+    });
+
+    test('a load can switch a public page to no-store, and the page '
+        'cache keeps no copy of it', () async {
+      flakyLoads = 0;
+      final failed = await handler.handle(request('GET', '/flaky?fail=1'));
+      expect(failed.headers['cache-control'], 'no-store');
+      expect(failed.headers['etag'], isNull);
+      await handler.handle(request('GET', '/flaky?fail=1'));
+      expect(flakyLoads, 2, reason: 'not served from the page cache');
+      final ok = await handler.handle(request('GET', '/flaky'));
+      expect(ok.headers['cache-control'], 'public, max-age=60');
+      await handler.handle(request('GET', '/flaky'));
+      expect(flakyLoads, 3, reason: 'a good copy is cached');
     });
 
     test('a page without data inside the layout', () async {
@@ -344,14 +403,22 @@ void main() {
       expect(nested.personalized, isTrue);
     });
 
-    test('a page without data has no load', () {
+    test('a page without data loads nothing', () async {
       final plain = router.routes
           .whereType<LayoutRoute<Widget, Object?>>()
           .single
           .children
           .whereType<PageRoute<Widget, Object?>>()
           .firstWhere((p) => p.path == 'plain');
-      expect(plain.load, isNull);
+      expect(
+        await plain.runLoad(
+          PageRequest(
+            method: HttpMethod.get,
+            uri: Uri.parse('http://site.test/plain'),
+          ),
+        ),
+        isNull,
+      );
     });
   });
 
@@ -453,6 +520,8 @@ void main() {
       );
       expect(router.staticPaths, [
         '/plain',
+        '/header',
+        '/flaky',
         '/guarded',
         '/moved',
         '/upload',

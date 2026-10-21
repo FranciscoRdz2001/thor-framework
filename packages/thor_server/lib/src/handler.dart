@@ -2985,7 +2985,10 @@ class RouteHandler<P> {
   }
 
   static bool _cacheable(ThorResponse r) =>
-      r.status == 200 && r.cookies.isEmpty;
+      r.status == 200 &&
+      r.cookies.isEmpty &&
+      // A load that asked for it (`request.response.noStore()`).
+      !(_header(r.headers, 'cache-control')?.contains('no-store') ?? false);
 
   /// What [onError] is when the app does not set one: the exception and its
   /// stack on stderr.

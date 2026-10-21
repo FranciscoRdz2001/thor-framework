@@ -41,8 +41,14 @@ class Link extends ParentDataWrapper {
     this.label,
     this.prefetch = true,
     this.current = false,
+    this.fetch,
     required super.child,
   });
+
+  /// Shows a region of the page [href] names, here, instead of going there
+  /// (see [FragmentFetch]). Without JavaScript, or with a modified click,
+  /// the link goes to [href] as always.
+  final FragmentFetch? fetch;
 
   /// Whether [href] is the page being shown (`aria-current="page"`), e.g.
   /// the active entry of a sidebar.
@@ -84,8 +90,66 @@ class Link extends ParentDataWrapper {
       'aria-label': ?label,
       if (current) 'aria-current': 'page',
       if (!prefetch) noPrefetchAttribute: '',
+      if (fetch case final f?) ...f._attributes(href),
     },
   );
+}
+
+/// What a [Link] fetches instead of navigating: the [Region] [piece] of the
+/// page the link points to, put into the [Region] [into] of the page that
+/// has the link, and the dialog or popover [open] opened once it is there.
+///
+/// One `Dialog` can show any item this way: it has an empty region, each
+/// item's link asks for the `detail` region of the item's own page, and the
+/// dialog holds one item's content instead of the whole catalog's.
+///
+/// ```dart
+/// Dialog(id: 'product', child: Region(id: 'product-body', child: SizedBox())),
+/// Link(
+///   href: RouteUrl('/shop/mug'),
+///   fetch: const FragmentFetch(
+///     piece: 'detail',
+///     into: 'product-body',
+///     open: 'product',
+///   ),
+///   child: ProductCard(mug),
+/// ),
+/// // /shop/mug draws: Region(id: 'detail', child: ProductDetail(mug))
+/// ```
+///
+/// Clicking again on the same link only reopens the dialog. If the request
+/// fails the browser goes to the link's page.
+///
+/// `// web:` Flutter's `showDialog(builder:)` builds the content in the
+/// device; here the server draws it, and only when it is asked for.
+class FragmentFetch {
+  /// Fetches [piece] of the link's page into [into].
+  const FragmentFetch({required this.piece, required this.into, this.open});
+
+  /// The id of the `Region` of the page the link points to.
+  final String piece;
+
+  /// The id of the `Region` of this page that receives it.
+  final String into;
+
+  /// The id of the `Dialog`, `Drawer` or popover to open once the region has
+  /// its content, or null.
+  final String? open;
+
+  Map<String, String> _attributes(RouteUrl href) {
+    final url = '$href';
+    final hash = url.indexOf('#');
+    final page = hash < 0 ? url : url.substring(0, hash);
+    return {
+      'data-thor-lazy':
+          '$page${page.contains('?') ? '&' : '?'}thor-piece='
+          '${Uri.encodeQueryComponent(piece)}',
+      'data-thor-lazy-on': 'click',
+      'data-thor-lazy-as': 'into',
+      'data-thor-lazy-into': into,
+      'data-thor-lazy-open': ?open,
+    };
+  }
 }
 
 /// The `onclick` of a panel that closes with [close] when a link inside

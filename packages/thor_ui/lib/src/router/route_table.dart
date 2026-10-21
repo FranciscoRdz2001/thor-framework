@@ -118,14 +118,18 @@ abstract class ThorPage<T> {
   final bool invalidateOnWrite;
 
   /// The page's data (runs before [build] and [meta]). A page with data
-  /// (`ThorPage<Article>`) must override it; a `ThorPage<void>` has none.
-  FutureOr<T> load(PageRequest request) => throw StateError(
-    thorError(
-      'THOR-P013',
-      '$runtimeType extends ThorPage<$T> but has no load: override `load` or '
-          'extend `ThorPage<void>`',
-    ),
-  );
+  /// (`ThorPage<Article>`) must override it; a `ThorPage<void>` may: it runs
+  /// before [build] like any other, to set a header or a cookie, check
+  /// something or throw, and its result is nothing.
+  FutureOr<T> load(PageRequest request) => _hasData<T>()
+      ? throw StateError(
+          thorError(
+            'THOR-P013',
+            '$runtimeType extends ThorPage<$T> but has no load: override `load` or '
+                'extend `ThorPage<void>`',
+          ),
+        )
+      : null as T;
 
   /// The page, from its data.
   Widget build(BuildContext context, PageState<T> state);
@@ -179,7 +183,7 @@ abstract class ThorPage<T> {
 
   PageRoute<Widget, T> _routeOf(String path) => routePage<T>(
     path: path,
-    load: _hasData<T>() ? load : null,
+    load: load,
     build: transition == null
         ? build
         : (context, state) => PageTransitionScope(

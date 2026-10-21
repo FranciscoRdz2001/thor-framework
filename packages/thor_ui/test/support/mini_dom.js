@@ -59,9 +59,13 @@
       p.childNodes.splice(p.childNodes.indexOf(this), 1);
       this.parentNode = null;
     }
-    replaceWith(n) {
-      this.parentNode.insertBefore(n, this);
+    replaceWith(...ns) {
+      for (const n of ns) this.parentNode.insertBefore(n, this);
       this.remove();
+    }
+    replaceChildren(...ns) {
+      for (const c of [...this.childNodes]) c.remove();
+      for (const n of ns) this.appendChild(n);
     }
     contains(n) {
       for (; n; n = n.parentNode) if (n === this) return true;
@@ -157,6 +161,14 @@
       this.attributes = [];
       if (this.localName === 'template') this.content = new Fragment();
     }
+    // `<template>.innerHTML = '…'`: the parsed nodes become its content.
+    set innerHTML(html) {
+      const target = this.content || this;
+      target.replaceChildren(...parseHtml(String(html)).childNodes);
+    }
+    focus() {
+      globalThis.document.activeElement = this;
+    }
     getAttribute(n) {
       return this.attributes.find((a) => a.name === n)?.value ?? null;
     }
@@ -251,6 +263,7 @@
   globalThis.document = {
     documentElement: html,
     body,
+    activeElement: body,
     cookie: '',
     createElement: (t) => new Element(t),
     createDocumentFragment: () => new Fragment(),

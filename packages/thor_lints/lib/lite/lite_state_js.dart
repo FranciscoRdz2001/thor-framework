@@ -2812,7 +2812,10 @@ class _Translator {
         for (final v in m.fields.variables) {
           // (a derived is read as a signal: `.value`)
           if (_derivedCall(v) != null) continue;
-          final g = (v.declaredFragment?.element as FieldElement?)?.getter;
+          // (so is a late `state(…)`: it starts with the others)
+          final fe = v.declaredFragment?.element;
+          if (fe is FieldElement && _isSignal(fe.type)) continue;
+          final g = (fe as FieldElement?)?.getter;
           if (g != null) info.getters.add(g);
         }
       }
@@ -2873,7 +2876,22 @@ class _Translator {
               signals.add(key == js ? js : '$key: $js');
               continue;
             }
-            if (m.fields.isLate) {
+            // `late final x = state(…, localScope: other)`: the one place a
+            // field can name another (a plain initializer cannot read
+            // `this`). The browser starts every field in order, so it is
+            // translated like a `final` one.
+            final lateState =
+                m.fields.isLate &&
+                m.fields.isFinal &&
+                !m.isStatic &&
+                _isSignal(f.type) &&
+                v.initializer is MethodInvocation &&
+                (v.initializer! as MethodInvocation).methodName.name ==
+                    'state' &&
+                _inThor(
+                  (v.initializer! as MethodInvocation).methodName.element,
+                );
+            if (m.fields.isLate && !lateState) {
               if (_lazyField(m) &&
                   !(isServerQueryType(f.type) ||
                       isServerEventStreamType(f.type) ||
