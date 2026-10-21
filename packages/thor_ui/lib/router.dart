@@ -66,9 +66,9 @@ import 'src/widgets/feedback.dart' show FlashScope;
 import 'thor_ui.dart'
     show BuildContext, Center, FontFace, StatelessWidget, Text, ThorApp, Widget;
 
-// What an app writes. Dev, export and test plumbing (`ThorDev`, `DevHosts`,
-// `exportSite`, `ThorHttpTransport`, `ResponseDraft`, the router index…) is
-// not re-exported: import `package:thor_server/thor_server.dart` for it.
+// What an app writes. Export and test plumbing (`DevHosts`, `exportSite`,
+// `ThorHttpTransport`, `ResponseDraft`, the router index…) is not
+// re-exported: import `package:thor_server/thor_server.dart` for it.
 export 'package:thor_server/thor_server.dart'
     show
         ActionMessage,
@@ -145,6 +145,7 @@ export 'package:thor_server/thor_server.dart'
         RouteUrl,
         HttpMethod,
         StatusCode,
+        ThorDev,
         ThorHttpClient,
         ThorHttpResponse,
         ThorResponse,
