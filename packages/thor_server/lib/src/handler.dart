@@ -2138,6 +2138,17 @@ class RouteHandler<P> {
 
     final pageState = stateAt(entry.layouts.length);
     var page = entry.page.buildWith(pageState);
+    final fromPage = entry.page.forLayoutsWith(pageState);
+    PageState<Object?> layoutStateAt(int i) => fromPage.isEmpty
+        ? stateAt(i)
+        : PageState(
+            request: request,
+            data: data[i],
+            form: result?.data,
+            status: status,
+            levels: data.sublist(0, i + 1),
+            pageValues: fromPage,
+          );
     // The nearest template above a level shows that level's title.
     PageMeta metaNow() {
       var meta = const PageMeta();
@@ -2160,7 +2171,7 @@ class RouteHandler<P> {
       meta = meta.merge(PageMeta(robotsMeta: _withNoindex(meta.robotsContent)));
     }
     for (var i = entry.layouts.length - 1; i >= 0; i--) {
-      page = entry.layouts[i].buildWith(stateAt(i), page);
+      page = entry.layouts[i].buildWith(layoutStateAt(i), page);
     }
     // Only a page every visitor sees alike teaches its links to the next
     // request: a visitor's image must never reach another one's header.

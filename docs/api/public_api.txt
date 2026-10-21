@@ -1054,12 +1054,14 @@ router	PageRoute.build	P Function(PageState<T>) build
 router	PageRoute.buildWith	P buildWith(PageState<Object?> state)
 router	PageRoute.cache	Duration? cache
 router	PageRoute.earlyHints	bool? earlyHints
+router	PageRoute.forLayouts	List<Object> Function(PageState<T>)? forLayouts
+router	PageRoute.forLayoutsWith	List<Object> forLayoutsWith(PageState<Object?> state)
 router	PageRoute.invalidateOnWrite	bool invalidateOnWrite
 router	PageRoute.load	Loader<T>? load
 router	PageRoute.maxBodyBytes	int? maxBodyBytes
 router	PageRoute.meta	PageMeta Function(PageState<T>)? meta
 router	PageRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
-router	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch})
+router	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
 router	PageRoute.personalized	bool? personalized
 router	PageRoute.prefetch	bool? prefetch
 router	PageRoute.prerender	bool? prerender
@@ -1071,8 +1073,10 @@ router	PageState.cast	PageState<D> cast<D>()
 router	PageState.data	T data
 router	PageState.dataOf	D? dataOf<D>()
 router	PageState.form	Object? form
+router	PageState.fromPage	V? fromPage<V extends Object>()
 router	PageState.levels	List<Object?> levels
-router	PageState.new	PageState<T>({required PageRequest request, required T data, Object? form, int status = 200, List<Object?> levels = const []})
+router	PageState.new	PageState<T>({required PageRequest request, required T data, Object? form, int status = 200, List<Object?> levels = const [], List<Object> pageValues = const []})
+router	PageState.pageValues	List<Object> pageValues
 router	PageState.pathParameters	Map<String, String> get pathParameters
 router	PageState.request	PageRequest request
 router	PageState.status	int status
@@ -1398,6 +1402,7 @@ router	ThorPage	abstract class
 router	ThorPage.build	Widget build(BuildContext context, PageState<T> state)
 router	ThorPage.cache	Duration? cache
 router	ThorPage.earlyHints	bool? earlyHints
+router	ThorPage.forLayouts	List<Object> forLayouts(PageState<T> state)
 router	ThorPage.invalidateOnWrite	bool invalidateOnWrite
 router	ThorPage.load	FutureOr<T> load(PageRequest request)
 router	ThorPage.maxBodyBytes	int? maxBodyBytes
@@ -2933,12 +2938,14 @@ thor_server	PageRoute.build	P Function(PageState<T>) build
 thor_server	PageRoute.buildWith	P buildWith(PageState<Object?> state)
 thor_server	PageRoute.cache	Duration? cache
 thor_server	PageRoute.earlyHints	bool? earlyHints
+thor_server	PageRoute.forLayouts	List<Object> Function(PageState<T>)? forLayouts
+thor_server	PageRoute.forLayoutsWith	List<Object> forLayoutsWith(PageState<Object?> state)
 thor_server	PageRoute.invalidateOnWrite	bool invalidateOnWrite
 thor_server	PageRoute.load	Loader<T>? load
 thor_server	PageRoute.maxBodyBytes	int? maxBodyBytes
 thor_server	PageRoute.meta	PageMeta Function(PageState<T>)? meta
 thor_server	PageRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
-thor_server	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch})
+thor_server	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
 thor_server	PageRoute.personalized	bool? personalized
 thor_server	PageRoute.prefetch	bool? prefetch
 thor_server	PageRoute.prerender	bool? prerender
@@ -2950,8 +2957,10 @@ thor_server	PageState.cast	PageState<D> cast<D>()
 thor_server	PageState.data	T data
 thor_server	PageState.dataOf	D? dataOf<D>()
 thor_server	PageState.form	Object? form
+thor_server	PageState.fromPage	V? fromPage<V extends Object>()
 thor_server	PageState.levels	List<Object?> levels
-thor_server	PageState.new	PageState<T>({required PageRequest request, required T data, Object? form, int status = 200, List<Object?> levels = const []})
+thor_server	PageState.new	PageState<T>({required PageRequest request, required T data, Object? form, int status = 200, List<Object?> levels = const [], List<Object> pageValues = const []})
+thor_server	PageState.pageValues	List<Object> pageValues
 thor_server	PageState.pathParameters	Map<String, String> get pathParameters
 thor_server	PageState.request	PageRequest request
 thor_server	PageState.status	int status

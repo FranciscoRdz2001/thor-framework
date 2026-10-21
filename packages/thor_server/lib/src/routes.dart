@@ -64,7 +64,12 @@ class PageRoute<P, T> extends RouteNode<P> {
     this.tags = const [],
     this.invalidateOnWrite = true,
     this.prefetch,
+    this.forLayouts,
   }) : super(path);
+
+  /// What the page hands the layouts above it (`ThorPage.forLayouts`): read
+  /// there with `PageState.fromPage`.
+  final List<Object> Function(PageState<T> state)? forLayouts;
 
   /// Largest request body this page's form actions accept, in bytes; `null`
   /// keeps the server's (`ThorServer(maxBodyBytes:)`, 1 MiB). Raise it on
@@ -145,6 +150,10 @@ class PageRoute<P, T> extends RouteNode<P> {
 
   /// Meta with an untyped state.
   PageMeta? metaWith(PageState<Object?> state) => meta?.call(state.cast<T>());
+
+  /// What the page hands its layouts, with an untyped state.
+  List<Object> forLayoutsWith(PageState<Object?> state) =>
+      forLayouts?.call(state.cast<T>()) ?? const [];
 }
 
 /// A route that answers something other than a page (a file, XML, text,
@@ -295,6 +304,7 @@ class PageState<T> {
     this.form,
     this.status = 200,
     this.levels = const [],
+    this.pageValues = const [],
   });
 
   /// The request.
@@ -311,6 +321,27 @@ class PageState<T> {
 
   /// Data of every level (layouts, then the page), root first.
   final List<Object?> levels;
+
+  /// What the page handed its layouts (`ThorPage.forLayouts`); empty in the
+  /// page's own state and in an error page.
+  final List<Object> pageValues;
+
+  /// The first value of type [V] the page handed its layouts, or null: how
+  /// a layout reads what one route asks of it (hide the footer, change the
+  /// width) while it builds around `child`.
+  ///
+  /// ```dart
+  /// if (state.fromPage<HideFooter>() == null) const Footer(),
+  /// ```
+  // web: Flutter reads this from the route's `settings` or an inherited
+  // widget below the layout; a layout here is built after the page, so it
+  // reads a value the page declared by type.
+  V? fromPage<V extends Object>() {
+    for (final v in pageValues) {
+      if (v is V) return v;
+    }
+    return null;
+  }
 
   /// Path parameters (`[slug]`).
   Map<String, String> get pathParameters => request.pathParameters;
@@ -334,6 +365,7 @@ class PageState<T> {
     form: form,
     status: status,
     levels: levels,
+    pageValues: pageValues,
   );
 }
 

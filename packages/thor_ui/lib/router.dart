@@ -917,6 +917,7 @@ PageRoute<Widget, T> routePage<T>({
   List<String> tags = const [],
   bool invalidateOnWrite = true,
   bool? prefetch,
+  List<Object> Function(PageState<T> state)? forLayouts,
 }) => PageRoute<Widget, T>(
   path: path,
   load: load,
@@ -933,6 +934,7 @@ PageRoute<Widget, T> routePage<T>({
   tags: tags,
   invalidateOnWrite: invalidateOnWrite,
   prefetch: prefetch,
+  forLayouts: forLayouts,
 );
 
 /// A layout route whose `build` gets a `BuildContext`, with the error and

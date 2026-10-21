@@ -128,6 +128,37 @@ class SalesLayout extends ThorLayout<void> {
 }
 ```
 
+Una página puede pedirle algo a su marco. `forLayouts` devuelve objetos simples que los layouts a su alrededor leen, por tipo, con `state.fromPage<V>()`; así un layout no necesita una lista de rutas.
+
+```dart
+class HideFooter {
+  const HideFooter();
+}
+
+class CheckoutPage extends ThorPage<void> {
+  const CheckoutPage();
+
+  @override
+  List<Object> forLayouts(PageState<void> state) => [const HideFooter()];
+
+  @override
+  Widget build(BuildContext context, PageState<void> state) => const Text('Pagar');
+}
+
+class ShopLayout extends ThorLayout<void> {
+  const ShopLayout();
+
+  @override
+  Widget build(BuildContext context, PageState<void> state, Widget child) =>
+      Column(
+        children: [
+          child,
+          if (state.fromPage<HideFooter>() == null) const Text('Pie'),
+        ],
+      );
+}
+```
+
 Una pantalla sin marco, como el inicio de sesión, va en un grupo aparte.
 
 ### Páginas de error

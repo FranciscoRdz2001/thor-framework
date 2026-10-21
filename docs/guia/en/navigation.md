@@ -128,6 +128,37 @@ class SalesLayout extends ThorLayout<void> {
 }
 ```
 
+A page can ask its frame for something. `forLayouts` returns plain objects that the layouts around it read, by type, with `state.fromPage<V>()`, so a layout needs no list of routes.
+
+```dart
+class HideFooter {
+  const HideFooter();
+}
+
+class CheckoutPage extends ThorPage<void> {
+  const CheckoutPage();
+
+  @override
+  List<Object> forLayouts(PageState<void> state) => [const HideFooter()];
+
+  @override
+  Widget build(BuildContext context, PageState<void> state) => const Text('Pay');
+}
+
+class ShopLayout extends ThorLayout<void> {
+  const ShopLayout();
+
+  @override
+  Widget build(BuildContext context, PageState<void> state, Widget child) =>
+      Column(
+        children: [
+          child,
+          if (state.fromPage<HideFooter>() == null) const Text('Footer'),
+        ],
+      );
+}
+```
+
 A screen without a frame, such as sign-in, goes in a separate group.
 
 ### Error pages

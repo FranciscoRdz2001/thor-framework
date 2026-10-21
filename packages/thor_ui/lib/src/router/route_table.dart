@@ -128,6 +128,29 @@ abstract class ThorPage<T> {
   /// null comes from the groups above).
   PageMeta meta(PageState<T> state) => const PageMeta();
 
+  /// Values this page hands the layouts around it, which they read while
+  /// they build with `state.fromPage<V>()`: how one route asks its frame
+  /// for something (no footer, a narrower column). Layouts still hand data
+  /// down through `request.parent<T>()`; this is the way back up.
+  ///
+  /// ```dart
+  /// class CheckoutPage extends ThorPage<void> {
+  ///   const CheckoutPage();
+  ///
+  ///   @override
+  ///   List<Object> forLayouts(PageState<void> state) => [const HideFooter()];
+  ///   …
+  /// }
+  ///
+  /// // in the layout's build:
+  /// if (state.fromPage<HideFooter>() == null) const Footer(),
+  /// ```
+  ///
+  /// `// web:` Flutter would read the route's `settings` or an inherited
+  /// widget; here the page is built before its layouts, and the values are
+  /// plain objects looked up by type (the first match wins).
+  List<Object> forLayouts(PageState<T> state) => const [];
+
   /// A path to send the visitor to instead of this page, or null (a `302`;
   /// a `303` for a form `POST`).
   ///
@@ -168,6 +191,7 @@ abstract class ThorPage<T> {
     tags: tags,
     invalidateOnWrite: invalidateOnWrite,
     prefetch: prefetch,
+    forLayouts: forLayouts,
   );
 }
 

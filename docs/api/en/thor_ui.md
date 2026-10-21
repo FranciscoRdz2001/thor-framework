@@ -4443,7 +4443,7 @@ A page: what a `ThorRoute` of the route table (`lib/router.dart`) becomes.
 
 What a page (or layout) builds from.
 
-- `PageState<T>({required PageRequest request, required T data, Object? form, int status = 200, List<Object?> levels = const []})` — The state of one route level.
+- `PageState<T>({required PageRequest request, required T data, Object? form, int status = 200, List<Object?> levels = const [], List<Object> pageValues = const []})` — The state of one route level.
 
 ### `RateLimit` · class
 
