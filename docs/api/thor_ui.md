@@ -4489,7 +4489,8 @@ Ends the request with a redirect to [location]. Thrown from a `load` or returned
 - `Redirect.back(PageRequest request, {int status = 303, bool resetScroll = false})` — The page [request] was posted from, its query kept and the action key (`?/save`) gone: the very URL the visitor was on, so the browser keeps their scroll and the pressed button (`thor_ui`'s form script). A hand-written `Redirect(request.uri.path)` drops the query (`/orders? status=paid` lands on `/orders`): that is another page and it starts at the top. Not the `Referer`: that header is the client's to send or not, and an action may also be posted from another page.
 - `Redirect.found(RouteUrl location)` — `302 Found`: a temporary redirect (e.g. a protected page → `/login`).
 - `Redirect.temporary(RouteUrl location)` — `307 Temporary Redirect`: keeps the method and body.
-- `Redirect.permanent(RouteUrl location)` — `308 Permanent Redirect`.
+- `Redirect.moved(RouteUrl location)` — `301 Moved Permanently`: the classic permanent redirect for a URL that changed for good (search engines transfer the page to the new URL). A browser may follow it with a `GET` whatever the original method.
+- `Redirect.permanent(RouteUrl location)` — `308 Permanent Redirect`: permanent, and the method and body are kept. For a plain moved page [Redirect.moved] (`301`) is the usual choice.
 
 ### `ReferrerPolicy` · enum
 

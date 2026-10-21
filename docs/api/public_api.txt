@@ -1117,6 +1117,7 @@ router	Redirect.flash	Redirect flash(String message, {FlashKind kind = FlashKind
 router	Redirect.flashMessage	FlashMessage? flashMessage
 router	Redirect.found	Redirect.found(RouteUrl location)
 router	Redirect.location	RouteUrl location
+router	Redirect.moved	Redirect.moved(RouteUrl location)
 router	Redirect.new	Redirect(RouteUrl location, {int status = 303, bool resetScroll = false})
 router	Redirect.permanent	Redirect.permanent(RouteUrl location)
 router	Redirect.resetScroll	bool resetScroll
@@ -3002,6 +3003,7 @@ thor_server	Redirect.flash	Redirect flash(String message, {FlashKind kind = Flas
 thor_server	Redirect.flashMessage	FlashMessage? flashMessage
 thor_server	Redirect.found	Redirect.found(RouteUrl location)
 thor_server	Redirect.location	RouteUrl location
+thor_server	Redirect.moved	Redirect.moved(RouteUrl location)
 thor_server	Redirect.new	Redirect(RouteUrl location, {int status = 303, bool resetScroll = false})
 thor_server	Redirect.permanent	Redirect.permanent(RouteUrl location)
 thor_server	Redirect.resetScroll	bool resetScroll

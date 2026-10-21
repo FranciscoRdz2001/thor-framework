@@ -77,7 +77,20 @@ class Redirect extends ActionResult implements Exception {
       resetScroll = false,
       super._(307);
 
-  /// `308 Permanent Redirect`.
+  /// `301 Moved Permanently`: the classic permanent redirect for a URL that
+  /// changed for good (search engines transfer the page to the new URL). A
+  /// browser may follow it with a `GET` whatever the original method.
+  ///
+  /// `// web:` Flutter has no analogue; [Redirect.permanent] (`308`) is the
+  /// same promise keeping the method, and `Redirect(location, status: 301)`
+  /// is this constructor spelled out.
+  const Redirect.moved(this.location)
+    : flashMessage = null,
+      resetScroll = false,
+      super._(301);
+
+  /// `308 Permanent Redirect`: permanent, and the method and body are kept.
+  /// For a plain moved page [Redirect.moved] (`301`) is the usual choice.
   const Redirect.permanent(this.location)
     : flashMessage = null,
       resetScroll = false,
