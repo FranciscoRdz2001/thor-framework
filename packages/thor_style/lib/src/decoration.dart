@@ -189,6 +189,9 @@ sealed class Gradient {
   /// CSS gradient function (`linear-gradient(...)`, `radial-gradient(...)`).
   String get css;
 
+  /// The gradients painted, top first: this one, or a [LayeredGradient]'s.
+  List<Gradient> get layers => [this];
+
   /// The color stops, remapped from 0..1 onto [from]..[to] of the line.
   String _stops([double from = 0, double to = 1]) {
     final remap = from != 0 || to != 1;
@@ -319,6 +322,45 @@ class RadialGradient extends Gradient {
 
   @override
   int get hashCode => Object.hash(RadialGradient, center, radius, _baseHash);
+}
+
+/// Several gradients painted on top of each other in one box (the first is
+/// the topmost), like CSS's comma-separated `background-image`.
+///
+/// ```dart
+/// BoxDecoration(
+///   gradient: LayeredGradient([
+///     RadialGradient(colors: [glow, transparent]),
+///     RadialGradient(colors: [dot, dot, transparent], stops: [0, .1, .1], tile: Size(16, 16)),
+///   ]),
+/// )
+/// ```
+///
+/// `// web:` Flutter's [BoxDecoration] holds one gradient; to stack more it
+/// nests a `DecoratedBox` per layer (which works here too, at the cost of an
+/// element each). The layers share the box's `background-color`, which sits
+/// below all of them, and each keeps its own [Gradient.tile].
+class LayeredGradient extends Gradient {
+  /// Stacks [gradients] in one box, the first on top.
+  const LayeredGradient(List<Gradient> gradients)
+    : _gradients = gradients,
+      super(colors: const []);
+
+  final List<Gradient> _gradients;
+
+  @override
+  List<Gradient> get layers => [for (final g in _gradients) ...g.layers];
+
+  @override
+  String get css => layers.map((g) => g.css).join(', ');
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LayeredGradient && listsEqual(other._gradients, _gradients);
+
+  @override
+  int get hashCode => Object.hash(LayeredGradient, hashList(_gradients));
 }
 
 /// Flutter's `DecorationImage` (network/asset URL).
@@ -459,17 +501,18 @@ class BoxDecoration with Adaptable<BoxDecoration> {
   CssDeclarations toCss() => _cssCache[this] ??= _computeCss();
 
   CssDeclarations _computeCss() {
+    final layers = gradient?.layers ?? const <Gradient>[];
     final images = [
-      if (gradient != null) gradient!.css,
+      for (final g in layers) g.css,
       if (image != null) cssUrl(image!.url),
     ];
     return {
       if (color != null) 'background-color': color!.css,
       if (images.isNotEmpty) 'background-image': images.join(', '),
-      if (gradient?.tile != null || image?.fit != null)
+      if (layers.any((g) => g.tile != null) || image?.fit != null)
         'background-size': [
-          if (gradient != null)
-            switch (gradient!.tile) {
+          for (final g in layers)
+            switch (g.tile) {
               final t? => '${cssPx(t.width)} ${cssPx(t.height)}',
               null => 'auto',
             },
@@ -484,8 +527,16 @@ class BoxDecoration with Adaptable<BoxDecoration> {
             },
         ].join(', '),
       if (image != null) ...{
-        'background-position': image!.alignment.cssPosition,
-        'background-repeat': image!.repeat ? 'repeat' : 'no-repeat',
+        // One value per layer: the image's position and repeat must not
+        // reach the gradients under it (a tile needs `repeat`).
+        'background-position': [
+          for (final _ in layers) '0% 0%',
+          image!.alignment.cssPosition,
+        ].join(', '),
+        'background-repeat': [
+          for (final _ in layers) 'repeat',
+          image!.repeat ? 'repeat' : 'no-repeat',
+        ].join(', '),
       },
       ...?border?.toCss(),
       if (shape == BoxShape.circle)

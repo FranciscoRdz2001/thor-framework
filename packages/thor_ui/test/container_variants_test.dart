@@ -57,4 +57,29 @@ void main() {
     );
     expect(RegExp('<div[ >]').allMatches(html).length, 1);
   });
+
+  test(
+    'a LayeredGradient stacks a glow and a dot pattern in one box',
+    () async {
+      final css = _styles(
+        await page(
+          const Container(
+            decoration: BoxDecoration(
+              gradient: LayeredGradient([
+                RadialGradient(colors: [Color(0xFF112233), Color(0x00112233)]),
+                RadialGradient(
+                  colors: [Color(0xFF000000), Color(0x00000000)],
+                  tile: Size(16, 16),
+                ),
+              ]),
+            ),
+            child: Text('a'),
+          ),
+        ),
+      );
+      expect(css, contains('background-image: radial-gradient('));
+      expect(RegExp('radial-gradient').allMatches(css).length, 2);
+      expect(css, contains('background-size: auto, 16px 16px'));
+    },
+  );
 }

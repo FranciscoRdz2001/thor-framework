@@ -2936,6 +2936,12 @@ Flutter's `IconButtonThemeData`: the default [ButtonStyle] of every `IconButton`
 
 - `IconButtonThemeData({ButtonStyle? style})` — A theme for `IconButton`.
 
+### `LayeredGradient` · class
+
+Several gradients painted on top of each other in one box (the first is the topmost), like CSS's comma-separated `background-image`.
+
+- `LayeredGradient(List<Gradient> gradients)` — Stacks [gradients] in one box, the first on top.
+
 ### `LayoutScope` · class
 
 Makes a size container around its child, so descendants can respond to *its* width (`.when(container: {...})`, `GridView.count(containerBreakpoints:)`, `Flex(layoutBreakpoints:)`) instead of the viewport's.

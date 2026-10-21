@@ -35,4 +35,57 @@ void main() {
     // 0.5 / sqrt(2) of the farthest corner distance.
     expect(css, contains('#ffffff 35.3553%'));
   });
+
+  group('LayeredGradient', () {
+    const glow = RadialGradient(colors: [Color(0xFF112233), Color(0x00112233)]);
+    const dots = RadialGradient(
+      colors: [Color(0xFF000000), Color(0x00000000)],
+      tile: Size(16, 16),
+    );
+
+    test('stacks gradients in one background-image, first on top', () {
+      final css = const BoxDecoration(
+        color: Color(0xFFFFFFFF),
+        gradient: LayeredGradient([glow, dots]),
+      ).toCss();
+      expect(css['background-image'], '${glow.css}, ${dots.css}');
+      expect(css['background-size'], 'auto, 16px 16px');
+      expect(css['background-color'], '#ffffff');
+    });
+
+    test('a single gradient renders as before', () {
+      final css = const BoxDecoration(gradient: dots).toCss();
+      expect(css['background-image'], dots.css);
+      expect(css['background-size'], '16px 16px');
+      expect(css.containsKey('background-repeat'), isFalse);
+    });
+
+    test('an image gets its own position and repeat after the layers', () {
+      final css = const BoxDecoration(
+        gradient: LayeredGradient([glow, dots]),
+        image: DecorationImage(url: '/a.png', fit: BoxFit.cover),
+      ).toCss();
+      expect(
+        css['background-image'],
+        '${glow.css}, ${dots.css}, url("/a.png")',
+      );
+      expect(css['background-size'], 'auto, 16px 16px, cover');
+      expect(css['background-repeat'], 'repeat, repeat, no-repeat');
+      expect(css['background-position'], '0% 0%, 0% 0%, 50% 50%');
+    });
+
+    test('equal layers are equal; nesting flattens', () {
+      expect(
+        const LayeredGradient([glow, dots]),
+        const LayeredGradient([glow, dots]),
+      );
+      expect(
+        const LayeredGradient([
+          LayeredGradient([glow]),
+          dots,
+        ]).layers,
+        [glow, dots],
+      );
+    });
+  });
 }
