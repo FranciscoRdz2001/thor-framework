@@ -5465,6 +5465,7 @@ thor_style	Matrix4.rotationY	Matrix4.rotationY(double radians)
 thor_style	Matrix4.rotationZ	Matrix4.rotationZ(double radians)
 thor_style	Matrix4.toString	String toString()
 thor_style	Matrix4.translationValues	Matrix4.translationValues(double x, double y, double z)
+thor_style	Matrix4.withVariants	Matrix4 withVariants(Adaptive<Matrix4> variants)
 thor_style	Offset	class
 thor_style	Offset.*	Offset *(double operand)
 thor_style	Offset.+	Offset +(Offset other)
@@ -18234,6 +18235,7 @@ thor_ui	Matrix4.rotationY	Matrix4.rotationY(double radians)
 thor_ui	Matrix4.rotationZ	Matrix4.rotationZ(double radians)
 thor_ui	Matrix4.toString	String toString()
 thor_ui	Matrix4.translationValues	Matrix4.translationValues(double x, double y, double z)
+thor_ui	Matrix4.withVariants	Matrix4 withVariants(Adaptive<Matrix4> variants)
 thor_ui	MaxColumnWidth	class
 thor_ui	MaxColumnWidth.a	TableColumnWidth a
 thor_ui	MaxColumnWidth.b	TableColumnWidth b
