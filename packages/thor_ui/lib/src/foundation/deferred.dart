@@ -393,6 +393,7 @@ final class DeferPiece {
     List<int>? engine,
     this.shape,
     this.roots = const [],
+    this.sync = false,
   }) : engine = engine ?? const [];
 
   /// The HTML that goes where the placeholder was.
@@ -404,8 +405,13 @@ final class DeferPiece {
   /// The `<symbol>`s it added to the page's icon sprite.
   final String sprite;
 
-  /// The values of the states it uses that the page didn't have.
+  /// The values of the states it uses that the page didn't have (with
+  /// [sync], every state it uses).
   final Map<String, Object?> state;
+
+  /// Whether the browser replaces the values of the states it already has
+  /// with those of [state] (a `Region(syncState: true)` answer).
+  final bool sync;
 
   /// The engine's script, when only this piece needs it.
   final List<int> engine;
@@ -425,16 +431,20 @@ final class DeferPiece {
     sprite: sprite + next.sprite,
     state: {...state, ...next.state},
     engine: engine.isEmpty ? next.engine : engine,
+    sync: sync || next.sync,
   );
 
-  /// This piece with its [state] replaced.
-  DeferPiece withState(Map<String, Object?> state) => DeferPiece(
-    html: html,
-    css: css,
-    sprite: sprite,
-    state: state,
-    engine: engine,
-  );
+  /// This piece with its [state] replaced ([sync]: the browser takes them
+  /// over the ones it has).
+  DeferPiece withState(Map<String, Object?> state, {bool sync = false}) =>
+      DeferPiece(
+        html: html,
+        css: css,
+        sprite: sprite,
+        state: state,
+        engine: engine,
+        sync: sync,
+      );
 
   /// This piece with what [other] (the same HTML, drawn for another place)
   /// brought that this one didn't.
@@ -446,6 +456,7 @@ final class DeferPiece {
     engine: engine.isEmpty ? other.engine : engine,
     shape: shape,
     roots: roots,
+    sync: sync || other.sync,
   );
 }
 
@@ -969,10 +980,12 @@ Future<DeferPiece> _drawPiece(
   DeferRun run,
   ThorStyleRegistry? registry,
   String id,
-  Object? data,
-) async {
+  Object? data, {
+  bool sync = false,
+}) async {
   // What the page's ancestors of the piece drew is not the piece's.
   registry?.forgetLateStates();
+  if (sync) registry?.beginCapture();
   run.stream = false;
   DeferPiece? drawn;
   for (var pass = 1; ; pass++) {
@@ -997,9 +1010,11 @@ Future<DeferPiece> _drawPiece(
     if (await run.afterLazyDraw?.call() ?? false) again = true;
     if (!again) break;
   }
-  // The values of the states it used, as they are once its queries ran.
-  return registry == null
-      ? drawn
+  // The values of the states it used, as they are once its queries ran; with
+  // [sync], those of every state it reads, also the ones the page has.
+  if (registry == null) return drawn;
+  return sync
+      ? drawn.withState(stateJson(registry.endCapture()), sync: true)
       : drawn.withState(stateJson(registry.lateStates));
 }
 
@@ -1044,8 +1059,9 @@ bool _offerInline(
   ThorStyleRegistry? registry,
   String path,
   String id,
-  Widget content,
-) {
+  Widget content, {
+  bool sync = false,
+}) {
   if (run.lazy != null || run.lazyId != path) return false;
   final slot = DeferSlot._(
     0,
@@ -1061,7 +1077,7 @@ bool _offerInline(
     Future<Object?>.value(),
     (_, _) => null,
   );
-  run.lazy = (request) => _drawPiece(slot, run, registry, id, null);
+  run.lazy = (request) => _drawPiece(slot, run, registry, id, null, sync: sync);
   return true;
 }
 
@@ -1102,6 +1118,11 @@ void _checkPieceId(String value, String label) {
 /// region, nothing: it is drawn by the page. The region's content may use
 /// `Watch`, buttons and the states of the page.
 ///
+/// A state the region reads keeps the value the page gave it when the region
+/// is swapped, unless [syncState] is true: then the answer also carries the
+/// current value of every state the region reads, and the browser replaces
+/// the ones it has with them (see [syncState]).
+///
 /// `// web:` Flutter has no counterpart. The page's `load` runs for the
 /// fragment's request too (the region needs the page's data in scope): keep it
 /// cheap or give the page `cache:`, which keeps its fragments as well. The
@@ -1109,10 +1130,32 @@ void _checkPieceId(String value, String label) {
 /// static export draws the content with no region around it.
 class Region extends StatelessWidget implements ThorBuiltIn {
   /// A region called [id] that holds [child].
-  const Region({super.key, required this.id, required this.child});
+  const Region({
+    super.key,
+    required this.id,
+    required this.child,
+    this.syncState = false,
+  });
 
   /// Names the region in the page: part of the fragment's URL.
   final String id;
+
+  /// Whether a swap of this region also updates the states it reads.
+  ///
+  /// By default a fragment brings the values only of states the page did not
+  /// send yet; one the page already has keeps its current value, which is
+  /// right for what the visitor changes in the browser (a counter, a typed
+  /// draft). A state whose value comes from the server for this very region
+  /// (the free slots of the week the region shows) would stay stale: with
+  /// `syncState: true` the answer carries the value, as the server computed
+  /// it for that request, of **every** state the region's content reads, and
+  /// the running engine takes it over its own (the fields of the states, not
+  /// only the HTML). Use it on regions whose states are server-derived; a
+  /// field the visitor edits and the region reads is overwritten.
+  ///
+  /// `// web:` the lite engine applies the values; a state not running yet
+  /// simply starts from them.
+  final bool syncState;
 
   /// The content, drawn by the page and by the fragment's request.
   final Widget child;
@@ -1122,6 +1165,7 @@ class Region extends StatelessWidget implements ThorBuiltIn {
     context,
     id: id,
     widget: 'Region',
+    sync: syncState,
     content: (request, path) => child,
     wrap: (content) => thorElement(
       'div',
@@ -1253,6 +1297,7 @@ class _InlinePlace extends PageComponent implements ThorBuiltIn {
     required this.widget,
     required this.content,
     required this.wrap,
+    this.sync = false,
   });
 
   final BuildContext context;
@@ -1260,6 +1305,7 @@ class _InlinePlace extends PageComponent implements ThorBuiltIn {
   final String widget;
   final Widget Function(PageRequest? request, String path) content;
   final Widget Function(Widget content) wrap;
+  final bool sync;
 
   @override
   void buildInto(
@@ -1286,7 +1332,17 @@ class _InlinePlace extends PageComponent implements ThorBuiltIn {
       _checkPieceId(id, '$widget(id:)');
       final registry = ThorStyleRegistry.of(element);
       registry?.useLazyScript();
-      mine = _offerInline(page, element, build, run, registry, path, id, drawn);
+      mine = _offerInline(
+        page,
+        element,
+        build,
+        run,
+        registry,
+        path,
+        id,
+        drawn,
+        sync: sync,
+      );
     }
     // The piece asked for is drawn by its answer, not twice.
     final inner = mine
@@ -1308,7 +1364,10 @@ List<int> lazyFragment(DeferPiece piece, {String? nonce}) {
   final out = BytesBuilder(copy: false)
     ..add(utf8.encode(pieceAssets(piece, nonce)))
     ..add(piece.html);
-  if (pieceStateScript(piece, 'data-thor-lazy-json') case final script?) {
+  final attributes = piece.sync
+      ? 'data-thor-lazy-json data-thor-lazy-sync'
+      : 'data-thor-lazy-json';
+  if (pieceStateScript(piece, attributes) case final script?) {
     out.add(utf8.encode(script));
   }
   return (out..add(piece.engine)).takeBytes();

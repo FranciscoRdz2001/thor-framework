@@ -3833,7 +3833,7 @@ What can be read as `.value` and tracked: a [Signal] is one of those to its read
 
 A part of the page that can be asked for alone: the server draws the page as always and answers only this region (`GET` the page's URL plus `thor-piece=<id>`), and the browser puts the answer in place of the region's content. It is what a live search, a product shown in a dialog or any "update this part" needs, with the page's own `load` and `build` deciding what is inside.
 
-- `Region({Key? key, required String id, required Widget child})` — A region called [id] that holds [child].
+- `Region({Key? key, required String id, required Widget child, bool syncState = false})` — A region called [id] that holds [child].
 
 ### `RowColor` · class
 

@@ -19045,7 +19045,8 @@ thor_ui	Region	class
 thor_ui	Region.build	Widget build(BuildContext context)
 thor_ui	Region.child	Widget child
 thor_ui	Region.id	String id
-thor_ui	Region.new	Region({Key? key, required String id, required Widget child})
+thor_ui	Region.new	Region({Key? key, required String id, required Widget child, bool syncState = false})
+thor_ui	Region.syncState	bool syncState
 thor_ui	ReorderCallback	typedef
 thor_ui	ReorderItemProxyDecorator	typedef
 thor_ui	ReorderLabels	class
@@ -20756,6 +20757,7 @@ thor_ui	ThorStyleRegistry.addProperty	void addProperty(String name, String body)
 thor_ui	ThorStyleRegistry.addSwitcher	void addSwitcher(String key)
 thor_ui	ThorStyleRegistry.addSymbol	bool addSymbol(String id, String viewBox, String body)
 thor_ui	ThorStyleRegistry.allowErrorFocus	void allowErrorFocus()
+thor_ui	ThorStyleRegistry.beginCapture	void beginCapture()
 thor_ui	ThorStyleRegistry.breakpoints	Breakpoints breakpoints
 thor_ui	ThorStyleRegistry.claimAlternatives	void claimAlternatives(Iterable<void Function()> alternatives)
 thor_ui	ThorStyleRegistry.claimErrorFocus	bool claimErrorFocus()
@@ -20766,6 +20768,7 @@ thor_ui	ThorStyleRegistry.close	void close()
 thor_ui	ThorStyleRegistry.cssText	String get cssText
 thor_ui	ThorStyleRegistry.debugCheckOneClassPerLayer	void debugCheckOneClassPerLayer(Iterable<String> classes, String tag)
 thor_ui	ThorStyleRegistry.dependsOnPlace	void dependsOnPlace()
+thor_ui	ThorStyleRegistry.endCapture	Set<ThorState> endCapture()
 thor_ui	ThorStyleRegistry.fieldId	String fieldId(String base)
 thor_ui	ThorStyleRegistry.flushed	bool get flushed
 thor_ui	ThorStyleRegistry.flutterSrc	String? get flutterSrc

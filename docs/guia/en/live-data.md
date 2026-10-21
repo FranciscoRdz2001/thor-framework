@@ -224,6 +224,36 @@ A click asks `/shop/mug?thor-piece=detail`, the region of the dialog receives it
 - A `Watch` or a button inside the part work; a state the part brings is bound when it arrives.
 - A static site has nothing to answer: `LoadMore` and `Region` draw their content, and the links are plain links.
 
+### States the region reads
+
+A swap puts new HTML in the region, but a state the page already sent keeps the value it has: a fragment brings only the states the page did not send yet. For a value that depends on the region (the free slots of the week it shows), give the region `syncState: true`:
+
+```dart no-check
+class BookingViewModel extends ThorState {
+  final slots = state<List<String>>(const []);
+  String firstFree() => slots.value.isEmpty ? '' : slots.value.first;
+}
+
+// The page's `load` fills `slots` for the `?week=` it was asked for.
+Column(
+  children: [
+    Watch(booking.firstFree), // outside the region: also updated
+    Region(
+      id: 'week',
+      syncState: true,
+      child: SlotGrid(),
+    ),
+  ],
+)
+```
+
+The answer then carries the value, as the server computed it for that request, of **every** state the region reads, and the browser replaces its own: the HTML in the region and every `Watch` bound to those fields change together. Rules:
+
+- Only the states the region's content reads are sent, and they replace the page's, also those that run already; nothing else is touched.
+- A field the visitor edits in the browser (a draft, a counter) and the region reads is overwritten: use `syncState` on regions whose states come from the server.
+- It works with the lite engine; a state that has not started yet starts from the new value.
+- Without `syncState` (the default) nothing changes: a state the page has keeps its value.
+
 ## Next steps
 
 :::cards

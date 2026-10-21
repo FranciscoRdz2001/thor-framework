@@ -262,10 +262,13 @@ List<String> litePartsFor({
       }
     }
   }
-  // Content that arrives after the page: a server app only (a static site
-  // is complete when it is exported).
+  // Content that arrives after the page (a `Region` or `LoadMore` swapped by
+  // a fragment too, and its states' values): a server app only (a static
+  // site is complete when it is exported).
   if (pages == null &&
-      RegExp(r'\b(FutureBuilder|LazyPiece)\s*[<(]').hasMatch(sources)) {
+      RegExp(
+        r'\b(FutureBuilder|LazyPiece|Region|LoadMore)\s*[<(]',
+      ).hasMatch(sources)) {
     parts.add('stream');
   }
   // Parts that need no engine feature: a tap on an element the markup

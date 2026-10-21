@@ -224,6 +224,36 @@ Un clic pide `/shop/mug?thor-piece=detail`, la región del diálogo la recibe y 
 - Un `Watch` o un botón dentro de la parte funcionan; un estado que la parte trae se enlaza cuando llega.
 - Un sitio estático no tiene quién responda: `LoadMore` y `Region` dibujan su contenido y los enlaces son enlaces simples.
 
+### Los estados que lee la región
+
+Un intercambio pone HTML nuevo en la región, pero un estado que la página ya envió conserva su valor: un fragmento trae solo los estados que la página aún no había enviado. Para un valor que depende de la región (los horarios libres de la semana que muestra), dale a la región `syncState: true`:
+
+```dart no-check
+class BookingViewModel extends ThorState {
+  final slots = state<List<String>>(const []);
+  String firstFree() => slots.value.isEmpty ? '' : slots.value.first;
+}
+
+// El `load` de la página llena `slots` para el `?week=` que se pidió.
+Column(
+  children: [
+    Watch(booking.firstFree), // fuera de la región: también se actualiza
+    Region(
+      id: 'week',
+      syncState: true,
+      child: SlotGrid(),
+    ),
+  ],
+)
+```
+
+La respuesta lleva entonces el valor, tal como el servidor lo calculó para esa petición, de **todos** los estados que lee la región, y el navegador reemplaza los suyos: el HTML de la región y cada `Watch` enlazado a esos campos cambian juntos. Reglas:
+
+- Solo se envían los estados que lee el contenido de la región, y reemplazan los de la página, también los que ya corren; nada más se toca.
+- Un campo que el visitante edita en el navegador (un borrador, un contador) y que la región lee se sobrescribe: usa `syncState` en regiones cuyos estados vienen del servidor.
+- Funciona con el motor lite; un estado que aún no arrancó arranca con el valor nuevo.
+- Sin `syncState` (el predeterminado) nada cambia: un estado que la página tiene conserva su valor.
+
 ## Siguientes pasos
 
 :::cards

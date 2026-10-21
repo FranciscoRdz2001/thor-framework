@@ -162,6 +162,13 @@ globalThis.queueMicrotask = () => {};
       },
     );
 
+    test('stream: a Region brings it too (a fragment syncs its states)', () {
+      const page = 'Region(id: "r", syncState: true, child: c)';
+      expect(litePartsFor(stateJs: '', engineEntry: '', sources: page), [
+        'stream',
+      ]);
+    });
+
     test('never ships dev_state (only thor dev adds it)', () {
       const markup =
           ' data-tvf= data-tfa= data-t-validate data-t-dd data-t-date '

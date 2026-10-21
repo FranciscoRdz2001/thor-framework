@@ -4,7 +4,9 @@
 //
 // The values of its states join the ones the engine already read, and the
 // states that are running bind the new nodes (the others wire them when
-// they wake, scanning the page). Loaded when the app builds a `FutureBuilder`.
+// they wake, scanning the page). A `Region(syncState: true)` answer also
+// sends `detail.sync` (its states' JSON): those values replace the ones the
+// engine has, also the fields of the states that already run. Loaded when the app builds a `FutureBuilder`.
 (() => {
   D.documentElement.addEventListener('thor:stream', (e) => {
     const s = D.getElementById('thor-state');
@@ -13,6 +15,18 @@
     } catch (x) {
       fail(x);
     }
+    if (e.detail?.sync)
+      try {
+        batch(() => {
+          for (const [k, v] of W.thor.parse(e.detail.sync)) {
+            saved().set(k, v);
+            const d = k.lastIndexOf('.'), g = live[k.slice(0, d)]?.s?.[k.slice(d + 1)];
+            if (g) g[0].value = g[1] ? g[1](v) : v;
+          }
+        });
+      } catch (x) {
+        fail(x);
+      }
     for (const el of e.detail?.nodes || [])
       if (el.nodeType === 1)
         for (const p in live) {

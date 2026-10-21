@@ -550,6 +550,7 @@ class ThorStyleRegistry {
   void useState(ThorState state) {
     _recording?.usedState = true;
     _states.add(state);
+    _capture?.add(state);
     // What its code asks the page for (`confirm`, `toast`).
     final uses = state.uses;
     if (uses.contains('confirm')) useConfirm();
@@ -558,6 +559,22 @@ class ThorStyleRegistry {
 
   /// The states the page uses.
   Set<ThorState> get usedStates => _states;
+
+  Set<ThorState>? _capture;
+
+  /// Starts collecting every state used from now on, even one the document
+  /// already carries (what a fragment that refreshes the page's states needs
+  /// to ship); [endCapture] hands them out.
+  @internal
+  void beginCapture() => _capture = {};
+
+  /// The states used since [beginCapture].
+  @internal
+  Set<ThorState> endCapture() {
+    final found = _capture ?? const <ThorState>{};
+    _capture = null;
+    return found;
+  }
 
   bool _engine = false;
 

@@ -27,6 +27,14 @@ const _all = [
   'ines',
 ];
 
+class WeekState extends ThorState {
+  WeekState();
+  final week = state('0');
+  String text() => 'week ${week.value}';
+}
+
+final weekState = WeekState();
+
 class _Rows {
   const _Rows(this.items, this.next);
   final List<String> items;
@@ -35,6 +43,17 @@ class _Rows {
 
 void main() {
   initializeThorTests();
+  setUpAll(
+    () => ThorState.register({
+      WeekState: ThorStateType('WeekState', (state) {
+        final s = state as WeekState;
+        return [
+          ThorMember.state('week', s.week),
+          ThorMember('text', s.text, call: (_) => s.text()),
+        ];
+      }),
+    }),
+  );
   var loads = 0;
   late List<Object> errors;
 
@@ -108,6 +127,27 @@ void main() {
           ],
         ),
       ),
+      // The same state is read outside the region and inside it.
+      for (final sync in [true, false])
+        PageRoute<Widget, void>(
+          path: sync ? 'week' : 'plainweek',
+          load: (r) => weekState.week.value = r.uri.queryParameters['w'] ?? '1',
+          build: (s) => Column(
+            children: [
+              Watch(weekState.text),
+              Link(
+                href: RouteUrl(sync ? '/week?w=2' : '/plainweek?w=2'),
+                fetch: const FragmentFetch(piece: 'grid', into: 'grid'),
+                child: const Text('next'),
+              ),
+              Region(
+                id: 'grid',
+                syncState: sync,
+                child: Column(children: [Watch(weekState.text)]),
+              ),
+            ],
+          ),
+        ),
       PageRoute<Widget, void>(
         path: 'shop/mug',
         build: (s) => const Column(
@@ -375,6 +415,28 @@ void main() {
     });
   });
 
+  group('Region(syncState:)', () {
+    test('the answer carries the states the page already has', () async {
+      final r = await handler().handle(get('/week?w=3&thor-piece=grid'));
+      expect(r.status, 200);
+      expect(r.text, contains('week 3'));
+      expect(r.text, contains('data-thor-lazy-json data-thor-lazy-sync'));
+      expect(r.text, contains('"WeekState.week":"3"'));
+    });
+
+    test('by default a state the page has is not sent again', () async {
+      final r = await handler().handle(get('/plainweek?w=3&thor-piece=grid'));
+      expect(r.text, contains('week 3'));
+      expect(r.text, isNot(contains('data-thor-lazy-json')));
+      expect(r.text, isNot(contains('data-thor-lazy-sync')));
+    });
+
+    test('a region that reads no state sends none', () async {
+      final r = await handler().handle(get('/people?q=gus&thor-piece=results'));
+      expect(r.text, isNot(contains('data-thor-lazy-sync')));
+    });
+  });
+
   group('the loader script, in node over the server\'s own HTML', () {
     final hasNode = () {
       try {
@@ -408,6 +470,8 @@ const input = JSON.parse(process.argv[1]);
 const D = document, calls = [], listeners = {};
 D.addEventListener = (t, f) => (listeners[t] ||= []).push(f);
 globalThis.MutationObserver = class { observe() {} };
+const streams = [];
+D.documentElement.dispatchEvent = (e) => streams.push(e);
 globalThis.navigator = {};
 globalThis.location = { href: 'http://site.test${path.split('?').first}' };
 globalThis.history = { state: null, replaceState: (s, t, u) => calls.push(['replaceState', u]) };
@@ -448,6 +512,55 @@ eval(input.script);
       return jsonDecode((result.stdout as String).trim().split('\n').last)
           as Map<String, Object?>;
     }
+
+    test(
+      'a synced region swap hands the engine the states\' JSON',
+      () async {
+        final out = await run(
+          '/week?w=1',
+          ['/week?w=2&thor-piece=grid'],
+          r'''
+          const region = D.querySelector('[data-thor-region="grid"]');
+          const mine = D.createElement('script');
+          mine.setAttribute('id', 'thor-state');
+          mine.textContent = '{"WeekState.week":"1","Other.x":2}';
+          D.body.append(mine);
+          out.before = text(region);
+          click(D.querySelector('a'));
+          await tick();
+          out.after = text(region);
+          out.events = streams.length;
+          out.sync = streams[0].detail.sync;
+          out.merged = JSON.parse(mine.textContent);
+        ''',
+        );
+        expect(out['before'], 'week 1');
+        expect(out['after'], 'week 2');
+        expect(out['events'], 1);
+        expect(jsonDecode(out['sync']! as String), {'WeekState.week': '2'});
+        expect(out['merged'], {'WeekState.week': '2', 'Other.x': 2});
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a plain region swap sends no sync',
+      () async {
+        final out = await run(
+          '/plainweek?w=1',
+          ['/plainweek?w=2&thor-piece=grid'],
+          r'''
+          click(D.querySelector('a'));
+          await tick();
+          out.events = streams.length;
+          out.sync = streams[0].detail.sync;
+        ''',
+        );
+        expect(out['events'], 1);
+        expect(out['sync'], isIn([0, null]));
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
 
     test(
       'Load more: the next rows and control replace the link',

@@ -320,8 +320,10 @@
         p,
         key: h < 0 ? null : p.slice(h + 1).replace(/%(25|7E|3B)/g, (_, c) => (c === '25' ? '%' : c === '3B' ? ';' : '~')),
         state: (n, v, decode) => {
-          const j = saved(), k = `${p}.${n}`;
-          return new Signal(j.has(k) ? (decode ? decode(j.get(k)) : j.get(k)) : v);
+          const j = saved(), k = `${p}.${n}`, g = new Signal(j.has(k) ? (decode ? decode(j.get(k)) : j.get(k)) : v);
+          // Kept by name: a fragment that syncs the state's values sets them (part `stream`).
+          (i.s ||= nul())[n] = [g, decode];
+          return g;
         },
         computed: (fn) => {
           const c = new Computed(fn);
