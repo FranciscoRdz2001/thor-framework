@@ -577,6 +577,11 @@ class ExpansionTile extends StatelessWidget
 
   /// A widget at the end of the header, instead of the chevron (shown only
   /// with [showTrailingIcon]).
+  ///
+  /// `// web:` it does not turn. To turn a chevron of your own with the tile
+  /// (also one inside the [title], with `showTrailingIcon: false`), style it
+  /// with the open state of the tile it is in:
+  /// `Styled(style: StyleProps(turns: 0).when(open: StyleProps(turns: 0.5)), child: icon)`.
   final Widget? trailing;
 
   /// Whether the header is shorter (48 px instead of 56).

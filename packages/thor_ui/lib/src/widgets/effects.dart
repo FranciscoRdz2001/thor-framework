@@ -937,3 +937,57 @@ class ElementAttributes extends ParentDataWrapper {
   @override
   WrapData get wrapData => WrapData(attributes: attributes);
 }
+
+/// `// web:` not in Flutter (it has no style cascade): sets custom
+/// properties (`--accent`) on the element of [child], from values the server
+/// knows (a store's color, a size from data).
+///
+/// ```dart
+/// const accent = CssVariable<Color>('--accent');
+///
+/// ElementVariables(
+///   {accent: Color(store.primaryColor)},
+///   child: Card(child: …), // a stylesheet rule reads var(--accent)
+/// )
+/// ```
+///
+/// The value reaches the element's one class (the same for every element
+/// with the same value), so the client writes no style; a rule written once
+/// reads it with `Color.variable(accent)` or `Length.variable(gutter)`, and
+/// the descendants inherit it. A value is a [Color], a [Length] or a number;
+/// a value that follows a `ThorState` is `WatchVariables`.
+class ElementVariables extends ParentDataWrapper {
+  /// Puts [variables] on the element of [child].
+  const ElementVariables(this.variables, {super.key, required super.child});
+
+  /// Custom property → its value ([Color], [Length] or [num]).
+  final Map<CssVariable<Object>, Object> variables;
+
+  @override
+  WrapData get wrapData => WrapData(
+    css: {
+      for (final MapEntry(:key, :value) in variables.entries)
+        _name(key): switch (value) {
+          final Color c => c.css,
+          final Length l => l.css,
+          final num n => cssNum(n),
+          _ => throw ArgumentError.value(
+            value,
+            'variables',
+            'a variable holds a Color, a Length or a number',
+          ),
+        },
+    },
+  );
+
+  static String _name(CssVariable<Object> variable) {
+    if (!CssVariable.isValidName(variable.name)) {
+      throw ArgumentError.value(
+        variable.name,
+        'variables',
+        'must be a custom property name (--letters-digits)',
+      );
+    }
+    return variable.name;
+  }
+}
