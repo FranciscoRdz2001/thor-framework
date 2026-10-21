@@ -114,25 +114,35 @@ abstract mixin class Adaptable<T extends Object> {
     T? groupHover,
     Map<String, T> groupHovers = const {},
     Map<num, T> container = const {},
-  }) => withVariants(
-    Adaptive<T>(
-      this as T,
-      medium: medium,
-      expanded: expanded,
-      large: large,
-      extraLarge: extraLarge,
-      dark: dark,
-      open: open,
-      hover: hover,
-      focused: focused,
-      focusWithin: focusWithin,
-      disabled: disabled,
-      pressed: pressed,
-      groupHover: groupHover,
-      groupHovers: groupHovers,
-      container: container,
-    ),
-  );
+  }) {
+    // Chained calls (`v.when(medium: a).when(large: b)`) are one `.when`:
+    // the variants of this value stay, the new ones win per key. Markers do
+    // not nest.
+    final own = adaptive;
+    return withVariants(
+      Adaptive<T>(
+        own?.base ?? this as T,
+        medium: medium ?? own?.medium,
+        expanded: expanded ?? own?.expanded,
+        large: large ?? own?.large,
+        extraLarge: extraLarge ?? own?.extraLarge,
+        dark: dark ?? own?.dark,
+        open: open ?? own?.open,
+        hover: hover ?? own?.hover,
+        focused: focused ?? own?.focused,
+        focusWithin: focusWithin ?? own?.focusWithin,
+        disabled: disabled ?? own?.disabled,
+        pressed: pressed ?? own?.pressed,
+        groupHover: groupHover ?? own?.groupHover,
+        groupHovers: {...?own?.groupHovers, ...groupHovers},
+        container: {...?own?.container, ...container},
+      ),
+    );
+  }
+
+  /// The variants this value already carries (made with `.when()` or, for a
+  /// [ConstAdaptable], its constructor), or null for a plain value.
+  Adaptive<T>? get adaptive => null;
 
   /// The same type carrying [variants] in its CSS (see [Adaptive]).
   T withVariants(Adaptive<T> variants);
@@ -214,6 +224,7 @@ abstract class ConstAdaptable<T extends Object> with Adaptable<T> {
 
   /// The variants of this value (itself the base), or null for a plain one.
   /// A value made with `.when()` overrides it with its own.
+  @override
   Adaptive<T>? get adaptive =>
       medium == null &&
           expanded == null &&
@@ -409,10 +420,26 @@ class Adaptive<T> {
 
   /// One CSS value, marked with its variants when any differs.
   String css(String Function(T value) toCss) {
-    final b = toCss(base);
-    final v = _changed(b, {
-      for (final e in variants.entries) e.key: toCss(e.value),
-    });
+    var b = toCss(base);
+    final mine = {for (final e in variants.entries) e.key: toCss(e.value)};
+    // A base that already carries variants (a color or length made with
+    // `.when()` and chained with another): one marker, the new variants
+    // winning per key. Markers do not nest.
+    final inner = isAdaptive(b) ? _wholeMarker.firstMatch(b) : null;
+    if (inner != null) {
+      final parts = inner[1]!.split(_alt);
+      b = parts.first;
+      final all = <String, String>{};
+      for (final p in parts.skip(1)) {
+        final kv = p.split(_kv);
+        all[kv.first] = kv.last;
+      }
+      all.addAll(mine);
+      mine
+        ..clear()
+        ..addAll(all);
+    }
+    final v = _changed(b, mine);
     return v.isEmpty ? b : markAdaptive(b, v);
   }
 
@@ -425,8 +452,25 @@ class Adaptive<T> {
     CssDeclarations Function(T value) toCss, {
     Map<String, String> resets = const {},
   }) {
-    final b = toCss(base);
+    var b = toCss(base);
     final vs = {for (final e in variants.entries) e.key: toCss(e.value)};
+    if (b.values.any(isAdaptive)) {
+      // A base that carries variants itself (a const-constructor value
+      // chained with `.when()`): they join these, the new ones winning per
+      // key. Markers do not nest.
+      final own = vs.keys.toSet();
+      b = {...b};
+      for (final e in b.entries.toList()) {
+        final m = _wholeMarker.firstMatch(e.value);
+        if (m == null) continue;
+        final parts = m[1]!.split(_alt);
+        b[e.key] = parts.first;
+        for (final p in parts.skip(1)) {
+          final kv = p.split(_kv);
+          if (!own.contains(kv.first)) (vs[kv.first] ??= {})[e.key] = kv.last;
+        }
+      }
+    }
     final keys = {...b.keys, for (final m in vs.values) ...m.keys};
     // A state applies over the breakpoint that is on, so it only resets a
     // property no breakpoint sets (it would undo that breakpoint's value).

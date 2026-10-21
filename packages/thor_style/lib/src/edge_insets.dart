@@ -185,25 +185,29 @@ extension EdgeInsetsGeometryAdaptive on EdgeInsetsGeometry {
     EdgeInsetsGeometry? groupHover,
     Map<String, EdgeInsetsGeometry> groupHovers = const {},
     Map<num, EdgeInsetsGeometry> container = const {},
-  }) => _AdaptiveInsets(
-    Adaptive<EdgeInsetsGeometry>(
-      this,
-      medium: medium,
-      expanded: expanded,
-      large: large,
-      extraLarge: extraLarge,
-      dark: dark,
-      open: open,
-      hover: hover,
-      focused: focused,
-      focusWithin: focusWithin,
-      disabled: disabled,
-      pressed: pressed,
-      groupHover: groupHover,
-      groupHovers: groupHovers,
-      container: container,
-    ),
-  );
+  }) {
+    // Chained calls are one `.when`: see [Adaptable.when].
+    final own = _variants;
+    return _AdaptiveInsets(
+      Adaptive<EdgeInsetsGeometry>(
+        own?.base ?? this,
+        medium: medium ?? own?.medium,
+        expanded: expanded ?? own?.expanded,
+        large: large ?? own?.large,
+        extraLarge: extraLarge ?? own?.extraLarge,
+        dark: dark ?? own?.dark,
+        open: open ?? own?.open,
+        hover: hover ?? own?.hover,
+        focused: focused ?? own?.focused,
+        focusWithin: focusWithin ?? own?.focusWithin,
+        disabled: disabled ?? own?.disabled,
+        pressed: pressed ?? own?.pressed,
+        groupHover: groupHover ?? own?.groupHover,
+        groupHovers: {...?own?.groupHovers, ...groupHovers},
+        container: {...?own?.container, ...container},
+      ),
+    );
+  }
 }
 
 /// Flutter's `EdgeInsets`: padding / margin in logical pixels.
@@ -858,6 +862,7 @@ double? _px(Length l) {
 class _AdaptiveEdgeInsets extends EdgeInsets {
   const _AdaptiveEdgeInsets(this.adaptive) : super.fromLTRB(0, 0, 0, 0);
 
+  @override
   final Adaptive<EdgeInsets> adaptive;
 
   // The base's numbers (a deprecated Length base throws as it does alone).

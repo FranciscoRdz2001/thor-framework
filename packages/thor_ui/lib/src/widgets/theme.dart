@@ -808,6 +808,7 @@ class _AdaptiveTextTheme extends TextTheme {
         labelSmall: adaptive.base.labelSmall,
       );
 
+  @override
   final Adaptive<TextTheme> adaptive;
 
   @override

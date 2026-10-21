@@ -442,6 +442,7 @@ class _AdaptiveBorderRadius extends BorderRadius {
         bottomLeft: adaptive.base.bottomLeft,
       );
 
+  @override
   final Adaptive<BorderRadius> adaptive;
 
   @override
@@ -607,6 +608,7 @@ class _AdaptiveConstraints extends BoxConstraints {
         maxHeight: adaptive.base.maxHeight,
       );
 
+  @override
   final Adaptive<BoxConstraints> adaptive;
 
   @override
