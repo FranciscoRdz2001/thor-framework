@@ -79,6 +79,8 @@ Widget thorElement(
   );
 }
 
+bool _isGrid(String? display) => display == 'grid' || display == 'inline-grid';
+
 /// Elements a wrapper's tag can't replace: they are nested in it instead.
 const _keepsTag = wrapKeepsTag;
 
@@ -203,10 +205,18 @@ class _ThorElement {
 
     // Children see *this* element as their scope (its rules, no pending
     // data), so rules and wrapper data never leak to grandchildren.
-    final kids =
-        registry != null && allConditions.any((c) => c.when.isDescendant)
+    var kids = registry != null && allConditions.any((c) => c.when.isDescendant)
         ? [DescendantRulesScope(child: Widget.fragment(children))]
         : children;
+    // web: a Row or Column turned into a grid (`Styled(style:
+    // StyleProps(display: Display.grid))`) places its children with the
+    // grid's `align-items`; the `align-self: stretch` a flex parent grants
+    // to a child that fills the cross axis would override it.
+    if (_isGrid(own['display']) && childRules.growsAcross) {
+      kids = [
+        ChildRulesScope(rules: childRules.inGrid, child: Widget.fragment(kids)),
+      ];
+    }
 
     // `row.bind(…)` values (a `semanticLabel:` in a list row) become the
     // row's bound attributes here, wherever they came from.

@@ -79,9 +79,9 @@ Column(children: [
 | a name that isn't visible | `Semantics(label: '…', …)`; `tooltip:` on an `IconButton` |
 | a notice read when it changes | `Semantics(liveRegion: true, …)` |
 | a page region | `Semantics(role: SemanticsRole.navigation, …)`, also `main`, `complementary` (`<aside>`) and `region` (`<section>`) |
-| a list of steps, or with bullets | `role: SemanticsRole.orderedList` (`<ol>`) or `list` (`<ul>`) with `listItem`; the indent and the marker, `StyleProps(listStyleType:, padding:)` |
+| a list of steps, or with bullets | `role: SemanticsRole.orderedList` (`<ol>`) or `list` (`<ul>`) with `listItem`; the indent and the marker, `StyleProps(listStyleType:, padding:)` (the list starts without them, and these win over the reset) |
 | important or stressed text | `role: SemanticsRole.strong` (`<strong>`), `emphasis` (`<em>`) |
-| a figure with a caption | `role: SemanticsRole.figure` and `figureCaption`; a named icon or chart, `role: SemanticsRole.image` (`role="img"`) |
+| a figure with a caption | `role: SemanticsRole.figure` (no browser margins) and `figureCaption`; a named icon or chart, `role: SemanticsRole.image` (`role="img"`) |
 | the current item of a set | `Semantics(current: SemanticsCurrent.page, …)` (`aria-current`), also `step`, `location` and `date` |
 | a `data-*` or an `aria-*` without an extra element | `ElementAttributes(HtmlAttributes(data: {'track': 'cta'}), child: …)` |
 | hide something decorative | `ExcludeSemantics`, or `Semantics(hidden: true, …)` |

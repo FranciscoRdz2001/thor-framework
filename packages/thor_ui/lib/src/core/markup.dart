@@ -124,8 +124,14 @@ String writePage(RootNode root, {required bool compact}) {
       out.writeln();
     }
   } else {
-    for (final child in root.children) {
-      out.writeln(_Pretty.node(child, false, false, '').html);
+    final before = _preservingClasses;
+    _preservingClasses = _classesThatPreserveWhitespace(root);
+    try {
+      for (final child in root.children) {
+        out.writeln(_Pretty.node(child, false, false, '').html);
+      }
+    } finally {
+      _preservingClasses = before;
     }
   }
   return out.toString();
@@ -733,6 +739,65 @@ const _keepsFormatting = {
 
 final _whitespace = RegExp(r'\s');
 
+/// The classes of the page whose stylesheet rule sets `white-space` to a
+/// value that keeps the text's own spaces and line breaks (`pre`,
+/// `pre-wrap`, `pre-line`, `break-spaces`), while an indented page is being
+/// written: the content of those elements is written as it is, as in
+/// release.
+Set<String> _preservingClasses = const {};
+
+final _rule = RegExp(r'([^{}]+)\{([^{}]*)\}');
+final _preservingDeclaration = RegExp(
+  r'white-space\s*:\s*(?:pre|pre-wrap|pre-line|break-spaces)\s*(?:!important\s*)?(?:;|$)',
+);
+final _lastCompoundClasses = RegExp(r'\.((?:\\.|[\w-])+)');
+
+/// The classes of the `<style>` elements in [root] that preserve whitespace.
+/// Only the last compound selector of a rule counts (`.a .b` styles `.b`).
+Set<String> _classesThatPreserveWhitespace(Node root) {
+  final classes = <String>{};
+  void visit(Node node) {
+    switch (node) {
+      case ElementNode(tag: 'style'):
+        for (final child in node.children) {
+          if (child is! TextNode) continue;
+          for (final rule in _rule.allMatches(child.text)) {
+            if (!_preservingDeclaration.hasMatch(rule[2]!)) continue;
+            for (final selector in rule[1]!.split(',')) {
+              final last = selector.trim().split(RegExp(r'[\s>+~]+')).last;
+              for (final m in _lastCompoundClasses.allMatches(last)) {
+                classes.add(m[1]!.replaceAll(r'\', ''));
+              }
+            }
+          }
+        }
+      case ParentNode():
+        node.children.forEach(visit);
+      case TextNode():
+        break;
+    }
+  }
+
+  visit(root);
+  return classes;
+}
+
+/// Whether the element keeps its content's whitespace: a class or an inline
+/// style sets `white-space` to a preserving value.
+bool _preservesWhitespace(ElementNode node) {
+  final inline = node.styles?['white-space'];
+  if (inline != null) {
+    return _preservingDeclaration.hasMatch('white-space:$inline;');
+  }
+  if (_preservingClasses.isEmpty) return false;
+  final classes = node.classes;
+  if (classes == null) return false;
+  for (final name in classes.split(' ')) {
+    if (_preservingClasses.contains(name)) return true;
+  }
+  return false;
+}
+
 const _textEscape = HtmlEscape(HtmlEscapeMode.element);
 const _attributeEscape = HtmlEscape(HtmlEscapeMode.attribute);
 
@@ -764,7 +829,9 @@ abstract final class _Pretty {
           final inner = children(
             node,
             strictWhitespace,
-            strictFormatting || _keepsFormatting.contains(tag),
+            strictFormatting ||
+                _keepsFormatting.contains(tag) ||
+                _preservesWhitespace(node),
             strictWhitespace || _keepsWhitespace.contains(tag),
             indent,
           );

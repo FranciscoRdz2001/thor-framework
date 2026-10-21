@@ -347,6 +347,66 @@ Styled(
 )
 ```
 
+`Styled(descendants:)` styles only the markup no widget built. A Thor element
+inside it (a `Text`, a `Semantics(headingLevel:)`, a `Container`) is a limit:
+the rule skips it and what it holds, because that element already has its own
+class, and a rule from outside would fight it. To restyle the headings or
+links that widgets draw, give the elements their style where they are built
+(`Styled(style:)`, `TextStyle`), or write a rule in your own stylesheet, which
+wins over the widgets' styles:
+
+```dart
+import 'package:thor_ui/html.dart' show css;
+import 'package:thor_ui/thor_ui.dart';
+
+final articleStyles = [
+  css('.article', [
+    css('h1, h2, h3').props(
+      const StyleProps(textStyle: TextStyle(fontFamily: 'Gabarito')),
+    ),
+  ]),
+];
+```
+
+## Margins and inline boxes
+
+A `Column` or `Row` is a flex box, as in Flutter: the bottom margin of one child
+and the top margin of the next add up, they don't collapse as in HTML block
+content. Space things the Flutter way, with `spacing:`, `SizedBox` or
+`Padding`, and keep one value per gap:
+
+```dart
+Column(
+  spacing: 20,
+  children: [Text('Title'), Text('Subtitle'), Grid()],
+)
+```
+
+Content that must flow like HTML, because it collapses margins or puts a small
+box in a line of text (a pill next to a heading), opts in with
+`display: Display.block` on its container. The children are then block or
+inline boxes: give one `Display.inlineFlex` to keep it on the line.
+
+```dart
+Styled(
+  style: const StyleProps(display: Display.block),
+  child: Column(
+    children: [
+      Styled(
+        style: const StyleProps(display: Display.inlineFlex),
+        child: Row(children: [Text('New')]),
+      ),
+      Text('Title'),
+    ],
+  ),
+)
+```
+
+> **Difference from Flutter:** Flutter has no margin collapsing and no inline
+> boxes (`WidgetSpan` is the closest, and Thor's `Text.rich` doesn't draw
+> widgets in a line). `Display.block` is the way back to the browser's flow,
+> for markup ported as it is.
+
 ## Gradient patterns
 
 A gradient with `tile:` repeats as a tile: a dotted or striped background with

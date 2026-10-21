@@ -216,6 +216,11 @@ const _headingResetCss = <String, String>{
   'font-weight': 'inherit',
 };
 
+// The browser margins of a figure, a quotation, a paragraph and preformatted
+// text (`1em 40px`, `1em 0`): Flutter's widgets have none, so the element
+// starts without them, under its own props.
+const _blockResetCss = <String, String>{'margin': '0'};
+
 /// Flutter's `Semantics`, reduced to what maps onto ARIA.
 class Semantics extends ParentDataWrapper {
   /// Creates a widget that attaches accessibility metadata to [child].
@@ -461,6 +466,11 @@ class Semantics extends ParentDataWrapper {
           ? listResetCss
           : button
           ? buttonResetCss
+          : role == SemanticsRole.figure ||
+                role == SemanticsRole.blockquote ||
+                role == SemanticsRole.paragraph ||
+                role == SemanticsRole.preformatted
+          ? _blockResetCss
           : const {},
       attributes: {
         if (tag == null && role?.aria != null) 'role': role!.aria!,
