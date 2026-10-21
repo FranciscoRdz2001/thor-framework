@@ -37,7 +37,7 @@ ea7ceb0b49f94599938495a187a218f000088bd9fe69f810272ec0fd3a415629  ./en/examples/
 69597f69b831dad6c656e7d82bb654374ba6cab049d62a0f2aaf4fdac02d95e2  ./en/examples/toast-stack.md
 b81967d0e02f67e53735588d778d406397c4036e1390010a6bc0617df59d8426  ./en/fundamentals/interactivity.md
 6e0e9aebd3d3eb14e9d85ae74c1ad4aa8f0922b7f885c9d486d730c829ba25fb  ./en/fundamentals/layout.md
-82eaed160c78ede96e27508840910cc39d0b4956d60ddfd942115d88d0f77f21  ./en/fundamentals/navigation.md
+c93d392360cfe8f0ef83b6e1f0691226a6ab0810c19b5d1db0f807f837ff7d10  ./en/fundamentals/navigation.md
 a070de57e365c7e3876ce31091164277e9cbeed2916e4fc387e9c2059e44fc94  ./en/fundamentals/reading-data.md
 cffedad3649bd2a6d7e361d7dfcbb86050e713538e442c82635ff0f42f3e931d  ./en/fundamentals/widgets.md
 0ac0cbf24cac9daf2317a9c8797f46658b3c3fc940c3f27997deed843db1f8d1  ./en/get-started/first-app.md
@@ -52,7 +52,7 @@ acc53afdb42d53966e968bef9fb32861ed3db96ed23db8cfc7771e1187212e64  ./en/interface
 e1e4f5c2711f9de78ffa9cca2c0de47d6d4405a36fc245318c7e8d2032d559a7  ./en/interface/gestures.md
 3828a467f4e03f2cec57ca387ba534a0ec491e0272d9e84fd88ae143c38e2511  ./en/interface/localization.md
 1764fa82bcd3852f1722b31050c64d37eed8c82b0ffd84e59b1dbb6347948af0  ./en/interface/theme-and-styles.md
-ff42955154b4a33ce39ec0be035bb0b6910a663f56217d1c2bfee6ca22c1965b  ./en/llms-full.txt
+d7bddc8f8b176462c50f635ebe339585812a508d5a448c8ff9f62f33315181f3  ./en/llms-full.txt
 4f9d5ddb1fd17fe4eba7708f9915257a93502247aeb3e0a5f43bd2f5922d722a  ./en/llms.txt
 7d7ad0b14cbc3cc5c13d92d1f0483bacf1248fe17d66fd0594593a4df232b8e4  ./en/test-and-deploy/build-and-deploy.md
 d91a32b100aca0dd3af3acb9465584341ab278733c025c8ac189f5d2af34a1cf  ./en/test-and-deploy/cli.md
@@ -133,7 +133,7 @@ f954e557dec4c972c3b82179440973abe0726fc8f9f246ee3cbdb78b93493211  ./es/empezar/q
 dcd97add15291bdbdb2a38301e106c6f530965a9d8bd84b967e758d4c5e8bccd  ./es/fundamentos/interactividad.md
 809b93d432dcc14890d925da62564f1e7c5a48827cf236e29650b2313b8f6b39  ./es/fundamentos/layout.md
 af2f455fb6034863ae8558c8c58726c519e0a1846c3d6cae040169a1971d4e00  ./es/fundamentos/leer-datos.md
-257d9814fd073d7407ce767c8dc3e72940f44eb057d896d3b6144b72c037a3fa  ./es/fundamentos/navegacion.md
+f3d0620dbaab22b736deb13c6b7de6d80eb0acdccc6da7f15157895daee063fc  ./es/fundamentos/navegacion.md
 a1284f5909b28ac94070dc0f18fbc0303548165ef6fb87a710cf1f948f2c51f9  ./es/fundamentos/widgets.md
 050ddb8e9718f6722c9cf40062bf7679d325fa048ad0d8c1b52ff2a24740901b  ./es/interfaz/accesibilidad.md
 fb34e7a10e90a944c63d3e82958185a73b6672aaef91d09050beda25d88591fa  ./es/interfaz/animaciones.md
@@ -143,7 +143,7 @@ cb861ae5d812636183d59e345e5a8c59cae5dd922a289260a78a739293d3b862  ./es/interfaz/
 9e73a758f6b36d4541eaf8e50699d56bfa378c11e53a30d512069d93f0216c95  ./es/interfaz/gestos.md
 fabe850952d0dcda3e069997da7d12ef2515a46a5b546b1c874fecd68d7b8211  ./es/interfaz/idiomas.md
 69003818fb771d16e8e3348162281d0e1a5624f2deab60474c9220194cd457f7  ./es/interfaz/tema-y-estilos.md
-964d25d8261262a7b4b9fb181f2f61f9a6b491b4b98908d3caa1406098b33316  ./es/llms-full.txt
+511391f57dba5976b73042a68943c6ed7902e8cf3be2049b7bf8327b232d249c  ./es/llms-full.txt
 9cc9ffcbeca1aa67f28e4ce1450a50f6f5157264afcde308fde0207dc26c7c70  ./es/llms.txt
 fc15959b6182d195b84b17b4a9d3032411912135a6a3192ff7bbd9169cee8155  ./es/publicar/cli.md
 d0fa51bd1d6695bc8653b5e28141d37459f8f2c89ff25d99d59a6724e05d3f01  ./es/publicar/pruebas.md
@@ -155,7 +155,7 @@ d0fa51bd1d6695bc8653b5e28141d37459f8f2c89ff25d99d59a6724e05d3f01  ./es/publicar/
 08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7  ./fonts/ibm-plex-mono-latin-400-normal.1afad13b.woff2
 01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22  ./fonts/ibm-plex-mono-latin-500-normal.e627b3db.woff2
 3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62  ./fonts/inter-latin-wght-normal.ee755325.woff2
-ff42955154b4a33ce39ec0be035bb0b6910a663f56217d1c2bfee6ca22c1965b  ./llms-full.txt
+d7bddc8f8b176462c50f635ebe339585812a508d5a448c8ff9f62f33315181f3  ./llms-full.txt
 4f9d5ddb1fd17fe4eba7708f9915257a93502247aeb3e0a5f43bd2f5922d722a  ./llms.txt
 236111a14c69b52a384f02fb2b5de63f03de571c6107f12f455ad6dc6d15d056  ./og.png
 f42e5d0d84d3b4e4f271faf7e57a82a94abd4f5737a82db2acdcaf6613896476  ./scripts/studio-code.372ed2d9.js

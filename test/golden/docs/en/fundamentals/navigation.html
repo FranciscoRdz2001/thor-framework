@@ -169,6 +169,31 @@
         crossAxisAlignment: <span class="a">CrossAxisAlignment</span>.start,
         children: [<span class="a">Nav</span>(), <span class="a">Expanded</span>(child: child)],
       );
+}</span></pre></div><button class="K" data-studio-copy="Copied" aria-label="Copy" title="Copy" type="button"><div class="L"><svg class="G" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><use href="#lucide-copy"></use></svg><svg class="H" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><use href="#lucide-circle-check"></use></svg></div></button></div></div></div></div><div class="ga"><div class="M k"><p>A page can ask its frame for something. <code>forLayouts</code> returns plain objects that the layouts around it read, by type, with <code>state.fromPage&lt;V&gt;()</code>, so a layout needs no list of routes.</p></div></div><div class="R"><div class="Y" data-studio-code><div class="s" data-studio-code><div class="t"><div class="J" tabindex="0" role="group" aria-label="dart"><pre class="F"><span class="r"><span class="g">class</span> <span class="a">HideFooter</span> {
+  <span class="g">const</span> <span class="a">HideFooter</span>();
+}
+
+<span class="g">class</span> <span class="a">CheckoutPage</span> <span class="g">extends</span> <span class="a">ThorPage</span>&lt;<span class="g">void</span>&gt; {
+  <span class="g">const</span> <span class="a">CheckoutPage</span>();
+
+  <span class="g">@override</span>
+  <span class="a">List</span>&lt;<span class="a">Object</span>&gt; forLayouts(<span class="a">PageState</span>&lt;<span class="g">void</span>&gt; state) =&gt; [<span class="g">const</span> <span class="a">HideFooter</span>()];
+
+  <span class="g">@override</span>
+  <span class="a">Widget</span> build(<span class="a">BuildContext</span> context, <span class="a">PageState</span>&lt;<span class="g">void</span>&gt; state) =&gt; <span class="g">const</span> <span class="a">Text</span>(<span class="j">'Pay'</span>);
+}
+
+<span class="g">class</span> <span class="a">ShopLayout</span> <span class="g">extends</span> <span class="a">ThorLayout</span>&lt;<span class="g">void</span>&gt; {
+  <span class="g">const</span> <span class="a">ShopLayout</span>();
+
+  <span class="g">@override</span>
+  <span class="a">Widget</span> build(<span class="a">BuildContext</span> context, <span class="a">PageState</span>&lt;<span class="g">void</span>&gt; state, <span class="a">Widget</span> child) =&gt;
+      <span class="a">Column</span>(
+        children: [
+          child,
+          <span class="g">if</span> (state.fromPage&lt;<span class="a">HideFooter</span>&gt;() == <span class="g">null</span>) <span class="g">const</span> <span class="a">Text</span>(<span class="j">'Footer'</span>),
+        ],
+      );
 }</span></pre></div><button class="K" data-studio-copy="Copied" aria-label="Copy" title="Copy" type="button"><div class="L"><svg class="G" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><use href="#lucide-copy"></use></svg><svg class="H" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><use href="#lucide-circle-check"></use></svg></div></button></div></div></div></div><div class="ga"><div class="M k"><p>A screen without a frame, such as sign-in, goes in a separate group.</p><h3 id="error-pages" aria-labelledby="error-pages-title"><span id="error-pages-title">Error pages</span><a href="#error-pages" data-anchor aria-label="Link to this section"><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span></a></h3><p>An error page extends <code>ErrorPage</code>. The one from the group closest to the failing route responds, and <code>notFound:</code> handles URLs with no route.</p></div></div><div class="R"><div class="Y" data-studio-code><div class="s" data-studio-code><div class="t"><div class="J" tabindex="0" role="group" aria-label="dart"><pre class="F"><span class="r"><span class="g">class</span> <span class="a">AppErrorPage</span> <span class="g">extends</span> <span class="a">ErrorPage</span> {
   <span class="g">const</span> <span class="a">AppErrorPage</span>();
 
