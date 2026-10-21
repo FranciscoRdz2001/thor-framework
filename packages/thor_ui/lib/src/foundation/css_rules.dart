@@ -96,6 +96,37 @@ final class Css {
     rules,
   );
 
+  /// `@container [name] <query> { rules }`: rules for the size of the
+  /// nearest ancestor that is a size container (`containerType:
+  /// ContainerType.inlineSize`, or `LayoutScope`), not of the window.
+  ///
+  /// ```dart
+  /// css.container('(min-width: 36rem)', [css('.product').props(…)]),
+  /// css.container('(min-width: 48rem)', [...], name: 'catalog'),
+  /// ```
+  ///
+  /// `// web:` no Flutter counterpart (its `LayoutBuilder` reads the box in
+  /// `build`); for a widget that varies with its container use
+  /// `.when(container: {…})` or `GridLayout(container:)`. This is the
+  /// escape for rules of the app stylesheet. [name] picks the ancestor
+  /// whose `container-name` it is.
+  StyleRule container(String query, List<StyleRule> rules, {String? name}) {
+    assert(
+      name == null || RegExp(r'^[A-Za-z_][A-Za-z0-9_-]*$').hasMatch(name),
+      'A container name is one identifier: "$name"',
+    );
+    return _GroupRule(
+      '@container',
+      name == null ? query : '$name $query',
+      rules,
+    );
+  }
+
+  /// `@container (min-width: <px>) { rules }`: from the width of the
+  /// container up, any width (`css.containerMinWidth(576, […])`).
+  StyleRule containerMinWidth(num px, List<StyleRule> rules, {String? name}) =>
+      container('(min-width: ${cssPx(px.toDouble())})', rules, name: name);
+
   /// `@layer <name> { rules }` (an anonymous layer without [name]).
   ///
   /// `name: 'thor'` means `thor.reset`: thor's layers are sublayers of

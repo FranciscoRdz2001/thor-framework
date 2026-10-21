@@ -50,4 +50,18 @@ void main() {
     expect(html, contains('@media screen and (min-width: 920px)'));
     expect(html, contains('@media screen and (max-width: 919.98px)'));
   });
+
+  test(
+    'css.container and css.containerMinWidth write @container rules',
+    () async {
+      final html = await page(ThemeData(), [
+        css.containerMinWidth(576, [css('.a').props(rule)]),
+        css.container('(min-width: 48rem)', name: 'catalog', [
+          css('.b').props(rule),
+        ]),
+      ]);
+      expect(html, contains('@container (min-width: 576px)'));
+      expect(html, contains('@container catalog (min-width: 48rem)'));
+    },
+  );
 }
