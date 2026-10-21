@@ -75,6 +75,7 @@ class StyleProps extends ConstAdaptable<StyleProps> {
     this.direction,
     this.mainAxisAlignment,
     this.crossAxisAlignment,
+    this.justifyItems,
     this.wrap,
     this.spacing,
     this.runSpacing,
@@ -270,6 +271,12 @@ class StyleProps extends ConstAdaptable<StyleProps> {
   /// How the children are placed on the cross axis (`Row`'s
   /// `crossAxisAlignment`, `align-items`).
   final CrossAxisAlignment? crossAxisAlignment;
+
+  /// How a grid places each item inside its cell along the inline axis
+  /// (`justify-items`), with `crossAxisAlignment`'s names: `center` centers
+  /// every item in its column, `stretch` fills it. Only for a grid
+  /// (`display: Display.grid`); a flex box ignores it.
+  final CrossAxisAlignment? justifyItems;
 
   /// `true`: the children run onto more lines when they don't fit, like a
   /// `Wrap` (`flex-wrap: wrap`); `false`: one line (`nowrap`).
@@ -705,6 +712,7 @@ class StyleProps extends ConstAdaptable<StyleProps> {
       'flex-direction': d == Axis.horizontal ? 'row' : 'column',
     if (mainAxisAlignment case final a?) 'justify-content': a.css,
     if (crossAxisAlignment case final a?) 'align-items': a.css,
+    if (justifyItems case final a?) 'justify-items': a.css,
     if (wrap case final w?) 'flex-wrap': w ? 'wrap' : 'nowrap',
     ..._gaps(),
     if (gridTemplateColumns case final v?) 'grid-template-columns': v.css,
