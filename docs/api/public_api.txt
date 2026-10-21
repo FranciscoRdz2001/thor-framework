@@ -19063,8 +19063,9 @@ thor_ui	Region	class
 thor_ui	Region.build	Widget build(BuildContext context)
 thor_ui	Region.child	Widget child
 thor_ui	Region.id	String id
-thor_ui	Region.new	Region({Key? key, required String id, required Widget child, bool syncState = false})
+thor_ui	Region.new	Region({Key? key, required String id, required Widget child, bool syncState = false, List<ThorState> syncStates = const []})
 thor_ui	Region.syncState	bool syncState
+thor_ui	Region.syncStates	List<ThorState> syncStates
 thor_ui	ReorderCallback	typedef
 thor_ui	ReorderItemProxyDecorator	typedef
 thor_ui	ReorderLabels	class

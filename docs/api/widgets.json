@@ -12694,12 +12694,12 @@
   "name": "Region",
   "topic": "estado",
   "summary": "A part of the page that can be asked for alone: the server draws the page as always and answers only this region (`GET` the page's URL plus `thor-piece=<id>`), and the browser puts the answer in place of the region's content. It is what a live search, a product shown in a dialog or any \"update this part\" needs, with the page's own `load` and `build` deciding what is inside.",
-  "doc": "A part of the page that can be asked for alone: the server draws the page\nas always and answers only this region (`GET` the page's URL plus\n`thor-piece=<id>`), and the browser puts the answer in place of the\nregion's content. It is what a live search, a product shown in a dialog or\nany \"update this part\" needs, with the page's own `load` and `build`\ndeciding what is inside.\n\n```dart\n// The page's load reads `?q=`; the region is its results.\nForm(\n  formMethod: FormMethod.get,\n  live: 'results',\n  child: TextFormField(name: 'q'),\n)\nRegion(id: 'results', child: ResultsList(state.data)),\n```\n\nWithout JavaScript the `Form` submits and the page loads whole. What fills\na region from outside: `Form(live:)` (replaces its content as the visitor\ntypes), `Link(fetch:)` (shows another page's region here) and, inside the\nregion, nothing: it is drawn by the page. The region's content may use\n`Watch`, buttons and the states of the page.\n\nA state the region reads keeps the value the page gave it when the region\nis swapped, unless [syncState] is true: then the answer also carries the\ncurrent value of every state the region reads, and the browser replaces\nthe ones it has with them (see [syncState]).\n\n`// web:` Flutter has no counterpart. The page's `load` runs for the\nfragment's request too (the region needs the page's data in scope): keep it\ncheap or give the page `cache:`, which keeps its fragments as well. The\n[id] names the region in the page (`[A-Za-z0-9_-.]`) and must not repeat. A\nstatic export draws the content with no region around it.",
+  "doc": "A part of the page that can be asked for alone: the server draws the page\nas always and answers only this region (`GET` the page's URL plus\n`thor-piece=<id>`), and the browser puts the answer in place of the\nregion's content. It is what a live search, a product shown in a dialog or\nany \"update this part\" needs, with the page's own `load` and `build`\ndeciding what is inside.\n\n```dart\n// The page's load reads `?q=`; the region is its results.\nForm(\n  formMethod: FormMethod.get,\n  live: 'results',\n  child: TextFormField(name: 'q'),\n)\nRegion(id: 'results', child: ResultsList(state.data)),\n```\n\nWithout JavaScript the `Form` submits and the page loads whole. What fills\na region from outside: `Form(live:)` (replaces its content as the visitor\ntypes), `Link(fetch:)` (shows another page's region here) and, inside the\nregion, nothing: it is drawn by the page. The region's content may use\n`Watch`, buttons and the states of the page.\n\nA state the region reads keeps the value the page gave it when the region\nis swapped, unless [syncState] is true: then the answer also carries the\ncurrent value of every state the region reads, and the browser replaces\nthe ones it has with them (see [syncState]); [syncStates] names states to\ncarry that the region does not read.\n\n`// web:` Flutter has no counterpart. The page's `load` runs for the\nfragment's request too (the region needs the page's data in scope): keep it\ncheap or give the page `cache:`, which keeps its fragments as well. The\n[id] names the region in the page (`[A-Za-z0-9_-.]`) and must not repeat. A\nstatic export draws the content with no region around it.",
   "flutter": null,
   "constructors": [
    {
     "name": "Region",
-    "signature": "Region({\n  Key? key,\n  required String id,\n  required Widget child,\n  bool syncState = false,\n})",
+    "signature": "Region({\n  Key? key,\n  required String id,\n  required Widget child,\n  bool syncState = false,\n  List<ThorState> syncStates = const [],\n})",
     "summary": "A region called [id] that holds [child].",
     "params": [
      {
@@ -12722,6 +12722,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether a swap of this region also updates the states it reads."
+     },
+     {
+      "name": "syncStates",
+      "type": "List<ThorState>",
+      "required": false,
+      "default": "const []",
+      "doc": "States whose values every swap of this region carries, whether or not the content reads them: `Region(syncStates: [week])`."
      }
     ]
    }

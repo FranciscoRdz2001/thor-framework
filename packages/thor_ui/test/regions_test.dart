@@ -148,6 +148,26 @@ void main() {
             ],
           ),
         ),
+      // The state is read outside the region only; the region names it.
+      PageRoute<Widget, void>(
+        path: 'listedweek',
+        load: (r) => weekState.week.value = r.uri.queryParameters['w'] ?? '1',
+        build: (s) => Column(
+          children: [
+            Watch(weekState.text),
+            const Link(
+              href: RouteUrl('/listedweek?w=2'),
+              fetch: FragmentFetch(piece: 'grid', into: 'grid'),
+              child: Text('next'),
+            ),
+            Region(
+              id: 'grid',
+              syncStates: [weekState],
+              child: const Text('static grid'),
+            ),
+          ],
+        ),
+      ),
       // Filter chips that fill the results in place and write the address.
       PageRoute<Widget, String>(
         path: 'filter',
@@ -474,6 +494,39 @@ void main() {
       expect(r.text, isNot(contains('data-thor-lazy-sync')));
     });
 
+    test('syncStates names a state the region does not read', () async {
+      final r = await handler().handle(get('/listedweek?w=3&thor-piece=grid'));
+      expect(r.text, contains('static grid'));
+      expect(r.text, contains('data-thor-lazy-json data-thor-lazy-sync'));
+      expect(r.text, contains('"WeekState.week":"3"'));
+    });
+
+    test('syncState alone ships nothing the region does not read', () async {
+      final h = RouteHandler<Widget>(
+        renderer: WidgetRenderer(app: (page) => ThorApp(child: page)),
+        onError: (request, error, stack) {},
+        routes: [
+          PageRoute<Widget, void>(
+            path: 'unread',
+            load: (r) => weekState.week.value = '4',
+            build: (s) => Column(
+              children: [
+                Watch(weekState.text),
+                const Region(
+                  id: 'grid',
+                  syncState: true,
+                  child: Text('static grid'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+      final r = await h.handle(get('/unread?thor-piece=grid'));
+      expect(r.text, contains('static grid'));
+      expect(r.text, isNot(contains('WeekState.week')));
+    });
+
     test('a region that reads no state sends none', () async {
       final r = await handler().handle(get('/people?q=gus&thor-piece=results'));
       expect(r.text, isNot(contains('data-thor-lazy-sync')));
@@ -591,6 +644,32 @@ eval(input.script);
         expect(out['before'], 'week 1');
         expect(out['after'], 'week 2');
         expect(out['events'], 1);
+        expect(jsonDecode(out['sync']! as String), {'WeekState.week': '2'});
+        expect(out['merged'], {'WeekState.week': '2', 'Other.x': 2});
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a region that lists its state syncs it without reading it',
+      () async {
+        final out = await run(
+          '/listedweek?w=1',
+          ['/listedweek?w=2&thor-piece=grid'],
+          r'''
+          const region = D.querySelector('[data-thor-region="grid"]');
+          const mine = D.createElement('script');
+          mine.setAttribute('id', 'thor-state');
+          mine.textContent = '{"WeekState.week":"1","Other.x":2}';
+          D.body.append(mine);
+          click(D.querySelector('a'));
+          await tick();
+          out.after = text(region);
+          out.sync = streams[0].detail.sync;
+          out.merged = JSON.parse(mine.textContent);
+        ''',
+        );
+        expect(out['after'], 'static grid');
         expect(jsonDecode(out['sync']! as String), {'WeekState.week': '2'});
         expect(out['merged'], {'WeekState.week': '2', 'Other.x': 2});
       },
