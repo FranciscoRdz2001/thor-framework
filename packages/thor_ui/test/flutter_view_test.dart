@@ -146,7 +146,7 @@ void main() {
 
     test('aspectRatio: height from the width', () async {
       final page = await css(const FlutterView(aspectRatio: 16 / 9));
-      expect(page, contains('aspect-ratio: 1.7778'));
+      expect(page, contains('aspect-ratio: 16 / 9'));
       expect(page, isNot(contains('height: ')));
     });
 

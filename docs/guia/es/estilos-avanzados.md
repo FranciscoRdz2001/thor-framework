@@ -65,6 +65,10 @@ Styled(
 | `backdropFilter` | `ImageFilter` | filtra lo que hay detrás (`ImageFilter.blur(sigmaX: 8)`; también `saturate`, `brightness`, `contrast`, `grayscale`, `invert`, `sepia`, `hueRotate`, `opacity`, encadenados con `ImageFilter.compose`); o `BackdropFilter` |
 | `scrollbarWidth`, `scrollbarThumbColor`, `scrollbarTrackColor` | `ScrollbarWidth`, `Color` | la barra de desplazamiento del elemento |
 | `opacity`, `scale`, `offset`, `turns` | números | solo con `.when()`; un valor fijo va en `Opacity` o `Transform` |
+| `textTransform`, `textOverflow`, `textUnderlineOffset`, `lineClamp` | `TextTransform`, `TextOverflow`, `Length`, `int` | texto de HTML que ningún widget construye; para un `Text`, `maxLines:` y `overflow:` |
+| `inset`, `scrollPadding` | `Length`, `EdgeInsetsGeometry` | `inset: 0.px` cubre la caja con `position`; `scrollPadding` deja aire al desplazarse a un hijo |
+| `backgroundClip` | `BackgroundClip` | `BackgroundClip.text` muestra el fondo a través de las letras (con texto transparente) |
+| `aspectRatio` | `double` | una fracción sale como fracción: `4 / 3` escribe `aspect-ratio: 4 / 3` |
 
 `BoxPosition` recibe sus distancias como `Length`:
 `BoxPosition.fixed(bottom: 16.px, right: 16.px)`. Dentro de un `Stack`, usa
@@ -90,6 +94,41 @@ convierte el cambio en una transición:
 
 La [referencia de la API](../../api/thor_ui.md#estilos) lista el
 resto de las props de `StyleProps`.
+
+### Valores por elemento, mezclas y degradados
+
+Un color o un tamaño que viene de un dato (el acento de una tienda) no se
+escribe con `raw:`. `ElementVariables` lo pone como variable CSS en el
+elemento, una vez por valor distinto, y la hoja de estilo la lee:
+
+```dart no-check
+const accent = CssVariable<Color>('--accent');
+
+ElementVariables(
+  {accent: Color(store.primaryColor)},
+  child: const StoreCard(), // its rules read Color.variable(accent)
+)
+```
+
+`Color.lerp(a, b, t)` mezcla dos colores (con un color del tema, el
+navegador hace un `color-mix`), `color.withOpacity(.22)` lo vuelve
+translúcido, y `RadialGradient.ellipse` pone la elipse y el punto como en
+CSS:
+
+```dart
+BoxDecoration(
+  gradient: RadialGradient.ellipse(
+    center: Alignment(-0.48, -0.68), // 26% 16%
+    radiusX: 1.2,
+    radiusY: 1,
+    colors: [accent.withOpacity(.22), Colors.transparent],
+  ),
+)
+```
+
+Un margen negativo (`StyleProps(margin: EdgeInsets.symmetric(vertical: -12))`)
+va en `Styled`: `Container(margin:)` lo rechaza, como Flutter. En una hoja de
+estilo, `css.container('(min-width: 36rem)', […])` escribe un `@container`.
 
 ## Unidades
 

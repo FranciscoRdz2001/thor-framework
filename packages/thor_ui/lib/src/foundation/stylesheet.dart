@@ -190,10 +190,7 @@ enum WindowSizeClass {
   StyleRule media(
     List<StyleRule> rules, {
     Breakpoints breakpoints = const Breakpoints(),
-  }) => css.media(
-    'screen and (min-width: ${cssPx(breakpoints[this])})',
-    rules,
-  );
+  }) => css.media('screen and (min-width: ${cssPx(breakpoints[this])})', rules);
 }
 
 /// The widths of the [WindowSizeClass]es, part of the theme

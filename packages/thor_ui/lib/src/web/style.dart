@@ -1057,7 +1057,7 @@ class Style extends ConstAdaptable<Style> {
           if (maxWidth case final v?) 'max-width': v.css,
           if (minHeight case final v?) 'min-height': v.css,
           if (maxHeight case final v?) 'max-height': v.css,
-          if (aspectRatio case final v?) 'aspect-ratio': cssNum(v),
+          if (aspectRatio case final v?) 'aspect-ratio': cssAspectRatio(v),
           if (padding case final v?) 'padding': v.css,
           if (paddingInline case final v?) 'padding-inline': v.css,
           if (paddingBlock case final v?) 'padding-block': v.css,

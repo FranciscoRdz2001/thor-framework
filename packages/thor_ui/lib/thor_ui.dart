@@ -242,6 +242,7 @@ export 'src/widgets/divider.dart';
 export 'src/widgets/draggable.dart';
 export 'src/widgets/dropdown_menu.dart' hide menuStyleCss;
 export 'src/widgets/effects.dart' hide SemanticsButton;
+export 'src/widgets/expandable_text.dart';
 export 'src/widgets/flex.dart';
 export 'src/widgets/flutter_view.dart';
 export 'src/widgets/form.dart' hide InsideForm;

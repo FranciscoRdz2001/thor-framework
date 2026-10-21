@@ -32,7 +32,23 @@ focusable `role="button"` and the dialog opens on a click, Enter or Space.
 
 Add `showClose: true` to an `AlertDialog`, `Dialog`, `ModalBottomSheet` or
 `Drawer` and it brings its own close button in the top corner, named by the
-localized "Close", so you don't repeat a `DialogClose` in every panel.
+localized "Close", so you don't repeat a `DialogClose` in every panel. With
+`closeLabel: 'Fermer'` the name is yours, for when the page's text is not in
+the app's language.
+
+`dialog:` accepts the dialog wrapped in `Styled`, `Semantics` or
+`ElementAttributes` (they fuse into its `<dialog>`), to give it a style of its
+own or a `data-*`:
+
+```dart no-check
+DialogTrigger(
+  dialog: Styled(
+    style: StyleProps(maxWidth: 440.px),
+    child: Drawer(child: filters),
+  ),
+  child: const TextButton(child: Text('Filters')),
+)
+```
 
 ## A dialog that does not block
 

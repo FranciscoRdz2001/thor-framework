@@ -62,6 +62,24 @@ String _formatNum(num value) {
   return fixed.substring(0, end);
 }
 
+/// Formats an `aspect-ratio` (`width / height`): a ratio that is a small
+/// fraction is written as one (`1.3333333333333333` → `4 / 3`, `16 / 9`),
+/// as a designer writes it; anything else is a plain number (`1.5`).
+///
+/// `// web:` a [cssNum] rounds to four decimals, so `4 / 3` would be
+/// `1.3333` and the box a fraction of a pixel off the one the design says.
+String cssAspectRatio(double ratio) {
+  assert(ratio > 0 && ratio.isFinite, 'An aspect ratio is positive.');
+  final plain = cssNum(ratio);
+  // A short decimal (1.5, 0.75) is how it reads best.
+  if (plain.length <= 4) return plain;
+  for (var q = 2; q <= 100; q++) {
+    final p = (ratio * q).round();
+    if (p > 0 && ((p / q) - ratio).abs() < 1e-9) return '$p / $q';
+  }
+  return plain;
+}
+
 // Bounded: values computed from data (a width per item) must not grow the
 // interned strings forever.
 const _internLimit = 4096;

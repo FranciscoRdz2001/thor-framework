@@ -363,6 +363,28 @@ enum BlendMode {
   final String css;
 }
 
+/// How far the background of a box reaches (`background-clip`).
+enum BackgroundClip {
+  /// Under the border (the browser's default).
+  border('border-box'),
+
+  /// Up to the border's inner edge.
+  padding('padding-box'),
+
+  /// Only under the content.
+  content('content-box'),
+
+  /// Only under the glyphs of the text: a gradient or an image shown through
+  /// the letters. The text's own color must be transparent
+  /// (`Color.transparent`) for the background to show.
+  text('text');
+
+  const BackgroundClip(this.css);
+
+  /// The CSS keyword.
+  final String css;
+}
+
 /// Whether a form control paints itself (`appearance`).
 enum Appearance {
   /// The browser draws the control.

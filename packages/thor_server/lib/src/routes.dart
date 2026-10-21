@@ -514,14 +514,20 @@ class RobotsMeta {
   const RobotsMeta({
     this.index = true,
     this.follow = true,
+    this.explicitFollow = false,
     this.noArchive = false,
     this.noSnippet = false,
     this.noImageIndex = false,
     this.other = const [],
   });
 
-  /// Keep the page out of search results (`noindex, follow`).
+  /// Keep the page out of search results (`noindex`; `follow` is the
+  /// default and is left out, see [explicitFollow]).
   static const noindex = RobotsMeta(index: false);
+
+  /// Keep the page out of search results and say that its links count
+  /// (`noindex, follow`).
+  static const noindexFollow = RobotsMeta(index: false, explicitFollow: true);
 
   /// Keep the page out of search results and do not follow its links.
   static const none = RobotsMeta(index: false, follow: false);
@@ -531,6 +537,7 @@ class RobotsMeta {
   factory RobotsMeta.parse(String? content) {
     var index = true;
     var follow = true;
+    var explicitFollow = false;
     var noArchive = false;
     var noSnippet = false;
     var noImageIndex = false;
@@ -546,6 +553,7 @@ class RobotsMeta {
           index = false;
         case 'follow':
           follow = true;
+          explicitFollow = true;
         case 'nofollow':
           follow = false;
         case 'none':
@@ -564,6 +572,7 @@ class RobotsMeta {
     return RobotsMeta(
       index: index,
       follow: follow,
+      explicitFollow: explicitFollow,
       noArchive: noArchive,
       noSnippet: noSnippet,
       noImageIndex: noImageIndex,
@@ -576,6 +585,11 @@ class RobotsMeta {
 
   /// Whether its links may be followed (`follow` / `nofollow`).
   final bool follow;
+
+  /// Whether `follow` is written out when it is the default: a `noindex`
+  /// page then says `noindex, follow`, as some sites and tools expect. An
+  /// `index` page always says `index, follow`.
+  final bool explicitFollow;
 
   /// `noarchive`: no cached copy.
   final bool noArchive;
@@ -593,6 +607,7 @@ class RobotsMeta {
   RobotsMeta copyWith({bool? index, bool? follow}) => RobotsMeta(
     index: index ?? this.index,
     follow: follow ?? this.follow,
+    explicitFollow: explicitFollow,
     noArchive: noArchive,
     noSnippet: noSnippet,
     noImageIndex: noImageIndex,
@@ -603,7 +618,7 @@ class RobotsMeta {
   /// `noindex` page says just that.
   String get content => [
     index ? 'index' : 'noindex',
-    if (!follow) 'nofollow' else if (index) 'follow',
+    if (!follow) 'nofollow' else if (index || explicitFollow) 'follow',
     if (noArchive) 'noarchive',
     if (noSnippet) 'nosnippet',
     if (noImageIndex) 'noimageindex',

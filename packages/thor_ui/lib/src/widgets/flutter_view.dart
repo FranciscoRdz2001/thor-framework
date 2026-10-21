@@ -138,7 +138,7 @@ class FlutterView extends StatelessWidget
         if (height != null)
           'height': cssPx(height!)
         else
-          'aspect-ratio': cssNum(aspectRatio!),
+          'aspect-ratio': cssAspectRatio(aspectRatio!),
       },
       attributes: {
         flutterAttr: base,

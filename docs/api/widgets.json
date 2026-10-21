@@ -126,7 +126,7 @@
   "constructors": [
    {
     "name": "AlertDialog",
-    "signature": "AlertDialog({\n  Key? key,\n  String? id,\n  Widget? title,\n  Widget? content,\n  List<Widget> actions = const [],\n  String? semanticLabel,\n  bool barrierDismissible = true,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n})",
+    "signature": "AlertDialog({\n  Key? key,\n  String? id,\n  Widget? title,\n  Widget? content,\n  List<Widget> actions = const [],\n  String? semanticLabel,\n  bool barrierDismissible = true,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "Creates a Material alert dialog.",
     "params": [
      {
@@ -191,6 +191,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether the dialog brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\")."
+     },
+     {
+      "name": "closeLabel",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The name of the [showClose] button, for assistive technology and the tooltip. Null is the localized \"Close\" of `MaterialLocalizations`; give it when the page's text is not in the app's locale."
      }
     ]
    }
@@ -3646,7 +3653,7 @@
   "constructors": [
    {
     "name": "Dialog",
-    "signature": "Dialog({\n  Key? key,\n  String? id,\n  required Widget child,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  EdgeInsets? insetPadding,\n  BoxConstraints? constraints,\n  List<BoxShadow>? shadows,\n  Color? barrierColor,\n  ImageFilter? barrierFilter,\n  bool barrierDismissible = true,\n  String? label,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n})",
+    "signature": "Dialog({\n  Key? key,\n  String? id,\n  required Widget child,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  EdgeInsets? insetPadding,\n  BoxConstraints? constraints,\n  List<BoxShadow>? shadows,\n  Color? barrierColor,\n  ImageFilter? barrierFilter,\n  bool barrierDismissible = true,\n  String? label,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "A dialog with [child] as its content.",
     "params": [
      {
@@ -3753,6 +3760,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether the dialog brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\")."
+     },
+     {
+      "name": "closeLabel",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The name of the [showClose] button, for assistive technology and the tooltip. Null is the localized \"Close\" of `MaterialLocalizations`; give it when the page's text is not in the app's locale."
      }
     ]
    }
@@ -4171,7 +4185,7 @@
   "constructors": [
    {
     "name": "Drawer",
-    "signature": "Drawer({\n  Key? key,\n  String? id,\n  required Widget child,\n  DrawerSide? side,\n  double? width,\n  Color? backgroundColor,\n  String? label,\n  bool closeOnNavigate = true,\n  DialogController? controller,\n  EdgeInsetsGeometry padding = const EdgeInsets.all(16),\n  WindowSizeClass? permanentFrom,\n  double? permanentWidth,\n  EdgeInsetsGeometry? permanentPadding,\n  bool showClose = false,\n})",
+    "signature": "Drawer({\n  Key? key,\n  String? id,\n  required Widget child,\n  DrawerSide? side,\n  double? width,\n  Color? backgroundColor,\n  String? label,\n  bool closeOnNavigate = true,\n  DialogController? controller,\n  EdgeInsetsGeometry padding = const EdgeInsets.all(16),\n  WindowSizeClass? permanentFrom,\n  double? permanentWidth,\n  EdgeInsetsGeometry? permanentPadding,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "Creates a drawer.",
     "params": [
      {
@@ -4264,6 +4278,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether the drawer brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\"); it is not drawn once [permanentFrom] makes the drawer an inline panel."
+     },
+     {
+      "name": "closeLabel",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The name of the [showClose] button, for assistive technology and the tooltip. Null is the localized \"Close\" of `MaterialLocalizations`; give it when the page's text is not in the app's locale."
      }
     ]
    }
@@ -4877,6 +4898,66 @@
   ]
  },
  {
+  "name": "ElementAttributes",
+  "topic": "animacion",
+  "summary": "`// web:` not in Flutter (it has no attributes): sets attributes on the element of [child], with no element of its own.",
+  "doc": "`// web:` not in Flutter (it has no attributes): sets attributes on the\nelement of [child], with no element of its own.\n\n```dart\nElementAttributes(\n  HtmlAttributes(data: {'track': 'cta', 'track-id': 'hero'}),\n  child: Semantics(role: SemanticsRole.listItem, child: Link(…)),\n)\n```\n\nFor analytics markers, test hooks and `aria-*` that [Semantics] does not\ncover. It fuses into the element, so a `data-*` on a list item keeps the\n`<li>` (a wrapper element would break the list). An attribute the element\nalready has is replaced by this one; `class`, `style` and event handlers\nare refused by [HtmlAttributes]. For values that change on the page use\n`WatchAttributes`.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "ElementAttributes",
+    "signature": "ElementAttributes(\n  HtmlAttributes attributes, {\n  Key? key,\n  required Widget child,\n})",
+    "summary": "Puts [attributes] on the element of [child].",
+    "params": [
+     {
+      "name": "attributes",
+      "type": "HtmlAttributes",
+      "required": true,
+      "default": null,
+      "doc": "The attributes to write."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": null
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "ElementVariables",
+  "topic": "animacion",
+  "summary": "`// web:` not in Flutter (it has no style cascade): sets custom properties (`--accent`) on the element of [child], from values the server knows (a store's color, a size from data).",
+  "doc": "`// web:` not in Flutter (it has no style cascade): sets custom\nproperties (`--accent`) on the element of [child], from values the server\nknows (a store's color, a size from data).\n\n```dart\nconst accent = CssVariable<Color>('--accent');\n\nElementVariables(\n  {accent: Color(store.primaryColor)},\n  child: Card(child: …), // a stylesheet rule reads var(--accent)\n)\n```\n\nThe value reaches the element's one class (the same for every element\nwith the same value), so the client writes no style; a rule written once\nreads it with `Color.variable(accent)` or `Length.variable(gutter)`, and\nthe descendants inherit it. A value is a [Color], a [Length] or a number;\na value that follows a `ThorState` is `WatchVariables`.",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "ElementVariables",
+    "signature": "ElementVariables(\n  Map<CssVariable<Object>, Object> variables, {\n  Key? key,\n  required Widget child,\n})",
+    "summary": "Puts [variables] on the element of [child].",
+    "params": [
+     {
+      "name": "variables",
+      "type": "Map<CssVariable<Object>, Object>",
+      "required": true,
+      "default": null,
+      "doc": "Custom property → its value ([Color], [Length] or [num])."
+     },
+     {
+      "name": "child",
+      "type": "Widget",
+      "required": true,
+      "default": null,
+      "doc": null
+     }
+    ]
+   }
+  ]
+ },
+ {
   "name": "ElevatedButton",
   "topic": "controles",
   "summary": "Flutter's `ElevatedButton`: a raised button on the surface, for the emphasis between [FilledButton] and [OutlinedButton].",
@@ -5087,6 +5168,64 @@
       "required": true,
       "default": null,
       "doc": null
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "ExpandableText",
+  "topic": "texto",
+  "summary": "Text cut at [maxLines] lines with a button that shows the rest, and another that cuts it again: the \"read more\" of a description or a review.",
+  "doc": "Text cut at [maxLines] lines with a button that shows the rest, and\nanother that cuts it again: the \"read more\" of a description or a review.\n\n```dart\nExpandableText(\n  description,\n  maxLines: 3,\n  moreLabel: 'Read more',\n  lessLabel: 'Show less',\n)\n```\n\n`// web:` no Flutter counterpart. It works without JavaScript: the button\nis a `<label>` of a visually hidden checkbox, and the rule that lifts the\ncut is `:has(:checked)`, so it is right on the first paint and keyboard\nreachable (the checkbox takes the focus). The server cannot know whether\nthe text fills [maxLines], so the button is always there: give it text\nlong enough to need it (or show a plain `Text` for short ones).",
+  "flutter": null,
+  "constructors": [
+   {
+    "name": "ExpandableText",
+    "signature": "ExpandableText(\n  String text, {\n  Key? key,\n  int maxLines = 3,\n  required String moreLabel,\n  required String lessLabel,\n  TextStyle? style,\n  TextStyle? toggleStyle,\n})",
+    "summary": "Shows [text] cut at [maxLines] lines until the visitor expands it.",
+    "params": [
+     {
+      "name": "text",
+      "type": "String",
+      "required": true,
+      "default": null,
+      "doc": "The text."
+     },
+     {
+      "name": "maxLines",
+      "type": "int",
+      "required": false,
+      "default": "3",
+      "doc": "How many lines show while it is cut."
+     },
+     {
+      "name": "moreLabel",
+      "type": "String",
+      "required": true,
+      "default": null,
+      "doc": "The button while the text is cut (\"Read more\")."
+     },
+     {
+      "name": "lessLabel",
+      "type": "String",
+      "required": true,
+      "default": null,
+      "doc": "The button while the text is whole (\"Show less\")."
+     },
+     {
+      "name": "style",
+      "type": "TextStyle?",
+      "required": false,
+      "default": null,
+      "doc": "The text's style."
+     },
+     {
+      "name": "toggleStyle",
+      "type": "TextStyle?",
+      "required": false,
+      "default": null,
+      "doc": "The buttons' style (default: bold in the theme's primary color)."
      }
     ]
    }
@@ -10467,7 +10606,7 @@
   "constructors": [
    {
     "name": "ModalBottomSheet",
-    "signature": "ModalBottomSheet({\n  Key? key,\n  String? id,\n  required Widget child,\n  bool showDragHandle = true,\n  String? label,\n  DialogController? controller,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  BoxConstraints? constraints,\n  Color? barrierColor,\n  bool showClose = false,\n})",
+    "signature": "ModalBottomSheet({\n  Key? key,\n  String? id,\n  required Widget child,\n  bool showDragHandle = true,\n  String? label,\n  DialogController? controller,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  BoxConstraints? constraints,\n  Color? barrierColor,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "Creates a Material modal bottom sheet.",
     "params": [
      {
@@ -10546,6 +10685,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether the sheet brings its own close button in the top corner (`DialogClose` with a close icon, named by the localized \"Close\")."
+     },
+     {
+      "name": "closeLabel",
+      "type": "String?",
+      "required": false,
+      "default": null,
+      "doc": "The name of the [showClose] button, for assistive technology and the tooltip. Null is the localized \"Close\" of `MaterialLocalizations`; give it when the page's text is not in the app's locale."
      }
     ]
    }
@@ -13410,7 +13556,7 @@
   "constructors": [
    {
     "name": "Semantics",
-    "signature": "Semantics({\n  Key? key,\n  SemanticsRole? role,\n  int? headingLevel,\n  String? label,\n  bool button = false,\n  bool header = false,\n  bool link = false,\n  bool image = false,\n  bool hidden = false,\n  bool? enabled,\n  bool? selected,\n  bool? toggled,\n  int? rowIndex,\n  int? rowCount,\n  int? columnIndex,\n  int? columnCount,\n  bool liveRegion = false,\n  String? identifier,\n  String? value,\n  String? hint,\n  bool? checked,\n  bool? expanded,\n  bool? readOnly,\n  bool? obscured,\n  bool? focusable,\n  String? tooltip,\n  bool textField = false,\n  bool slider = false,\n  bool container = false,\n  bool explicitChildNodes = false,\n  bool excludeSemantics = false,\n  SemanticsSortKey? sortKey,\n  required Widget child,\n})",
+    "signature": "Semantics({\n  Key? key,\n  SemanticsRole? role,\n  int? headingLevel,\n  String? label,\n  bool button = false,\n  bool header = false,\n  bool link = false,\n  bool image = false,\n  bool hidden = false,\n  bool? enabled,\n  bool? selected,\n  bool? toggled,\n  int? rowIndex,\n  int? rowCount,\n  int? columnIndex,\n  int? columnCount,\n  bool liveRegion = false,\n  SemanticsCurrent? current,\n  String? identifier,\n  String? value,\n  String? hint,\n  bool? checked,\n  bool? expanded,\n  bool? readOnly,\n  bool? obscured,\n  bool? focusable,\n  String? tooltip,\n  bool textField = false,\n  bool slider = false,\n  bool container = false,\n  bool explicitChildNodes = false,\n  bool excludeSemantics = false,\n  SemanticsSortKey? sortKey,\n  required Widget child,\n})",
     "summary": "Creates a widget that attaches accessibility metadata to [child].",
     "params": [
      {
@@ -13524,6 +13670,13 @@
       "required": false,
       "default": "false",
       "doc": "Whether changes to [child]'s text are announced when they happen (`aria-live=\"polite\"`), like Flutter's `liveRegion`: a status line, or the value under a selection that moves while the focus stays put."
+     },
+     {
+      "name": "current",
+      "type": "SemanticsCurrent?",
+      "required": false,
+      "default": null,
+      "doc": "`// web:` not in Flutter: which item of a set [child] is, as a screen reader says it (`aria-current`): the page in a breadcrumb or a menu, the step of a process, today in a calendar. Null leaves it out."
      },
      {
       "name": "identifier",

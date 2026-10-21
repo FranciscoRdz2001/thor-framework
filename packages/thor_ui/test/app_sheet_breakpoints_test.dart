@@ -16,9 +16,7 @@ Future<String> page(ThemeData theme, List<StyleRule> styles) async {
   final handler = RouteHandler<Widget>(
     renderer: r,
     onError: (request, error, stack) {},
-    routes: [
-      routePage<void>(path: '', build: (c, s) => const Text('x')),
-    ],
+    routes: [routePage<void>(path: '', build: (c, s) => const Text('x'))],
   );
   final res = await handler.handle(
     PageRequest(
@@ -36,9 +34,7 @@ void main() {
 
   test('WindowSizeClass.media takes the app breakpoints', () async {
     final html = await page(ThemeData(breakpoints: site), [
-      WindowSizeClass.medium.media(breakpoints: site, [
-        css('.a').props(rule),
-      ]),
+      WindowSizeClass.medium.media(breakpoints: site, [css('.a').props(rule)]),
       WindowSizeClass.large.media([css('.b').props(rule)]),
     ]);
     expect(html, contains('(min-width: 640px)'));
@@ -54,4 +50,18 @@ void main() {
     expect(html, contains('@media screen and (min-width: 920px)'));
     expect(html, contains('@media screen and (max-width: 919.98px)'));
   });
+
+  test(
+    'css.container and css.containerMinWidth write @container rules',
+    () async {
+      final html = await page(ThemeData(), [
+        css.containerMinWidth(576, [css('.a').props(rule)]),
+        css.container('(min-width: 48rem)', name: 'catalog', [
+          css('.b').props(rule),
+        ]),
+      ]);
+      expect(html, contains('@container (min-width: 576px)'));
+      expect(html, contains('@container catalog (min-width: 48rem)'));
+    },
+  );
 }

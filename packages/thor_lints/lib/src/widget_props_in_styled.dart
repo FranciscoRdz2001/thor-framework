@@ -116,6 +116,12 @@ class _Visitor extends SimpleAstVisitor<void> {
         final name = a.name.label.name;
         final widget =
             _widgetOwned[name] ?? (varies ? null : _staticNumbers[name]);
+        // A negative margin (`-12`) is the web's: `Container(margin:)` is
+        // non-negative, as Flutter's.
+        if (name == 'margin' &&
+            RegExp(r'-\s*\d').hasMatch(a.expression.toSource())) {
+          continue;
+        }
         if (widget != null) {
           rule.reportAtNode(a, arguments: [name, widget]);
         }

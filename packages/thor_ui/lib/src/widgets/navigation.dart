@@ -156,6 +156,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.permanentWidth,
     this.permanentPadding,
     this.showClose = false,
+    this.closeLabel,
   }) : assert(
          (permanentWidth == null && permanentPadding == null) ||
              permanentFrom != null,
@@ -214,6 +215,11 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
   ///
   /// `// web:` Flutter's drawers have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// The edge it slides from (default: the start; in a `Scaffold`'s
   /// `endDrawer:`, the end).
@@ -372,7 +378,8 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       childRules: ChildRules.column,
       // Like Flutter's, the child gets the panel's full height.
       children: [
-        if (showClose) DialogCloseCorner(hiddenFrom: permanentFrom),
+        if (showClose)
+          DialogCloseCorner(hiddenFrom: permanentFrom, label: closeLabel),
         Expanded(child: child),
       ],
     );

@@ -577,6 +577,11 @@ class ExpansionTile extends StatelessWidget
 
   /// A widget at the end of the header, instead of the chevron (shown only
   /// with [showTrailingIcon]).
+  ///
+  /// `// web:` it does not turn. To turn a chevron of your own with the tile
+  /// (also one inside the [title], with `showTrailingIcon: false`), style it
+  /// with the open state of the tile it is in:
+  /// `Styled(style: StyleProps(turns: 0).when(open: StyleProps(turns: 0.5)), child: icon)`.
   final Widget? trailing;
 
   /// Whether the header is shorter (48 px instead of 56).
@@ -2355,6 +2360,7 @@ class AlertDialog extends StatelessWidget
     this.controller,
     this.modal = true,
     this.showClose = false,
+    this.closeLabel,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
@@ -2365,6 +2371,11 @@ class AlertDialog extends StatelessWidget
   ///
   /// `// web:` Flutter's dialogs have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// Whether the dialog blocks the page (default) or floats over it.
   ///
@@ -2473,7 +2484,7 @@ class AlertDialog extends StatelessWidget
     },
     childRules: ChildRules.column,
     children: [
-      if (showClose) const DialogCloseCorner(),
+      if (showClose) DialogCloseCorner(label: closeLabel),
       if (title != null)
         WrapWith(
           WrapData(
@@ -2548,6 +2559,7 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.controller,
     this.modal = true,
     this.showClose = false,
+    this.closeLabel,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
@@ -2562,6 +2574,11 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
   ///
   /// `// web:` Flutter's dialogs have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// DOM id (the triggers point at it); optional, see `AlertDialog.id`.
   final String? id;
@@ -2693,7 +2710,10 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
         dialogControllerAttr: ?controllerIdOf(controller),
       },
       childRules: ChildRules.column,
-      children: [if (showClose) const DialogCloseCorner(), child],
+      children: [
+        if (showClose) DialogCloseCorner(label: closeLabel),
+        child,
+      ],
     );
   }
 }
@@ -2752,7 +2772,9 @@ class DialogTrigger extends ParentDataWrapper {
   /// `controller` still name it, if the app wants to point at it elsewhere).
   ///
   /// `// web:` Flutter's `showDialog` pushes a route when pressed; the
-  /// dialog here is part of the markup, next to the button.
+  /// dialog here is part of the markup, next to the button. It may be
+  /// wrapped in `Styled`, `Semantics`, `ElementAttributes`… (they fuse into
+  /// its `<dialog>`), to give it a class or attributes.
   final Widget? dialog;
 
   /// Id of the dialog to open (the `id` of its `<dialog>`).
@@ -2817,7 +2839,13 @@ class DialogTrigger extends ParentDataWrapper {
     // An app component that builds the dialog is the dialog: the
     // preview shows which one it is, and the first of its kind built below
     // takes the id.
-    final r = resolveComponent(d)!;
+    // `Styled`, `Semantics` and the like fuse into the dialog's own element,
+    // so they may wrap it: the dialog is what they hold.
+    var inner = d;
+    while (inner is ParentDataWrapper) {
+      inner = inner.child;
+    }
+    final r = resolveComponent(inner)!;
     final (prefix, id, key, controller) = switch (r) {
       AlertDialog() => ('dlg', r.id, r.key, r.controller),
       Dialog() => ('dlg', r.id, r.key, r.controller),
@@ -2840,7 +2868,7 @@ class DialogTrigger extends ParentDataWrapper {
       PresetDialogId(
         id: panelId,
         dialog: r,
-        byType: !identical(r, d),
+        byType: !identical(r, inner),
         scope: DialogScope.maybeOf(context),
         child: d,
       ),
@@ -3185,6 +3213,7 @@ class ModalBottomSheet extends StatelessWidget
     this.constraints,
     this.barrierColor,
     this.showClose = false,
+    this.closeLabel,
   });
 
   /// DOM id (the triggers point at it); optional, see `AlertDialog.id`.
@@ -3204,6 +3233,11 @@ class ModalBottomSheet extends StatelessWidget
   ///
   /// `// web:` Flutter's sheets have no built-in close button.
   final bool showClose;
+
+  /// The name of the [showClose] button, for assistive technology and the
+  /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
+  /// it when the page's text is not in the app's locale.
+  final String? closeLabel;
 
   /// Whether to show the drag handle at the top (Flutter's default: true).
   final bool showDragHandle;
@@ -3328,7 +3362,7 @@ class ModalBottomSheet extends StatelessWidget
           },
           attributes: const {'aria-hidden': 'true'},
         ),
-      if (showClose) const DialogCloseCorner(),
+      if (showClose) DialogCloseCorner(label: closeLabel),
       child,
     ],
   );

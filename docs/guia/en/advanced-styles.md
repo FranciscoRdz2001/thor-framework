@@ -65,6 +65,10 @@ Styled(
 | `backdropFilter` | `ImageFilter` | filters what is behind (`ImageFilter.blur(sigmaX: 8)`; also `saturate`, `brightness`, `contrast`, `grayscale`, `invert`, `sepia`, `hueRotate`, `opacity`, chained with `ImageFilter.compose`); or `BackdropFilter` |
 | `scrollbarWidth`, `scrollbarThumbColor`, `scrollbarTrackColor` | `ScrollbarWidth`, `Color` | the element's scrollbar |
 | `opacity`, `scale`, `offset`, `turns` | numbers | only with `.when()`; a fixed value goes in `Opacity` or `Transform` |
+| `textTransform`, `textOverflow`, `textUnderlineOffset`, `lineClamp` | `TextTransform`, `TextOverflow`, `Length`, `int` | text of HTML no widget builds; for a `Text`, `maxLines:` and `overflow:` |
+| `inset`, `scrollPadding` | `Length`, `EdgeInsetsGeometry` | `inset: 0.px` covers the box with a `position`; `scrollPadding` keeps room when scrolling to a child |
+| `backgroundClip` | `BackgroundClip` | `BackgroundClip.text` shows the background through the letters (with transparent text) |
+| `aspectRatio` | `double` | a fraction comes out as a fraction: `4 / 3` writes `aspect-ratio: 4 / 3` |
 
 `BoxPosition` takes its distances as `Length`:
 `BoxPosition.fixed(bottom: 16.px, right: 16.px)`. Inside a `Stack`, use
@@ -90,6 +94,41 @@ turns the change into a transition:
 
 The [API reference](../../api/thor_ui.md#estilos) lists the
 rest of the `StyleProps` props.
+
+### Per-element values, mixes and gradients
+
+A color or a size that comes from data (a store's accent) is not written with
+`raw:`. `ElementVariables` puts it as a CSS variable on the element, once per
+distinct value, and the stylesheet reads it:
+
+```dart no-check
+const accent = CssVariable<Color>('--accent');
+
+ElementVariables(
+  {accent: Color(store.primaryColor)},
+  child: const StoreCard(), // its rules read Color.variable(accent)
+)
+```
+
+`Color.lerp(a, b, t)` mixes two colors (with a theme color the browser does a
+`color-mix`), `color.withOpacity(.22)` makes it translucent, and
+`RadialGradient.ellipse` takes the ellipse and the point as CSS does:
+
+```dart
+BoxDecoration(
+  gradient: RadialGradient.ellipse(
+    center: Alignment(-0.48, -0.68), // 26% 16%
+    radiusX: 1.2,
+    radiusY: 1,
+    colors: [accent.withOpacity(.22), Colors.transparent],
+  ),
+)
+```
+
+A negative margin (`StyleProps(margin: EdgeInsets.symmetric(vertical: -12))`)
+goes in `Styled`: `Container(margin:)` refuses it, as Flutter does. In a
+stylesheet, `css.container('(min-width: 36rem)', […])` writes an
+`@container`.
 
 ## Units
 
