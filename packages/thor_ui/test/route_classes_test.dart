@@ -157,8 +157,9 @@ class _FlakyPage extends ThorPage<void> {
   @override
   void load(PageRequest request) {
     flakyLoads++;
-    if (request.uri.queryParameters.containsKey('fail'))
+    if (request.uri.queryParameters.containsKey('fail')) {
       request.response.noStore();
+    }
   }
 
   @override

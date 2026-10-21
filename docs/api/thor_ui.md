@@ -2472,6 +2472,12 @@ Flutter's `FilterChip`: toggles; `onSelected(!selected)`.
 
 - `FilterChip(…)` — Creates a toggleable Material filter chip.
 
+### `FragmentFetch` · class
+
+What a [Link] fetches instead of navigating: the [Region] [piece] of the page the link points to, put into the [Region] [into] of the page that has the link, and the dialog or popover [open] opened once it is there.
+
+- `FragmentFetch({required String piece, required String into, String? open})` — Fetches [piece] of the link's page into [into].
+
 ### `Hero` · class
 
 Flutter's `Hero`: an element that travels from one page to the next.
@@ -2496,7 +2502,7 @@ Flutter's `LinearProgressIndicator` on `<progress>`: determinate with a [value],
 
 A link: makes its child's element an `<a href>` (no extra node), like Flutter's `Link` from `url_launcher`. With [newTab] it opens in a new tab (`target="_blank"`, `rel="noopener noreferrer"`).
 
-- `Link({Key? key, RouteUrl href = const RouteUrl('#'), bool newTab = false, String? label, bool prefetch = true, bool current = false, required Widget child})` — Links `child` to [href].
+- `Link({Key? key, RouteUrl href = const RouteUrl('#'), bool newTab = false, String? label, bool prefetch = true, bool current = false, FragmentFetch? fetch, required Widget child})` — Links `child` to [href].
 
 ### `ListTile` · class
 
@@ -3744,6 +3750,18 @@ What makes a [LazyPiece] load.
 
 - valores: `open`, `visible`, `idle`
 
+### `LoadMore` · class
+
+The next page of a list the server drew, appended to it: the rows of a listing, a "Load more" control after them, and no reload. The page's `load` reads the position (`?cursor=…`) and the page draws its [items] and the [next] cursor; the browser asks for the same page with the next cursor, the server answers only this piece (the next rows and the next control) and the browser puts it where the control was.
+
+- `LoadMore(…)` — Rows [items] and a control for the page that follows [next].
+
+### `LoadMoreTrigger` · enum
+
+What makes a [LoadMore] fetch the next page.
+
+- valores: `click`, `visible`
+
 ### `PageController` · class
 
 Flutter's `PageController`, as a field of a `ThorState`: the page a `PageView(controller:)` shows, and the way to move it.
@@ -3773,6 +3791,12 @@ The visitor's message of a failed [query], bound to the page (a text that follow
 What can be read as `.value` and tracked: a [Signal] is one of those to its readers, and so is the result of `derived(...)`, which cannot be written.
 
 - `ReadSignal<T>()`
+
+### `Region` · class
+
+A part of the page that can be asked for alone: the server draws the page as always and answers only this region (`GET` the page's URL plus `thor-piece=<id>`), and the browser puts the answer in place of the region's content. It is what a live search, a product shown in a dialog or any "update this part" needs, with the page's own `load` and `build` deciding what is inside.
+
+- `Region({Key? key, required String id, required Widget child})` — A region called [id] that holds [child].
 
 ### `RowColor` · class
 
@@ -4671,6 +4695,12 @@ An HTTP status code: the typed constants of the ones thor answers with (`StatusC
 A text field: its value as submitted (`''` when empty), or trimmed.
 
 - `TextSchemaField(String name, {List<Validator> validators = const [], bool secret = false, bool Function(FormData)? when, bool? trim})` — A text field; [secret] is never re-filled (passwords). [trim]: see the class.
+
+### `ThorDev` · abstract class
+
+The contract between an app's server and `thor dev`, active only when `thor dev` starts the server (it sets `THOR_DEV=1`); a release build never turns it on, and nothing here changes a page without it.
+
+- `ThorDev()`
 
 ### `ThorHttpClient` · class
 

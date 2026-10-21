@@ -549,12 +549,13 @@ router	ContentSecurityPolicy.fontSrc	List<CspSource>? fontSrc
 router	ContentSecurityPolicy.formAction	List<CspSource>? formAction
 router	ContentSecurityPolicy.frameAncestors	List<CspSource>? frameAncestors
 router	ContentSecurityPolicy.frameSrc	List<CspSource>? frameSrc
+router	ContentSecurityPolicy.hashes	bool hashes
 router	ContentSecurityPolicy.headerName	String get headerName
-router	ContentSecurityPolicy.headerValue	String headerValue(String? requestNonce)
+router	ContentSecurityPolicy.headerValue	String headerValue(String? requestNonce, {Iterable<String> scriptHashes = const [], Iterable<String> styleHashes = const []})
 router	ContentSecurityPolicy.imgSrc	List<CspSource>? imgSrc
 router	ContentSecurityPolicy.manifestSrc	List<CspSource>? manifestSrc
 router	ContentSecurityPolicy.mediaSrc	List<CspSource>? mediaSrc
-router	ContentSecurityPolicy.new	ContentSecurityPolicy({List<CspSource>? defaultSrc = const [CspSource.self], List<CspSource>? scriptSrc = const [CspSource.self], List<CspSource>? scriptSrcAttr, List<CspSource>? styleSrc = const [CspSource.self], List<CspSource>? styleSrcAttr = const [CspSource.unsafeInline], List<CspSource>? imgSrc = const [CspSource.self, CspSource.data], List<CspSource>? fontSrc = const [CspSource.self], List<CspSource>? connectSrc = const [CspSource.self], List<CspSource>? mediaSrc, List<CspSource>? frameSrc, List<CspSource>? workerSrc, List<CspSource>? manifestSrc, List<CspSource>? objectSrc = const [CspSource.none], List<CspSource>? baseUri = const [CspSource.self], List<CspSource>? formAction = const [CspSource.self], List<CspSource>? frameAncestors = const [CspSource.none], bool upgradeInsecureRequests = false, bool nonce = true, bool reportOnly = false, Uri? reportUri})
+router	ContentSecurityPolicy.new	ContentSecurityPolicy({List<CspSource>? defaultSrc = const [CspSource.self], List<CspSource>? scriptSrc = const [CspSource.self], List<CspSource>? scriptSrcAttr, List<CspSource>? styleSrc = const [CspSource.self], List<CspSource>? styleSrcAttr = const [CspSource.unsafeInline], List<CspSource>? imgSrc = const [CspSource.self, CspSource.data], List<CspSource>? fontSrc = const [CspSource.self], List<CspSource>? connectSrc = const [CspSource.self], List<CspSource>? mediaSrc, List<CspSource>? frameSrc, List<CspSource>? workerSrc, List<CspSource>? manifestSrc, List<CspSource>? objectSrc = const [CspSource.none], List<CspSource>? baseUri = const [CspSource.self], List<CspSource>? formAction = const [CspSource.self], List<CspSource>? frameAncestors = const [CspSource.none], bool upgradeInsecureRequests = false, bool nonce = true, bool hashes = false, bool reportOnly = false, Uri? reportUri})
 router	ContentSecurityPolicy.nonce	bool nonce
 router	ContentSecurityPolicy.objectSrc	List<CspSource>? objectSrc
 router	ContentSecurityPolicy.reportOnly	bool reportOnly
@@ -1381,6 +1382,30 @@ router	TextSchemaField.secret	bool secret
 router	TextSchemaField.trim	bool? trim
 router	TextSchemaField.validators	List<Validator> validators
 router	TextSchemaField.when	bool Function(FormData)? when
+router	ThorDev	abstract class
+router	ThorDev.appFrame	String? appFrame(StackTrace? stack)
+router	ThorDev.bindAddress	Object bindAddress(Object? requested)
+router	ThorDev.clock	DateTime Function() clock
+router	ThorDev.devPid	int? get devPid
+router	ThorDev.enabled	bool enabled
+router	ThorDev.errorBlock	String errorBlock({required String phase, required String where, required Object error, StackTrace? stack})
+router	ThorDev.errorDedupe	Duration errorDedupe
+router	ThorDev.errorId	String errorId
+router	ThorDev.errorSink	void Function(String) errorSink
+router	ThorDev.exitWithParent	void exitWithParent()
+router	ThorDev.forgetLoggedErrors	void forgetLoggedErrors()
+router	ThorDev.hosts	DevHosts hosts
+router	ThorDev.logRequestError	void logRequestError({required String method, required String path, required Object error, StackTrace? stack})
+router	ThorDev.new	ThorDev()
+router	ThorDev.onReassemble	void onReassemble(void Function() hook)
+router	ThorDev.pidEnvName	String pidEnvName
+router	ThorDev.pidFrom	int? pidFrom(Map<String, String> env)
+router	ThorDev.reassembled	void reassembled()
+router	ThorDev.reassembledResult	String reassembledResult
+router	ThorDev.terminalSafe	String terminalSafe(String text, int max)
+router	ThorDev.warnLateHeadStatus	void warnLateHeadStatus({required String method, required String path})
+router	ThorDev.warnUndeclaredCall	void warnUndeclaredCall(String id)
+router	ThorDev.withBlocks	String withBlocks(String html, Iterable<String> blocks)
 router	ThorHttpClient	class
 router	ThorHttpClient.allowPrivateNetworks	bool allowPrivateNetworks
 router	ThorHttpClient.close	void close({bool force = false})
@@ -2547,12 +2572,13 @@ thor_server	ContentSecurityPolicy.fontSrc	List<CspSource>? fontSrc
 thor_server	ContentSecurityPolicy.formAction	List<CspSource>? formAction
 thor_server	ContentSecurityPolicy.frameAncestors	List<CspSource>? frameAncestors
 thor_server	ContentSecurityPolicy.frameSrc	List<CspSource>? frameSrc
+thor_server	ContentSecurityPolicy.hashes	bool hashes
 thor_server	ContentSecurityPolicy.headerName	String get headerName
-thor_server	ContentSecurityPolicy.headerValue	String headerValue(String? requestNonce)
+thor_server	ContentSecurityPolicy.headerValue	String headerValue(String? requestNonce, {Iterable<String> scriptHashes = const [], Iterable<String> styleHashes = const []})
 thor_server	ContentSecurityPolicy.imgSrc	List<CspSource>? imgSrc
 thor_server	ContentSecurityPolicy.manifestSrc	List<CspSource>? manifestSrc
 thor_server	ContentSecurityPolicy.mediaSrc	List<CspSource>? mediaSrc
-thor_server	ContentSecurityPolicy.new	ContentSecurityPolicy({List<CspSource>? defaultSrc = const [CspSource.self], List<CspSource>? scriptSrc = const [CspSource.self], List<CspSource>? scriptSrcAttr, List<CspSource>? styleSrc = const [CspSource.self], List<CspSource>? styleSrcAttr = const [CspSource.unsafeInline], List<CspSource>? imgSrc = const [CspSource.self, CspSource.data], List<CspSource>? fontSrc = const [CspSource.self], List<CspSource>? connectSrc = const [CspSource.self], List<CspSource>? mediaSrc, List<CspSource>? frameSrc, List<CspSource>? workerSrc, List<CspSource>? manifestSrc, List<CspSource>? objectSrc = const [CspSource.none], List<CspSource>? baseUri = const [CspSource.self], List<CspSource>? formAction = const [CspSource.self], List<CspSource>? frameAncestors = const [CspSource.none], bool upgradeInsecureRequests = false, bool nonce = true, bool reportOnly = false, Uri? reportUri})
+thor_server	ContentSecurityPolicy.new	ContentSecurityPolicy({List<CspSource>? defaultSrc = const [CspSource.self], List<CspSource>? scriptSrc = const [CspSource.self], List<CspSource>? scriptSrcAttr, List<CspSource>? styleSrc = const [CspSource.self], List<CspSource>? styleSrcAttr = const [CspSource.unsafeInline], List<CspSource>? imgSrc = const [CspSource.self, CspSource.data], List<CspSource>? fontSrc = const [CspSource.self], List<CspSource>? connectSrc = const [CspSource.self], List<CspSource>? mediaSrc, List<CspSource>? frameSrc, List<CspSource>? workerSrc, List<CspSource>? manifestSrc, List<CspSource>? objectSrc = const [CspSource.none], List<CspSource>? baseUri = const [CspSource.self], List<CspSource>? formAction = const [CspSource.self], List<CspSource>? frameAncestors = const [CspSource.none], bool upgradeInsecureRequests = false, bool nonce = true, bool hashes = false, bool reportOnly = false, Uri? reportUri})
 thor_server	ContentSecurityPolicy.nonce	bool nonce
 thor_server	ContentSecurityPolicy.objectSrc	List<CspSource>? objectSrc
 thor_server	ContentSecurityPolicy.reportOnly	bool reportOnly
@@ -3095,10 +3121,12 @@ thor_server	ResourceRoute.respond	FutureOr<ThorResponse> Function(PageRequest) r
 thor_server	ResourceRoute.robots	ResourceRoute<P>.robots(FutureOr<Robots> Function(PageRequest) robots)
 thor_server	ResourceRoute.sitemap	ResourceRoute<P>.sitemap(FutureOr<Sitemap> Function(PageRequest) sitemap)
 thor_server	ResponseDraft	class
+thor_server	ResponseDraft.cacheControl	void cacheControl(CacheControl control)
 thor_server	ResponseDraft.cookies	List<SetCookie> cookies
 thor_server	ResponseDraft.deleteCookie	void deleteCookie(String name, {String path = '/'})
 thor_server	ResponseDraft.headers	Map<HttpHeader, String> headers
 thor_server	ResponseDraft.new	ResponseDraft()
+thor_server	ResponseDraft.noStore	void noStore()
 thor_server	ResponseDraft.setCookie	void setCookie(String name, String value, {Duration? maxAge, String path = '/', bool httpOnly = true, String sameSite = 'Lax', bool? secure})
 thor_server	ResponseDraft.status	int? status
 thor_server	Robots	class
@@ -8183,9 +8211,9 @@ thor_ui	ElasticOutCurve.period	double period
 thor_ui	ElasticOutCurve.transformInternal	double transformInternal(double t)
 thor_ui	ElevatedButton	class
 thor_ui	ElevatedButton.hoverCss	CssDeclarations get hoverCss
-thor_ui	ElevatedButton.icon	ElevatedButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	ElevatedButton.icon	ElevatedButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	ElevatedButton.iconPadding	(String, String)? get iconPadding
-thor_ui	ElevatedButton.new	ElevatedButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	ElevatedButton.new	ElevatedButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	ElevatedButton.pressedCss	CssDeclarations get pressedCss
 thor_ui	ElevatedButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	ElevatedButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
@@ -8278,14 +8306,14 @@ thor_ui	FileField.submitOnChange	bool submitOnChange
 thor_ui	FileField.submitWith	String? submitWith
 thor_ui	FilledButton	class
 thor_ui	FilledButton.hoverCss	CssDeclarations get hoverCss
-thor_ui	FilledButton.icon	FilledButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	FilledButton.icon	FilledButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	FilledButton.iconPadding	(String, String)? get iconPadding
-thor_ui	FilledButton.new	FilledButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	FilledButton.new	FilledButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	FilledButton.pressedCss	CssDeclarations get pressedCss
 thor_ui	FilledButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	FilledButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
-thor_ui	FilledButton.tonal	FilledButton.tonal({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
-thor_ui	FilledButton.tonalIcon	FilledButton.tonalIcon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	FilledButton.tonal	FilledButton.tonal({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	FilledButton.tonalIcon	FilledButton.tonalIcon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	FilledButton.variantCss	CssDeclarations get variantCss
 thor_ui	FilledButton.variantElevation	double variantElevation(Set<WidgetState> states)
 thor_ui	FilledButtonThemeData	class
@@ -8543,7 +8571,10 @@ thor_ui	Form.failed	Object? failed
 thor_ui	Form.fillsHeight	bool get fillsHeight
 thor_ui	Form.fillsWidth	bool get fillsWidth
 thor_ui	Form.formMethod	FormMethod? formMethod
-thor_ui	Form.new	Form<S>({Key? key, required Widget child, S? schema, PageValidPost<S>? onValid, PagePost? onPost, VoidCallback? onSubmit, String? action, FormMethod? formMethod, FormEncoding encoding = FormEncoding.urlEncoded, bool disableOnSubmit = true, bool resetScroll = false, Object? failed, Object? defaults, bool noValidate = false, bool preserveQuery = true, bool stay = false, ConfirmSpec? confirm})
+thor_ui	Form.id	String? id
+thor_ui	Form.live	String? live
+thor_ui	Form.liveDelay	Duration liveDelay
+thor_ui	Form.new	Form<S>({Key? key, required Widget child, S? schema, PageValidPost<S>? onValid, PagePost? onPost, VoidCallback? onSubmit, String? action, FormMethod? formMethod, FormEncoding encoding = FormEncoding.urlEncoded, bool disableOnSubmit = true, bool resetScroll = false, Object? failed, Object? defaults, bool noValidate = false, bool preserveQuery = true, bool stay = false, ConfirmSpec? confirm, String? id, String? live, Duration liveDelay = const Duration(milliseconds: 350)})
 thor_ui	Form.noValidate	bool noValidate
 thor_ui	Form.onPost	PagePost? onPost
 thor_ui	Form.onSubmit	VoidCallback? onSubmit
@@ -8591,6 +8622,11 @@ thor_ui	FractionallySizedBox.heightFactor	double? heightFactor
 thor_ui	FractionallySizedBox.new	FractionallySizedBox({Key? key, double? widthFactor, double? heightFactor, required Widget child})
 thor_ui	FractionallySizedBox.widthFactor	double? widthFactor
 thor_ui	FractionallySizedBox.wrapData	WrapData get wrapData
+thor_ui	FragmentFetch	class
+thor_ui	FragmentFetch.into	String into
+thor_ui	FragmentFetch.new	FragmentFetch({required String piece, required String into, String? open})
+thor_ui	FragmentFetch.open	String? open
+thor_ui	FragmentFetch.piece	String piece
 thor_ui	FrameMessages	abstract class
 thor_ui	FrameMessages.driver	FrameMessagesDriver? driver
 thor_ui	FrameMessages.isValidOrigin	bool isValidOrigin(String origin)
@@ -18039,9 +18075,10 @@ thor_ui	LinearProgressIndicator.value	double? value
 thor_ui	LinearProgressIndicator.watch	LinearProgressIndicator.watch(double? Function() source, {Key? key, Color? color, double? minHeight, String? semanticsLabel})
 thor_ui	Link	class
 thor_ui	Link.current	bool current
+thor_ui	Link.fetch	FragmentFetch? fetch
 thor_ui	Link.href	RouteUrl href
 thor_ui	Link.label	String? label
-thor_ui	Link.new	Link({Key? key, RouteUrl href = const RouteUrl('#'), bool newTab = false, String? label, bool prefetch = true, bool current = false, required Widget child})
+thor_ui	Link.new	Link({Key? key, RouteUrl href = const RouteUrl('#'), bool newTab = false, String? label, bool prefetch = true, bool current = false, FragmentFetch? fetch, required Widget child})
 thor_ui	Link.newTab	bool newTab
 thor_ui	Link.prefetch	bool prefetch
 thor_ui	Link.wrapData	WrapData get wrapData
@@ -18140,6 +18177,19 @@ thor_ui	ListenableBuilder.builder	Widget Function(BuildContext, Widget?) builder
 thor_ui	ListenableBuilder.child	Widget? child
 thor_ui	ListenableBuilder.listenable	Listenable listenable
 thor_ui	ListenableBuilder.new	ListenableBuilder({Key? key, required Listenable listenable, required Widget Function(BuildContext, Widget?) builder, Widget? child})
+thor_ui	LoadMore	class
+thor_ui	LoadMore.build	Widget build(BuildContext context)
+thor_ui	LoadMore.child	Widget child
+thor_ui	LoadMore.id	String id
+thor_ui	LoadMore.items	List<Widget> items
+thor_ui	LoadMore.new	LoadMore({Key? key, required String id, required List<Widget> items, required String? next, required Widget child, String param = 'cursor', LoadMoreTrigger trigger = LoadMoreTrigger.click})
+thor_ui	LoadMore.next	String? next
+thor_ui	LoadMore.param	String param
+thor_ui	LoadMore.trigger	LoadMoreTrigger trigger
+thor_ui	LoadMoreTrigger	enum
+thor_ui	LoadMoreTrigger.click	LoadMoreTrigger click
+thor_ui	LoadMoreTrigger.new	LoadMoreTrigger()
+thor_ui	LoadMoreTrigger.visible	LoadMoreTrigger visible
 thor_ui	Locale	class
 thor_ui	Locale.==	bool ==(Object other)
 thor_ui	Locale.countryCode	String? countryCode
@@ -18614,9 +18664,9 @@ thor_ui	OutlinedBorder.new	OutlinedBorder({BorderSide side = BorderSide.none})
 thor_ui	OutlinedBorder.radiusCss	String get radiusCss
 thor_ui	OutlinedBorder.side	BorderSide side
 thor_ui	OutlinedButton	class
-thor_ui	OutlinedButton.icon	OutlinedButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	OutlinedButton.icon	OutlinedButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	OutlinedButton.iconPadding	(String, String)? get iconPadding
-thor_ui	OutlinedButton.new	OutlinedButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	OutlinedButton.new	OutlinedButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	OutlinedButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	OutlinedButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
 thor_ui	OutlinedButton.unborderedIconPadding	(String, String)? get unborderedIconPadding
@@ -18930,6 +18980,11 @@ thor_ui	ReadSignal	abstract class
 thor_ui	ReadSignal.call	T call()
 thor_ui	ReadSignal.new	ReadSignal<T>()
 thor_ui	ReadSignal.value	T get value
+thor_ui	Region	class
+thor_ui	Region.build	Widget build(BuildContext context)
+thor_ui	Region.child	Widget child
+thor_ui	Region.id	String id
+thor_ui	Region.new	Region({Key? key, required String id, required Widget child})
 thor_ui	ReorderCallback	typedef
 thor_ui	ReorderItemProxyDecorator	typedef
 thor_ui	ReorderLabels	class
@@ -20006,9 +20061,9 @@ thor_ui	TextBaseline.alphabetic	TextBaseline alphabetic
 thor_ui	TextBaseline.ideographic	TextBaseline ideographic
 thor_ui	TextBaseline.new	TextBaseline()
 thor_ui	TextButton	class
-thor_ui	TextButton.icon	TextButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	TextButton.icon	TextButton.icon({Key? key, void Function()? onPressed, required Widget icon, required Widget label, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	TextButton.iconPadding	(String, String)? get iconPadding
-thor_ui	TextButton.new	TextButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
+thor_ui	TextButton.new	TextButton({Key? key, void Function()? onPressed, required Widget child, ButtonType? buttonType, ButtonStyle? style, String? href, String? formAction, String? formId, PagePost? onPost, PageValidPost<Never>? onValid, ConfirmSpec? confirm})
 thor_ui	TextButton.styleFrom	ButtonStyle styleFrom({Color? backgroundColor, Color? foregroundColor, Color? overlayColor, EdgeInsetsGeometry? padding, Size? minimumSize, OutlinedBorder? shape, BorderSide? side, TextStyle? textStyle, Color? disabledBackgroundColor, Color? disabledForegroundColor, Alignment? alignment, Duration? animationDuration, double? elevation, Color? shadowColor, List<BoxShadow>? shadows})
 thor_ui	TextButton.themeStyle	ButtonStyle? themeStyle(ThemeData theme)
 thor_ui	TextButton.variantCss	CssDeclarations get variantCss

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:server_query/app.dart';
 import 'package:test/test.dart';
-import 'package:thor_server/thor_server.dart' show ThorDev;
 import 'package:thor_test/thor_test.dart';
 import 'package:thor_ui/router.dart';
 

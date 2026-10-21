@@ -78,7 +78,7 @@ Un sitio estático no tiene servidor que ponga un nonce. Cada código en línea 
 | `Popover`, `MenuAnchor` con `closeOnNavigate` | `onclick`: cierra al navegar | no se cierran al navegar |
 | `Drawer` con `closeOnNavigate` | `onclick`: cierra al navegar | no se cierra al navegar |
 | `FutureBuilder` con `defer` | coloca los datos que llegan después | los datos llegan, pero quedan los esqueletos |
-| `LazyPiece` | pide la parte bajo demanda | la parte no se pide |
+| `LazyPiece`, `Region`, `LoadMore`, `Form(live:)`, `Link(fetch:)` | pide la parte bajo demanda y la pone en su lugar | la parte no se pide; los enlaces y el formulario funcionan como HTML simple |
 | `ExpansionTile(permanentFrom:)` | quita el encabezado del orden de Tab desde el punto de quiebre | el encabezado sigue recibiendo el foco con Tab |
 | `Form` | estado de envío, foco del primer error, posición conservada | el formulario envía sin esas tres cosas |
 | `LinearProgressIndicator.upload()` | muestra el progreso de la subida | no hay barra; el formulario envía igual |
@@ -97,7 +97,7 @@ script-src 'self' 'unsafe-hashes'
   'sha256-L/gjp/lXf1b++Z++rgw+P1gwp3nzVwoiQxErAc/1Brc='
   'sha256-RyS7b/uVe1C+1Gd8n4HR1kH+n+01SmpZRn+mOR9CJUk='
   'sha256-Mxg6UhxGzKjB5ugabTWXccqT/DAbMskkZQEV7uRLGC0='
-  'sha256-omYRSsAIVTFaZQZ5jkLRqAjKxDmfv/hmDNkTg3ETp8I='
+  'sha256-0FODyLHg0RJ98E2Or4V64ZVY1y/ew+r0Jp1L1MbiMvQ='
   'sha256-tiaf4Ty5SJfKEBWPKh/B6ZKlL80Xn7N9K+Q1zZFqvy4='
   'sha256-zlm6MXXoeDrl6SMrFRQc7NRm+ZLmsHjlpTuOW4kCA9g='
   'sha256-Asckod0Qy5jICUwq+JiuJxRdh6mNnBMYtL2+X0M9imE='

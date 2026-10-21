@@ -10,7 +10,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:thor_server/thor_server.dart' show ThorDev;
 import 'package:thor_ui/router.dart';
 import 'package:thor_ui/testing.dart';
 import 'package:thor_ui/thor_ui.dart';

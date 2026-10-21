@@ -129,6 +129,101 @@ The page carries the `fallback`. When the `trigger` fires, the browser requests 
 
 > **Note:** A static site has nothing to answer the request: it keeps the `fallback`.
 
+## Update a part of the page from the server
+
+`LazyPiece` waits for a trigger. Three more widgets use the same request (the page's URL plus `thor-piece=<id>`) when the part already comes with the page and what changes is what is inside: the next rows of a list, the results of a search, the content of a dialog. In all of them the page's own `load` reads the query and the page draws the part; the answer is just that part, and without JavaScript every control is a link or a `GET` form that loads the page whole.
+
+A `Region` is the part: it can be asked for alone.
+
+### Load the next page of a list
+
+`LoadMore` draws the rows of the page you are on and a link to the next one. The browser asks for the same page with the next cursor, the server answers only the new rows and the next link, and they replace the link.
+
+```dart
+class PeoplePage extends ThorPage<People> {
+  const PeoplePage();
+
+  @override
+  Future<People> load(PageRequest request) =>
+      repo.people(cursor: request.uri.queryParameters['cursor']);
+
+  @override
+  Widget build(BuildContext context, PageState<People> state) => Column(
+    children: [
+      LoadMore(
+        id: 'people',
+        items: [for (final p in state.data.items) PersonCard(p)],
+        next: state.data.next, // null on the last page: no link
+        child: const Text('Load more'),
+      ),
+    ],
+  );
+}
+```
+
+One backend read per click, and no page reload. The link is `<a href="?cursor=…" rel="next">`: without JavaScript, with a modified click, for a search engine and when the request fails, the visitor goes to the next page. The rest of the query (`?q=pizza`) is kept. `trigger: LoadMoreTrigger.visible` loads by itself when the link comes near the screen (infinite scroll). `items` and the link are siblings in the parent that holds them: put the widget in the `Column`, `Grid` or `Wrap` of the rows. `child` is the link's content (a `Text`, a `Container`), not a button.
+
+### A search that updates as you type
+
+`Form(live:)` names a region. As the visitor types (350 ms after the last key, `liveDelay`) or presses Enter, the browser asks the page for that region with the form's fields as the query, puts the answer in the region and writes the same query in the address bar without adding a history entry. The field is not redrawn, so the caret and the focus stay where they are, and an answer to an earlier keystroke is dropped.
+
+```dart
+Column(
+  children: [
+    Form(
+      formMethod: FormMethod.get,
+      live: 'results',
+      child: TextFormField(name: 'q'),
+    ),
+    Region(
+      id: 'results',
+      child: Column(
+        children: [
+          LoadMore(id: 'people', items: rows, next: next, child: const Text('Load more')),
+        ],
+      ),
+    ),
+  ],
+)
+```
+
+Without JavaScript the form submits and the page loads with `?q=`. A `LoadMore` inside the region keeps working after each search: its link carries the current query. Keep the form outside the region.
+
+### One dialog for many items
+
+A page with a dialog per product repeats the same markup hundreds of times. Give the page one `Dialog` with an empty `Region`, and make each product's link fetch that product's own region:
+
+```dart
+Column(
+  children: [
+    Dialog(
+      id: 'product',
+      child: const Region(id: 'product-body', child: SizedBox.shrink()),
+    ),
+    for (final p in products)
+      Link(
+        href: RouteUrl('/shop/${p.slug}'),
+        fetch: const FragmentFetch(
+          piece: 'detail',
+          into: 'product-body',
+          open: 'product',
+        ),
+        child: ProductCard(p),
+      ),
+  ],
+)
+
+// the product's own page
+Region(id: 'detail', child: ProductDetail(product))
+```
+
+A click asks `/shop/mug?thor-piece=detail`, the region of the dialog receives it and the dialog opens; a second click on the same product only reopens it. Without JavaScript, with a modified click or if the request fails, the link goes to the product's page. The catalog page carries the cards and one empty dialog, and each product's content comes when someone opens it.
+
+- The page's `load` runs for the fragment's request too: keep it light, or give the page `cache:` (the page cache also keeps its fragments).
+- An `id` is unique in the page and uses letters, digits, `-`, `_` and `.`. A `Region` inside a `Region` or a `LazyPiece` is asked for by the whole path (`results:people`).
+- A `Watch` or a button inside the part work; a state the part brings is bound when it arrives.
+- A static site has nothing to answer: `LoadMore` and `Region` draw their content, and the links are plain links.
+
 ## Next steps
 
 :::cards

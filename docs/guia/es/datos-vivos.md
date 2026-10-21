@@ -129,6 +129,101 @@ La página lleva el `fallback`. Cuando ocurre el `trigger`, el navegador pide la
 
 > **Nota:** Un sitio estático no tiene quién responda la petición: conserva el `fallback`.
 
+## Actualizar una parte de la página desde el servidor
+
+`LazyPiece` espera un disparador. Otros tres widgets usan la misma petición (la URL de la página más `thor-piece=<id>`) cuando la parte ya viene con la página y lo que cambia es lo de adentro: las filas siguientes de una lista, los resultados de una búsqueda, el contenido de un diálogo. En todos el `load` de la página lee la query y la página dibuja la parte; la respuesta es solo esa parte, y sin JavaScript cada control es un enlace o un formulario `GET` que carga la página completa.
+
+Una `Region` es la parte: se puede pedir sola.
+
+### Cargar la página siguiente de una lista
+
+`LoadMore` dibuja las filas de la página en que estás y un enlace a la siguiente. El navegador pide la misma página con el cursor siguiente, el servidor responde solo las filas nuevas y el enlace siguiente, y reemplazan al enlace.
+
+```dart
+class PeoplePage extends ThorPage<People> {
+  const PeoplePage();
+
+  @override
+  Future<People> load(PageRequest request) =>
+      repo.people(cursor: request.uri.queryParameters['cursor']);
+
+  @override
+  Widget build(BuildContext context, PageState<People> state) => Column(
+    children: [
+      LoadMore(
+        id: 'people',
+        items: [for (final p in state.data.items) PersonCard(p)],
+        next: state.data.next, // null en la última página: sin enlace
+        child: const Text('Cargar más'),
+      ),
+    ],
+  );
+}
+```
+
+Una lectura al backend por clic y sin recargar la página. El enlace es `<a href="?cursor=…" rel="next">`: sin JavaScript, con un clic con modificador, para un buscador y cuando la petición falla, el visitante va a la página siguiente. El resto de la query (`?q=pizza`) se conserva. `trigger: LoadMoreTrigger.visible` carga solo cuando el enlace se acerca a la pantalla (scroll infinito). `items` y el enlace son hermanos en el padre que los contiene: pon el widget en el `Column`, `Grid` o `Wrap` de las filas. `child` es el contenido del enlace (un `Text`, un `Container`), no un botón.
+
+### Una búsqueda que se actualiza al escribir
+
+`Form(live:)` nombra una región. Mientras el visitante escribe (350 ms después de la última tecla, `liveDelay`) o presiona Enter, el navegador le pide a la página esa región con los campos del formulario como query, pone la respuesta en la región y escribe la misma query en la barra de direcciones sin añadir una entrada al historial. El campo no se vuelve a dibujar, así que el cursor y el foco se quedan donde estaban, y la respuesta a una tecla anterior se descarta.
+
+```dart
+Column(
+  children: [
+    Form(
+      formMethod: FormMethod.get,
+      live: 'results',
+      child: TextFormField(name: 'q'),
+    ),
+    Region(
+      id: 'results',
+      child: Column(
+        children: [
+          LoadMore(id: 'people', items: rows, next: next, child: const Text('Cargar más')),
+        ],
+      ),
+    ),
+  ],
+)
+```
+
+Sin JavaScript el formulario se envía y la página carga con `?q=`. Un `LoadMore` dentro de la región sigue funcionando tras cada búsqueda: su enlace lleva la query actual. Deja el formulario fuera de la región.
+
+### Un diálogo para muchos elementos
+
+Una página con un diálogo por producto repite el mismo marcado cientos de veces. Dale a la página un solo `Dialog` con una `Region` vacía, y haz que el enlace de cada producto pida la región propia de ese producto:
+
+```dart
+Column(
+  children: [
+    Dialog(
+      id: 'product',
+      child: const Region(id: 'product-body', child: SizedBox.shrink()),
+    ),
+    for (final p in products)
+      Link(
+        href: RouteUrl('/shop/${p.slug}'),
+        fetch: const FragmentFetch(
+          piece: 'detail',
+          into: 'product-body',
+          open: 'product',
+        ),
+        child: ProductCard(p),
+      ),
+  ],
+)
+
+// la página propia del producto
+Region(id: 'detail', child: ProductDetail(product))
+```
+
+Un clic pide `/shop/mug?thor-piece=detail`, la región del diálogo la recibe y el diálogo se abre; un segundo clic en el mismo producto solo lo reabre. Sin JavaScript, con un clic con modificador o si la petición falla, el enlace va a la página del producto. La página del catálogo lleva las tarjetas y un diálogo vacío, y el contenido de cada producto llega cuando alguien lo abre.
+
+- El `load` de la página corre también para la petición del fragmento: mantenlo ligero, o dale a la página `cache:` (la caché de páginas guarda también sus fragmentos).
+- Un `id` es único en la página y usa letras, dígitos, `-`, `_` y `.`. Una `Region` dentro de una `Region` o de una `LazyPiece` se pide por su ruta completa (`results:people`).
+- Un `Watch` o un botón dentro de la parte funcionan; un estado que la parte trae se enlaza cuando llega.
+- Un sitio estático no tiene quién responda: `LoadMore` y `Region` dibujan su contenido y los enlaces son enlaces simples.
+
 ## Siguientes pasos
 
 :::cards

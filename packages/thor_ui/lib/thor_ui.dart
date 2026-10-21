@@ -159,6 +159,9 @@ export 'src/foundation/deferred.dart'
         FutureBuilder,
         LazyPiece,
         LazyTrigger,
+        LoadMore,
+        LoadMoreTrigger,
+        Region,
         defaultHeadBudget,
         defer,
         resolvedValue;

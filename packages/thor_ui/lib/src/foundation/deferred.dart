@@ -939,39 +939,8 @@ class _LazyPlace<T> extends PageComponent implements ThorBuiltIn {
     DeferRun run,
     ThorStyleRegistry? registry,
     PageRequest request,
-  ) async {
-    final data = await owner.load(request);
-    // What the page's ancestors of the piece drew is not the piece's.
-    registry?.forgetLateStates();
-    run.stream = false;
-    DeferPiece? drawn;
-    for (var pass = 1; ; pass++) {
-      if (pass > _lazyPasses) {
-        throw StateError(
-          thorError(
-            'THOR-R031',
-            'a FutureBuilder inside LazyPiece(id: ${owner.id}) got a new future '
-                'on every draw: create the future in the piece\'s `load`, not '
-                'in `builder`',
-          ),
-        );
-      }
-      run.unresolved.clear();
-      final next = slot.render(DeferDone(data));
-      drawn = drawn == null ? next : drawn.then(next);
-      var again = false;
-      if (run.unresolved.isNotEmpty) {
-        await run.settle();
-        again = true;
-      }
-      if (await run.afterLazyDraw?.call() ?? false) again = true;
-      if (!again) break;
-    }
-    // The values of the states it used, as they are once its queries ran.
-    return registry == null
-        ? drawn
-        : drawn.withState(stateJson(registry.lateStates));
-  }
+  ) async =>
+      _drawPiece(slot, run, registry, owner.id, await owner.load(request));
 
   static String _urlOf(Uri page, String id) {
     try {
@@ -989,6 +958,341 @@ class _LazyPlace<T> extends PageComponent implements ThorBuiltIn {
             '${page.query}&$lazyPieceParameter=${Uri.encodeQueryComponent(id)}',
       ).toString();
     }
+  }
+}
+
+// Draws the piece [id] of a fragment request with [data]: what the page's
+// ancestors of the piece drew is not the piece's, and the futures and the
+// queries it holds are waited for (the fragment goes out whole).
+Future<DeferPiece> _drawPiece(
+  DeferSlot slot,
+  DeferRun run,
+  ThorStyleRegistry? registry,
+  String id,
+  Object? data,
+) async {
+  // What the page's ancestors of the piece drew is not the piece's.
+  registry?.forgetLateStates();
+  run.stream = false;
+  DeferPiece? drawn;
+  for (var pass = 1; ; pass++) {
+    if (pass > _lazyPasses) {
+      throw StateError(
+        thorError(
+          'THOR-R031',
+          'a FutureBuilder inside the piece $id got a new future on every '
+              'draw: create the future in the piece\'s `load`, not in '
+              '`builder`',
+        ),
+      );
+    }
+    run.unresolved.clear();
+    final next = slot.render(DeferDone(data));
+    drawn = drawn == null ? next : drawn.then(next);
+    var again = false;
+    if (run.unresolved.isNotEmpty) {
+      await run.settle();
+      again = true;
+    }
+    if (await run.afterLazyDraw?.call() ?? false) again = true;
+    if (!again) break;
+  }
+  // The values of the states it used, as they are once its queries ran.
+  return registry == null
+      ? drawn
+      : drawn.withState(stateJson(registry.lateStates));
+}
+
+// The URL of the page [page] with `thor-piece=<piece>` (when given) and the
+// query value [param]=[value] (when given) in place of what it had; every
+// other key keeps all its values (`?f=red&f=size-9`).
+String _pieceUrl(Uri page, {String? piece, String? param, String? value}) {
+  Map<String, Iterable<String>> query;
+  try {
+    query = {...page.queryParametersAll}..remove(lazyPieceParameter);
+  } on FormatException {
+    // A query that does not decode: kept as it came.
+    final extra = [
+      if (param != null) '$param=${Uri.encodeQueryComponent(value ?? '')}',
+      if (piece != null)
+        '$lazyPieceParameter=${Uri.encodeQueryComponent(piece)}',
+    ].join('&');
+    return Uri(
+      path: page.path,
+      query: [
+        if (page.query.isNotEmpty) page.query,
+        if (extra.isNotEmpty) extra,
+      ].join('&'),
+    ).toString();
+  }
+  if (param != null) query[param] = [value ?? ''];
+  if (piece != null) query[lazyPieceParameter] = [piece];
+  return Uri(
+    path: page.path,
+    queryParameters: query.isEmpty ? null : query,
+  ).toString();
+}
+
+// Offers the answer of an inline piece (a [Region], a [LoadMore]): when the
+// request asks for [path], [content] is what the browser gets. True for the
+// piece asked for, whose place in the page's own draw then stays empty.
+bool _offerInline(
+  PageBuild page,
+  Element element,
+  BuildChild build,
+  DeferRun run,
+  ThorStyleRegistry? registry,
+  String path,
+  String id,
+  Widget content,
+) {
+  if (run.lazy != null || run.lazyId != path) return false;
+  final slot = DeferSlot._(
+    0,
+    run,
+    Future<Object?>.value(),
+    Future<Object>.value(const DeferDone(null)),
+    page,
+    element,
+    build,
+    Zone.current,
+    registry,
+    (_) => _InLazy(path: path, child: content),
+    Future<Object?>.value(),
+    (_, _) => null,
+  );
+  run.lazy = (request) => _drawPiece(slot, run, registry, id, null);
+  return true;
+}
+
+// The `id` of a piece (or the `param` of a `LoadMore`), or an error that says
+// what it is: it is part of a URL.
+void _checkPieceId(String value, String label) {
+  if (_lazyId.hasMatch(value)) return;
+  throw ArgumentError.value(
+    value,
+    label,
+    thorError(
+      'THOR-R035',
+      '$label is part of a URL: use letters, digits, `-`, `_` and `.`',
+    ),
+  );
+}
+
+/// A part of the page that can be asked for alone: the server draws the page
+/// as always and answers only this region (`GET` the page's URL plus
+/// `thor-piece=<id>`), and the browser puts the answer in place of the
+/// region's content. It is what a live search, a product shown in a dialog or
+/// any "update this part" needs, with the page's own `load` and `build`
+/// deciding what is inside.
+///
+/// ```dart
+/// // The page's load reads `?q=`; the region is its results.
+/// Form(
+///   formMethod: FormMethod.get,
+///   live: 'results',
+///   child: TextFormField(name: 'q'),
+/// )
+/// Region(id: 'results', child: ResultsList(state.data)),
+/// ```
+///
+/// Without JavaScript the `Form` submits and the page loads whole. What fills
+/// a region from outside: `Form(live:)` (replaces its content as the visitor
+/// types), `Link(fetch:)` (shows another page's region here) and, inside the
+/// region, nothing: it is drawn by the page. The region's content may use
+/// `Watch`, buttons and the states of the page.
+///
+/// `// web:` Flutter has no counterpart. The page's `load` runs for the
+/// fragment's request too (the region needs the page's data in scope): keep it
+/// cheap or give the page `cache:`, which keeps its fragments as well. The
+/// [id] names the region in the page (`[A-Za-z0-9_-.]`) and must not repeat. A
+/// static export draws the content with no region around it.
+class Region extends StatelessWidget implements ThorBuiltIn {
+  /// A region called [id] that holds [child].
+  const Region({super.key, required this.id, required this.child});
+
+  /// Names the region in the page: part of the fragment's URL.
+  final String id;
+
+  /// The content, drawn by the page and by the fragment's request.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => _InlinePlace(
+    context,
+    id: id,
+    widget: 'Region',
+    content: (request, path) => child,
+    wrap: (content) => thorElement(
+      'div',
+      debugName: 'Region',
+      // The region adds no box: its content lays out in the page's flow.
+      css: const {'display': 'contents'},
+      attributes: {'data-thor-region': id},
+      children: [content],
+    ),
+  );
+}
+
+/// What makes a [LoadMore] fetch the next page.
+enum LoadMoreTrigger {
+  /// A click (or Enter) on the control.
+  click,
+
+  /// The control coming near the viewport: infinite scroll.
+  visible,
+}
+
+/// The next page of a list the server drew, appended to it: the rows of a
+/// listing, a "Load more" control after them, and no reload. The page's
+/// `load` reads the position (`?cursor=…`) and the page draws its [items]
+/// and the [next] cursor; the browser asks for the same page with the next
+/// cursor, the server answers only this piece (the next rows and the next
+/// control) and the browser puts it where the control was.
+///
+/// ```dart
+/// Grid(
+///   children: [
+///     LoadMore(
+///       id: 'places',
+///       items: [for (final p in state.data.items) PlaceCard(p)],
+///       next: state.data.next, // null: the last page, no control
+///       child: const Text('Load more'),
+///     ),
+///   ],
+/// )
+/// ```
+///
+/// [child] is the control: a `Text`, a `Container`, a chip (not a button: it
+/// becomes the `<a>`). It is a real link to the same page with `?cursor=…`
+/// (`rel="next"`), so without JavaScript, for a search engine, with a modified
+/// click or if the request fails, the visitor goes to the next page. A
+/// [LoadMoreTrigger.visible] control loads by itself when it nears the
+/// screen (infinite scroll).
+///
+/// [items] and the control are the widget's siblings in its parent: put it in
+/// the `Column`, `Grid` or `Wrap` that holds the rows. The control keeps the
+/// rest of the page's query (`?q=pizza&cursor=…`).
+///
+/// `// web:` Flutter's `ListView.builder` asks the model for more; here the
+/// server draws the rows, the page's `load` runs for each request (keep the
+/// rows' query cheap) and the state of the earlier rows stays in the browser.
+class LoadMore extends StatelessWidget implements ThorBuiltIn {
+  /// Rows [items] and a control for the page that follows [next].
+  const LoadMore({
+    super.key,
+    required this.id,
+    required this.items,
+    required this.next,
+    required this.child,
+    this.param = 'cursor',
+    this.trigger = LoadMoreTrigger.click,
+  });
+
+  /// Names the list in the page: part of the fragment's URL.
+  final String id;
+
+  /// The rows of this page.
+  final List<Widget> items;
+
+  /// The value of [param] for the next page, or null when there is none.
+  final String? next;
+
+  /// The control's content.
+  final Widget child;
+
+  /// The query key that carries [next] (`?cursor=…`).
+  final String param;
+
+  /// What makes the browser fetch the next page.
+  final LoadMoreTrigger trigger;
+
+  @override
+  Widget build(BuildContext context) {
+    _checkPieceId(param, 'LoadMore(param:)');
+    return _InlinePlace(
+      context,
+      id: id,
+      widget: 'LoadMore',
+      content: (request, path) {
+        final more = next;
+        final control = more == null || request == null
+            ? null
+            : Widget.wrapElement(
+                tag: 'a',
+                attributes: {
+                  'href': _pieceUrl(request.uri, param: param, value: more),
+                  'rel': 'next',
+                  if (!request.isExport) ...{
+                    'data-thor-lazy': _pieceUrl(
+                      request.uri,
+                      piece: path,
+                      param: param,
+                      value: more,
+                    ),
+                    'data-thor-lazy-on': trigger.name,
+                    'data-thor-lazy-as': 'replace',
+                  },
+                },
+                child: child,
+              );
+        return Widget.fragment([...items, ?control]);
+      },
+      wrap: (content) => content,
+    );
+  }
+}
+
+// A piece the page draws itself and the server can answer alone: a [Region]
+// or a [LoadMore]. [content] is the piece's widgets; [wrap] puts them in the
+// page (with the attributes the page needs for the script).
+class _InlinePlace extends PageComponent implements ThorBuiltIn {
+  const _InlinePlace(
+    this.context, {
+    required this.id,
+    required this.widget,
+    required this.content,
+    required this.wrap,
+  });
+
+  final BuildContext context;
+  final String id;
+  final String widget;
+  final Widget Function(PageRequest? request, String path) content;
+  final Widget Function(Widget content) wrap;
+
+  @override
+  void buildInto(
+    PageBuild page,
+    Element element,
+    ParentNode into,
+    BuildChild build,
+  ) {
+    final request = element
+        .dependOnInheritedWidgetOfExactType<RequestScope>()
+        ?.request;
+    final run = element
+        .dependOnInheritedWidgetOfExactType<DeferScope>()
+        ?.holder
+        .run;
+    final parent = element.dependOnInheritedWidgetOfExactType<_InLazy>()?.path;
+    final path = parent == null ? id : '$parent:$id';
+    // No request (a test, a render outside a route), a static export or no
+    // run: nothing to ask the server for.
+    final live = request != null && run != null && !request.isExport;
+    final drawn = content(request, path);
+    var mine = false;
+    if (live) {
+      _checkPieceId(id, '$widget(id:)');
+      final registry = ThorStyleRegistry.of(element);
+      registry?.useLazyScript();
+      mine = _offerInline(page, element, build, run, registry, path, id, drawn);
+    }
+    // The piece asked for is drawn by its answer, not twice.
+    final inner = mine
+        ? const Widget.empty()
+        : _InLazy(path: path, child: drawn);
+    build(live ? wrap(inner) : inner, element, into);
   }
 }
 
