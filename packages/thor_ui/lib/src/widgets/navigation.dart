@@ -267,6 +267,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.permanentFrom,
     this.permanentWidth,
     this.permanentPadding,
+    this.initiallyOpen = false,
     this.showClose = false,
     this.closeLabel,
   }) : assert(
@@ -321,6 +322,25 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
   /// Content of the drawer.
   final Widget child;
 
+  /// Whether the server draws the drawer open: a modal panel that is showing
+  /// when the page arrives, e.g. the filters a link opened (the page decides
+  /// from its request: `initiallyOpen: request.uri.queryParameters
+  /// .containsKey('filters')`).
+  ///
+  /// The HTML carries `<dialog open data-thor-open>` and, as soon as the
+  /// page's script runs (it is inline, no engine needed), the drawer is
+  /// closed and shown again with `showModal()`: focus trap, backdrop, Esc and
+  /// the page behind inert, sliding in from its [side] as if a
+  /// `DialogTrigger` had opened it. Closing it does not change the URL.
+  ///
+  /// `// web:` without JavaScript a `<dialog open>` can only be non-modal: the
+  /// panel shows fixed against its edge, at its [width], over the page, with
+  /// no backdrop, nothing behind it inert, and Esc and the backdrop do not
+  /// close it (a `DialogClose` does). From [permanentFrom] up it is the
+  /// inline panel anyway. Flutter has no counterpart (`openDrawer` runs from
+  /// code, after the first frame).
+  final bool initiallyOpen;
+
   /// Whether the drawer brings its own close button in the top corner
   /// (`DialogClose` with a close icon, named by the localized "Close"); it is
   /// not drawn once [permanentFrom] makes the drawer an inline panel.
@@ -359,6 +379,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       )?.addKeyframes(_permanentName, _permanentFrames);
     }
     lockScrollWhileModal(context);
+    if (initiallyOpen) useOpenUpgrade(context);
     final slot = DrawerSlot.maybeOf(context);
     final id = nativeId(
       context,
@@ -461,6 +482,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
           'translate': '${start ? '100%' : '-100%'} 0',
         }),
         ...fadingBackdrop('250ms', color: scrim ?? theme?.scrimColor),
+        if (initiallyOpen) openBeforeUpgradePanel,
         const ConditionalCss(CssCondition.reducedMotion, {
           'transition-duration': '1ms',
         }),
@@ -475,6 +497,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       ],
       attributes: {
         'closedby': 'any',
+        if (initiallyOpen) ...openForUpgrade,
         'aria-label': ?label,
         if (closeOnNavigate) 'onclick': closeOnNavigateHandler('this.close()'),
         // The animation of `_permanent` starts when an open modal meets the

@@ -8032,8 +8032,9 @@ thor_ui	Drawer.closeLabel	String? closeLabel
 thor_ui	Drawer.closeOnNavigate	bool closeOnNavigate
 thor_ui	Drawer.controller	DialogController? controller
 thor_ui	Drawer.id	String? id
+thor_ui	Drawer.initiallyOpen	bool initiallyOpen
 thor_ui	Drawer.label	String? label
-thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, bool showClose = false, String? closeLabel})
+thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, bool initiallyOpen = false, bool showClose = false, String? closeLabel})
 thor_ui	Drawer.padding	EdgeInsetsGeometry padding
 thor_ui	Drawer.permanentFrom	WindowSizeClass? permanentFrom
 thor_ui	Drawer.permanentPadding	EdgeInsetsGeometry? permanentPadding
@@ -18531,8 +18532,9 @@ thor_ui	ModalBottomSheet.constraints	BoxConstraints? constraints
 thor_ui	ModalBottomSheet.controller	DialogController? controller
 thor_ui	ModalBottomSheet.elevation	double? elevation
 thor_ui	ModalBottomSheet.id	String? id
+thor_ui	ModalBottomSheet.initiallyOpen	bool initiallyOpen
 thor_ui	ModalBottomSheet.label	String? label
-thor_ui	ModalBottomSheet.new	ModalBottomSheet({Key? key, String? id, required Widget child, bool showDragHandle = true, String? label, DialogController? controller, Color? backgroundColor, double? elevation, OutlinedBorder? shape, BoxConstraints? constraints, Color? barrierColor, bool showClose = false, String? closeLabel})
+thor_ui	ModalBottomSheet.new	ModalBottomSheet({Key? key, String? id, required Widget child, bool showDragHandle = true, String? label, DialogController? controller, Color? backgroundColor, double? elevation, OutlinedBorder? shape, BoxConstraints? constraints, Color? barrierColor, bool initiallyOpen = false, bool showClose = false, String? closeLabel})
 thor_ui	ModalBottomSheet.shape	OutlinedBorder? shape
 thor_ui	ModalBottomSheet.showClose	bool showClose
 thor_ui	ModalBottomSheet.showDragHandle	bool showDragHandle
@@ -19061,8 +19063,9 @@ thor_ui	Region	class
 thor_ui	Region.build	Widget build(BuildContext context)
 thor_ui	Region.child	Widget child
 thor_ui	Region.id	String id
-thor_ui	Region.new	Region({Key? key, required String id, required Widget child, bool syncState = false})
+thor_ui	Region.new	Region({Key? key, required String id, required Widget child, bool syncState = false, List<ThorState> syncStates = const []})
 thor_ui	Region.syncState	bool syncState
+thor_ui	Region.syncStates	List<ThorState> syncStates
 thor_ui	ReorderCallback	typedef
 thor_ui	ReorderItemProxyDecorator	typedef
 thor_ui	ReorderLabels	class

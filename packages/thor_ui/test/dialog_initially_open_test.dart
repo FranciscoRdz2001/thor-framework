@@ -58,6 +58,65 @@ void main() {
       expect(html, contains(lazyScript));
     });
 
+    test('Drawer and ModalBottomSheet: open, marked, panel kept', () async {
+      for (final (w, name) in [
+        (
+          const Drawer(
+            id: 'filters',
+            side: DrawerSide.end,
+            width: 280,
+            initiallyOpen: true,
+            child: Text('Filters'),
+          ),
+          'Drawer',
+        ),
+        (
+          const ModalBottomSheet(
+            id: 'share',
+            initiallyOpen: true,
+            child: Text('Share'),
+          ),
+          'ModalBottomSheet',
+        ),
+      ]) {
+        final html = await _page(w);
+        final dialog = RegExp(r'<dialog[^>]*>').firstMatch(_body(html))![0]!;
+        expect(dialog, contains(' open'), reason: name);
+        expect(dialog, contains('data-thor-open'), reason: name);
+        expect(dialog, contains('closedby="any"'), reason: name);
+        expect(html, contains(lazyScript), reason: name);
+        // Fixed to the window until the upgrade, keeping its own margins.
+        expect(_head(html), contains(':not(:modal)'), reason: name);
+        expect(_head(html), contains('position: fixed'), reason: name);
+        expect(_head(html), contains('translate'), reason: name);
+        expect(_head(html), contains('::backdrop'), reason: name);
+      }
+      final drawer = await _page(
+        const Drawer(
+          initiallyOpen: true,
+          side: DrawerSide.end,
+          width: 280,
+          child: Text('x'),
+        ),
+      );
+      expect(_head(drawer), contains('min(280px'));
+      expect(_head(drawer), contains('margin-inline: auto 0'));
+    });
+
+    test('by default they are closed and ship no loader', () async {
+      for (final w in const [
+        Drawer(child: Text('x')),
+        ModalBottomSheet(child: Text('x')),
+      ]) {
+        final html = await _page(w);
+        final dialog = RegExp(r'<dialog[^>]*>').firstMatch(_body(html))![0]!;
+        expect(dialog, isNot(contains(' open')));
+        expect(dialog, isNot(contains('data-thor-open')));
+        expect(html, isNot(contains(lazyScript)));
+        expect(_head(html), isNot(contains(':not(:modal)')));
+      }
+    });
+
     test('by default it is closed and ships no loader', () async {
       for (final w in const [
         Dialog(child: Text('x')),

@@ -12,6 +12,7 @@ import 'package:thor_engine/thor_engine.dart'
         AsyncSnapshot,
         ConnectionState,
         ServerErrorKind,
+        ThorState,
         encodeStateJson,
         stateJson;
 import 'package:thor_server/thor_server.dart' show NotFound, PageRequest;
@@ -982,10 +983,11 @@ Future<DeferPiece> _drawPiece(
   String id,
   Object? data, {
   bool sync = false,
+  List<ThorState> syncStates = const [],
 }) async {
   // What the page's ancestors of the piece drew is not the piece's.
   registry?.forgetLateStates();
-  if (sync) registry?.beginCapture();
+  if (sync || syncStates.isNotEmpty) registry?.beginCapture();
   run.stream = false;
   DeferPiece? drawn;
   for (var pass = 1; ; pass++) {
@@ -1013,9 +1015,16 @@ Future<DeferPiece> _drawPiece(
   // The values of the states it used, as they are once its queries ran; with
   // [sync], those of every state it reads, also the ones the page has.
   if (registry == null) return drawn;
-  return sync
-      ? drawn.withState(stateJson(registry.endCapture()), sync: true)
-      : drawn.withState(stateJson(registry.lateStates));
+  if (!sync && syncStates.isEmpty) {
+    return drawn.withState(stateJson(registry.lateStates));
+  }
+  // The states the content read ([sync]; else only the new ones) and the
+  // ones named for the region.
+  final read = registry.endCapture();
+  return drawn.withState(
+    stateJson({...(sync ? read : registry.lateStates), ...syncStates}),
+    sync: true,
+  );
 }
 
 // The URL of the page [page] with `thor-piece=<piece>` (when given) and the
@@ -1061,6 +1070,7 @@ bool _offerInline(
   String id,
   Widget content, {
   bool sync = false,
+  List<ThorState> syncStates = const [],
 }) {
   if (run.lazy != null || run.lazyId != path) return false;
   final slot = DeferSlot._(
@@ -1077,7 +1087,15 @@ bool _offerInline(
     Future<Object?>.value(),
     (_, _) => null,
   );
-  run.lazy = (request) => _drawPiece(slot, run, registry, id, null, sync: sync);
+  run.lazy = (request) => _drawPiece(
+    slot,
+    run,
+    registry,
+    id,
+    null,
+    sync: sync,
+    syncStates: syncStates,
+  );
   return true;
 }
 
@@ -1121,7 +1139,8 @@ void _checkPieceId(String value, String label) {
 /// A state the region reads keeps the value the page gave it when the region
 /// is swapped, unless [syncState] is true: then the answer also carries the
 /// current value of every state the region reads, and the browser replaces
-/// the ones it has with them (see [syncState]).
+/// the ones it has with them (see [syncState]); [syncStates] names states to
+/// carry that the region does not read.
 ///
 /// `// web:` Flutter has no counterpart. The page's `load` runs for the
 /// fragment's request too (the region needs the page's data in scope): keep it
@@ -1135,6 +1154,7 @@ class Region extends StatelessWidget implements ThorBuiltIn {
     required this.id,
     required this.child,
     this.syncState = false,
+    this.syncStates = const [],
   });
 
   /// Names the region in the page: part of the fragment's URL.
@@ -1157,6 +1177,23 @@ class Region extends StatelessWidget implements ThorBuiltIn {
   /// simply starts from them.
   final bool syncState;
 
+  /// States whose values every swap of this region carries, whether or not
+  /// the content reads them: `Region(syncStates: [week])`.
+  ///
+  /// [syncState] ships the states the content reads; this names the ones to
+  /// ship, for a state the content does not read through a `Watch` (the free
+  /// slots a script or a button's handler uses, a value another part of the
+  /// page shows) without a hidden `Watch` that only exists to make it sync.
+  /// The two add up: with both, the answer carries the states the content
+  /// reads and the ones listed. A listed state sends all its fields that
+  /// differ from their initial value, as the server computed them for that
+  /// request, and the running engine takes them over its own.
+  ///
+  /// `// web:` same as [syncState]: a state not running yet simply starts
+  /// from the values. Without JavaScript nothing is swapped, so nothing is
+  /// synced.
+  final List<ThorState> syncStates;
+
   /// The content, drawn by the page and by the fragment's request.
   final Widget child;
 
@@ -1166,6 +1203,7 @@ class Region extends StatelessWidget implements ThorBuiltIn {
     id: id,
     widget: 'Region',
     sync: syncState,
+    syncStates: syncStates,
     content: (request, path) => child,
     wrap: (content) => thorElement(
       'div',
@@ -1298,6 +1336,7 @@ class _InlinePlace extends PageComponent implements ThorBuiltIn {
     required this.content,
     required this.wrap,
     this.sync = false,
+    this.syncStates = const [],
   });
 
   final BuildContext context;
@@ -1306,6 +1345,7 @@ class _InlinePlace extends PageComponent implements ThorBuiltIn {
   final Widget Function(PageRequest? request, String path) content;
   final Widget Function(Widget content) wrap;
   final bool sync;
+  final List<ThorState> syncStates;
 
   @override
   void buildInto(
@@ -1342,6 +1382,7 @@ class _InlinePlace extends PageComponent implements ThorBuiltIn {
         id,
         drawn,
         sync: sync,
+        syncStates: syncStates,
       );
     }
     // The piece asked for is drawn by its answer, not twice.

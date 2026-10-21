@@ -280,6 +280,8 @@ La respuesta lleva entonces el valor, tal como el servidor lo calculó para esa 
 - Funciona con el motor lite; un estado que aún no arrancó arranca con el valor nuevo.
 - Sin `syncState` (el predeterminado) nada cambia: un estado que la página tiene conserva su valor.
 
+Cuando la región no lee el estado (lo usa un script o el manejador de un botón, o lo muestra otra parte de la página), nómbralo: `Region(id: 'week', syncStates: [booking], child: SlotGrid())`. La respuesta lleva los valores de los estados listados (todos sus campos que cambiaron) y reemplaza los del navegador, con las mismas reglas. `syncState: true` y `syncStates` se suman: con ambos, la respuesta lleva los estados que lee la región y los listados.
+
 ### Refrescar una región desde un ViewModel
 
 `PageRegion.refresh('id')` le pide al navegador que dibuje de nuevo una `Region` desde un método de un ViewModel, sin formulario ni enlace de por medio: al terminar un comando, o con un temporizador para sondear.
