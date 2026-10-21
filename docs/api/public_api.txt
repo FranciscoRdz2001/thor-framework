@@ -8679,10 +8679,16 @@ thor_ui	FractionallySizedBox.new	FractionallySizedBox({Key? key, double? widthFa
 thor_ui	FractionallySizedBox.widthFactor	double? widthFactor
 thor_ui	FractionallySizedBox.wrapData	WrapData get wrapData
 thor_ui	FragmentFetch	class
+thor_ui	FragmentFetch.history	FragmentHistory history
 thor_ui	FragmentFetch.into	String into
-thor_ui	FragmentFetch.new	FragmentFetch({required String piece, required String into, String? open})
+thor_ui	FragmentFetch.new	FragmentFetch({required String piece, required String into, String? open, FragmentHistory history = FragmentHistory.none})
 thor_ui	FragmentFetch.open	String? open
 thor_ui	FragmentFetch.piece	String piece
+thor_ui	FragmentHistory	enum
+thor_ui	FragmentHistory.new	FragmentHistory()
+thor_ui	FragmentHistory.none	FragmentHistory none
+thor_ui	FragmentHistory.push	FragmentHistory push
+thor_ui	FragmentHistory.replace	FragmentHistory replace
 thor_ui	FrameMessages	abstract class
 thor_ui	FrameMessages.driver	FrameMessagesDriver? driver
 thor_ui	FrameMessages.isValidOrigin	bool isValidOrigin(String origin)

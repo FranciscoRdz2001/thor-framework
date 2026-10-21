@@ -2488,7 +2488,13 @@ Flutter's `FilterChip`: toggles; `onSelected(!selected)`.
 
 What a [Link] fetches instead of navigating: the [Region] [piece] of the page the link points to, put into the [Region] [into] of the page that has the link, and the dialog or popover [open] opened once it is there.
 
-- `FragmentFetch({required String piece, required String into, String? open})` — Fetches [piece] of the link's page into [into].
+- `FragmentFetch({required String piece, required String into, String? open, FragmentHistory history = FragmentHistory.none})` — Fetches [piece] of the link's page into [into].
+
+### `FragmentHistory` · enum
+
+What a [Link] with a [FragmentFetch] does to the browser's history once the region it fetched is in place.
+
+- valores: `none`, `push`, `replace`
 
 ### `Hero` · class
 

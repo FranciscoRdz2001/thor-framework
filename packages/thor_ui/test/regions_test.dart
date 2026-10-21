@@ -148,6 +148,30 @@ void main() {
             ],
           ),
         ),
+      // Filter chips that fill the results in place and write the address.
+      PageRoute<Widget, String>(
+        path: 'filter',
+        load: (r) => r.uri.queryParameters['cat'] ?? 'none',
+        build: (s) => Column(
+          children: [
+            for (final (mode, cat) in [
+              (FragmentHistory.push, 'a'),
+              (FragmentHistory.replace, 'b'),
+              (FragmentHistory.none, 'c'),
+            ])
+              Link(
+                href: RouteUrl('/filter?cat=$cat'),
+                fetch: FragmentFetch(
+                  piece: 'list',
+                  into: 'list',
+                  history: mode,
+                ),
+                child: Text('chip $cat'),
+              ),
+            Region(id: 'list', child: Text('cat ${s.data}')),
+          ],
+        ),
+      ),
       PageRoute<Widget, void>(
         path: 'shop/mug',
         build: (s) => const Column(
@@ -403,6 +427,18 @@ void main() {
       expect(r.text, isNot(contains('page chrome')));
     });
 
+    test('history is an attribute only when asked for', () async {
+      final html = (await handler().handle(get('/filter'))).text;
+      expect(html, contains('data-thor-lazy-history="push"'));
+      expect(html, contains('data-thor-lazy-history="replace"'));
+      expect(
+        RegExp('data-thor-lazy-history').allMatches(html),
+        hasLength(2),
+        reason: 'FragmentHistory.none writes nothing',
+      );
+      expect(html, contains('href="/filter?cat=a"'));
+    });
+
     test('a query in the href is kept', () {
       const link = Link(
         href: RouteUrl('/shop/mug?color=red#top'),
@@ -475,8 +511,14 @@ globalThis.MutationObserver = class { observe() {} };
 const streams = [];
 D.documentElement.dispatchEvent = (e) => streams.push(e);
 globalThis.navigator = {};
-globalThis.location = { href: 'http://site.test$path' };
-globalThis.history = { state: null, replaceState: (s, t, u) => calls.push(['replaceState', u]) };
+globalThis.location = { href: 'http://site.test$path', reload() { calls.push(['reload']); } };
+globalThis.history = {
+  state: null,
+  replaceState: (s, t, u) => calls.push(['replaceState', u]),
+  pushState: (s, t, u) => { history.state = s; calls.push(['pushState', u]); },
+};
+const winListeners = {};
+globalThis.addEventListener = (t, f) => (winListeners[t] ||= []).push(f);
 globalThis.FormData = class {
   constructor(f) { this.p = f.querySelectorAll('input').map((i) => [i.getAttribute('name'), i.value ?? '']); }
   [Symbol.iterator]() { return this.p[Symbol.iterator](); }
@@ -668,6 +710,136 @@ eval(input.script);
         );
         expect(out['calls'], ['fetch /shop/mug?thor-piece=detail']);
         expect(out['text'], 'Mug in detail');
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'Link(fetch: history: push) writes the address once the region is in',
+      () async {
+        final out = await run(
+          '/filter',
+          ['/filter?cat=a&thor-piece=list'],
+          r'''
+          const region = D.querySelector('[data-thor-region="list"]');
+          const chip = (t) => D.querySelectorAll('a').find((a) => text(a) == t);
+          out.before = text(region);
+          click(chip('chip a'));
+          out.early = calls.map((c) => c[0]);
+          await tick();
+          out.after = text(region);
+          click(chip('chip a'));
+          await tick();
+          out.calls = calls.map((c) => c.join(' '));
+        ''',
+        );
+        expect(out['before'], 'cat none');
+        expect(out['early'], ['fetch'], reason: 'the URL waits for the swap');
+        expect(out['after'], 'cat a');
+        expect(out['calls'], [
+          'fetch /filter?cat=a&thor-piece=list',
+          'pushState /filter?cat=a',
+        ], reason: 'a second click on the same link adds no entry');
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'Link(fetch: history: replace) replaces; none leaves the address alone',
+      () async {
+        final out = await run(
+          '/filter',
+          ['/filter?cat=b&thor-piece=list', '/filter?cat=c&thor-piece=list'],
+          r'''
+          const chip = (t) => D.querySelectorAll('a').find((a) => text(a) == t);
+          click(chip('chip b'));
+          await tick();
+          click(chip('chip c'));
+          await tick();
+          out.calls = calls.map((c) => c.join(' '));
+          out.region = text(D.querySelector('[data-thor-region="list"]'));
+        ''',
+        );
+        expect(out['calls'], [
+          'fetch /filter?cat=b&thor-piece=list',
+          'replaceState /filter?cat=b',
+          'fetch /filter?cat=c&thor-piece=list',
+        ]);
+        expect(out['region'], 'cat c');
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'back and forward ask the region again for the URL they land on',
+      () async {
+        final out = await run(
+          '/filter',
+          ['/filter?cat=a&thor-piece=list', '/filter?thor-piece=list'],
+          r'''
+          const region = D.querySelector('[data-thor-region="list"]');
+          const chip = (t) => D.querySelectorAll('a').find((a) => text(a) == t);
+          click(chip('chip a'));
+          await tick();
+          calls.length = 0;
+          // Back: the browser puts the first URL back and fires popstate.
+          location.href = 'http://site.test/filter';
+          winListeners.popstate.forEach((f) => f({}));
+          await tick();
+          out.back = text(region);
+          // Forward: the second URL again.
+          location.href = 'http://site.test/filter?cat=a';
+          winListeners.popstate.forEach((f) => f({}));
+          await tick();
+          out.forward = text(region);
+          // Same URL as shown: nothing to ask.
+          calls.length = 0;
+          winListeners.popstate.forEach((f) => f({}));
+          await tick();
+          out.quiet = calls.length;
+          out.history = calls.map((c) => c[0]);
+        ''',
+          extra: {'/filter?thor-piece=list': 'cat none'},
+        );
+        expect(out['back'], 'cat none');
+        expect(out['forward'], 'cat a');
+        expect(out['quiet'], 0);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a popstate whose request fails reloads the page',
+      () async {
+        final out = await run(
+          '/filter',
+          ['/filter?cat=a&thor-piece=list'],
+          r'''
+          const chip = (t) => D.querySelectorAll('a').find((a) => text(a) == t);
+          click(chip('chip a'));
+          await tick();
+          calls.length = 0;
+          fail = true;
+          location.href = 'http://site.test/filter';
+          winListeners.popstate.forEach((f) => f({}));
+          await tick();
+          out.calls = calls.map((c) => c[0]);
+        ''',
+        );
+        expect(out['calls'], ['fetch', 'reload']);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'no popstate work when no link used history',
+      () async {
+        final out = await run('/filter', [], r'''
+          winListeners.popstate.forEach((f) => f({}));
+          await tick();
+          out.calls = calls.length;
+        ''');
+        expect(out['calls'], 0);
       },
       skip: hasNode ? false : 'node is not installed',
     );

@@ -224,6 +224,32 @@ Un clic pide `/shop/mug?thor-piece=detail`, la región del diálogo la recibe y 
 - Un `Watch` o un botón dentro de la parte funcionan; un estado que la parte trae se enlaza cuando llega.
 - Un sitio estático no tiene quién responda: `LoadMore` y `Region` dibujan su contenido y los enlaces son enlaces simples.
 
+### Chips que filtran y conservan la dirección
+
+`Link(fetch:)` llena una región sin tocar la barra de direcciones. Para enlaces que filtran una lista en el lugar (chips de categoría, un selector de semana), `history:` escribe el `href` del enlace una vez que llega la respuesta:
+
+```dart no-check
+Link(
+  href: RouteUrl('/shop?category=mugs'),
+  fetch: const FragmentFetch(
+    piece: 'results',
+    into: 'results',
+    history: FragmentHistory.push,
+  ),
+  child: const Chip(label: Text('Mugs')),
+)
+```
+
+| `history:` | La barra de direcciones | Botón atrás |
+|---|---|---|
+| `FragmentHistory.none` (predeterminado) | se queda | sale de la página |
+| `FragmentHistory.push` | pasa a ser el `href` del enlace | vuelve al filtro anterior |
+| `FragmentHistory.replace` | pasa a ser el `href` del enlace | sale de la página, como `Form(live:)` |
+
+Atrás y adelante piden de nuevo la región para la URL a la que llegan (`?thor-piece=results` en la página de esa URL), así que `piece` debe ser el id de una `Region` que la página tenga en todas las URL de los enlaces; si esa petición falla, el navegador carga la página. Sin JavaScript el enlace es un enlace: la página carga en la nueva dirección.
+
+> **Nota:** Un diálogo abierto con `open:` sigue abierto al volver atrás: usa `history:` para listas y semanas, no para el contenido de un diálogo.
+
 ### Los estados que lee la región
 
 Un intercambio pone HTML nuevo en la región, pero un estado que la página ya envió conserva su valor: un fragmento trae solo los estados que la página aún no había enviado. Para un valor que depende de la región (los horarios libres de la semana que muestra), dale a la región `syncState: true`:

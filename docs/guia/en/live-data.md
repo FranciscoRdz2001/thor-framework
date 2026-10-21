@@ -224,6 +224,32 @@ A click asks `/shop/mug?thor-piece=detail`, the region of the dialog receives it
 - A `Watch` or a button inside the part work; a state the part brings is bound when it arrives.
 - A static site has nothing to answer: `LoadMore` and `Region` draw their content, and the links are plain links.
 
+### Chips that filter and keep the address
+
+`Link(fetch:)` fills a region without touching the address bar. For links that filter a list in place (category chips, a week selector), `history:` writes the link's `href` once the answer is in:
+
+```dart no-check
+Link(
+  href: RouteUrl('/shop?category=mugs'),
+  fetch: const FragmentFetch(
+    piece: 'results',
+    into: 'results',
+    history: FragmentHistory.push,
+  ),
+  child: const Chip(label: Text('Mugs')),
+)
+```
+
+| `history:` | The address bar | Back button |
+|---|---|---|
+| `FragmentHistory.none` (default) | stays | leaves the page |
+| `FragmentHistory.push` | becomes the link's `href` | returns to the previous filter |
+| `FragmentHistory.replace` | becomes the link's `href` | leaves the page, like `Form(live:)` |
+
+Back and forward ask the region again for the URL they land on (`?thor-piece=results` on the page at that URL), so `piece` must be the id of a `Region` that the page has at every URL of the links; if that request fails, the browser loads the page. Without JavaScript the link is a link: the page loads at the new address.
+
+> **Note:** A dialog opened with `open:` stays open on back: use `history:` for lists and weeks, not for dialog content.
+
 ### States the region reads
 
 A swap puts new HTML in the region, but a state the page already sent keeps the value it has: a fragment brings only the states the page did not send yet. For a value that depends on the region (the free slots of the week it shows), give the region `syncState: true`:
