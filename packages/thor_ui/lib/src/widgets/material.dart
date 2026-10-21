@@ -2697,6 +2697,11 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
 /// to enable the button): the browser opens the dialog and the button
 /// stays enabled.
 ///
+/// The child may also be a tappable box (an `InkWell` or `GestureDetector`
+/// around a card): the browser only runs the command on a `<button>`, so
+/// that element is a focusable `role="button"` and the engine opens the
+/// dialog on a click, Enter or Space. [DialogClose] works the same.
+///
 /// ```dart
 /// DialogTrigger(
 ///   dialog: AlertDialog(

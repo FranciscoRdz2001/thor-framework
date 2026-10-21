@@ -225,12 +225,31 @@ class _ThorElement {
     // must not leave it `disabled` (Flutter code needs `onPressed: () {}`
     // there only to enable the button). A `disabled` the wrapper itself sets
     // (`DialogTrigger(enabled: false)`) is on purpose and stays.
+    // web: the browser only runs `commandfor` on a button. Around anything
+    // else (a tappable card) the element is announced and focusable like
+    // one, and the lite engine carries the command (`aria-disabled` stands
+    // in for `disabled`, which a div ignores).
+    final commandOnBox =
+        nestIn == null &&
+        wrap != null &&
+        wrap.attributes.containsKey('commandfor') &&
+        resolvedTag != 'button' &&
+        resolvedTag != 'input';
     final merged = bindRowMarkers(
-      wrap != null &&
-              withWrap.containsKey('disabled') &&
-              !wrap.attributes.containsKey('disabled') &&
-              (wrap.attributes.containsKey('popovertarget') ||
-                  wrap.attributes.containsKey('commandfor'))
+      commandOnBox
+          ? {
+              for (final e in withWrap.entries)
+                if (e.key != 'disabled') e.key: e.value,
+              if (!withWrap.containsKey('role')) 'role': 'button',
+              if (!withWrap.containsKey('tabindex'))
+                'tabindex': withWrap.containsKey('disabled') ? '-1' : '0',
+              if (withWrap.containsKey('disabled')) 'aria-disabled': 'true',
+            }
+          : wrap != null &&
+                withWrap.containsKey('disabled') &&
+                !wrap.attributes.containsKey('disabled') &&
+                (wrap.attributes.containsKey('popovertarget') ||
+                    wrap.attributes.containsKey('commandfor'))
           ? {
               for (final e in withWrap.entries)
                 if (e.key != 'disabled') e.key: e.value,
