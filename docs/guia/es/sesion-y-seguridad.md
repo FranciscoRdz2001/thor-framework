@@ -103,6 +103,29 @@ script-src 'self' 'unsafe-hashes'
 
 `ThorApp(engineLoading: EngineLoading.eager)` carga el script de los ViewModels sin código en línea. La precarga de enlaces (`PageNavigation`) pone un `<script type="speculationrules">` en cada página; con servidor, `PageNavigation(delivery: SpeculationDelivery.header)` envía las reglas en una cabecera, y `ThorPage(prefetch: false)` excluye una página cuyo `GET` es costoso.
 
+### Analítica y gestores de etiquetas
+
+Un fragmento que debe correr en el `<head>` (Google Tag Manager, Clarity, una configuración de gtag) va en `WidgetRenderer(head:)` como `html.script`. Tanto el cargador (`src:`) como el código en línea (`content:`) reciben el nonce de la petición, y la política solo necesita los hosts de los que carga o a los que reporta el fragmento.
+
+```dart no-check
+WidgetRenderer(
+  head: [
+    html.script(src: 'https://www.googletagmanager.com/gtag/js?id=G-XXXX', async: true),
+    html.script(content: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXX');"),
+  ],
+  ...
+)
+
+contentSecurityPolicy(
+  ContentSecurityPolicy(
+    scriptSrc: [CspSource.host('https://www.googletagmanager.com')],
+    connectSrc: [CspSource.host('https://www.google-analytics.com')],
+  ),
+)
+```
+
+Un fragmento que inyecta más scripts desde el primero (Tag Manager lo hace) necesita `CspSource.strictDynamic` en `scriptSrc`.
+
 ## Host y origen público
 
 En producción, declara a qué dominios responde el servidor. Cualquier otro `Host` responde `400` antes de llegar a una página, así que un `Host` falso no entra en enlaces, caché ni correos.

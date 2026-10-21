@@ -103,6 +103,29 @@ script-src 'self' 'unsafe-hashes'
 
 `ThorApp(engineLoading: EngineLoading.eager)` loads the ViewModels script without inline code. Link prefetching (`PageNavigation`) puts a `<script type="speculationrules">` on every page; with a server, `PageNavigation(delivery: SpeculationDelivery.header)` sends the rules in a header, and `ThorPage(prefetch: false)` excludes a page whose `GET` is expensive.
 
+### Analytics and tag manager snippets
+
+A snippet that has to run in the `<head>` (Google Tag Manager, Clarity, a gtag config) goes in `WidgetRenderer(head:)` as `html.script`. Both the loader (`src:`) and the inline code (`content:`) get the request's nonce, and the policy only needs the hosts the snippet loads from or reports to.
+
+```dart no-check
+WidgetRenderer(
+  head: [
+    html.script(src: 'https://www.googletagmanager.com/gtag/js?id=G-XXXX', async: true),
+    html.script(content: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXX');"),
+  ],
+  ...
+)
+
+contentSecurityPolicy(
+  ContentSecurityPolicy(
+    scriptSrc: [CspSource.host('https://www.googletagmanager.com')],
+    connectSrc: [CspSource.host('https://www.google-analytics.com')],
+  ),
+)
+```
+
+A snippet that injects more scripts from the first one (Tag Manager does) needs `CspSource.strictDynamic` in `scriptSrc`.
+
 ## Host and public origin
 
 In production, declare which domains the server responds to. Any other `Host` responds `400` before reaching a page, so a forged `Host` never ends up in links, the cache or emails.
