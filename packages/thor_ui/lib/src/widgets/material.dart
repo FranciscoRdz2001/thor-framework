@@ -24,6 +24,7 @@ import 'backdrop.dart';
 import 'basic.dart' show Container, boxCss, buttonResetCss;
 import 'buttons.dart' show ButtonStyle, ButtonStyleResolved, buttonStyleCss;
 import 'component_themes.dart';
+import 'dialog_close_corner.dart' show DialogCloseCorner;
 import 'dropdown_menu.dart' show MenuStyle, menuStyleCss;
 import 'icon.dart' show Icon;
 import 'icons.dart' show Icons;
@@ -2353,10 +2354,17 @@ class AlertDialog extends StatelessWidget
     this.barrierDismissible = true,
     this.controller,
     this.modal = true,
+    this.showClose = false,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
        );
+
+  /// Whether the dialog brings its own close button in the top corner
+  /// (`DialogClose` with a close icon, named by the localized "Close").
+  ///
+  /// `// web:` Flutter's dialogs have no built-in close button.
+  final bool showClose;
 
   /// Whether the dialog blocks the page (default) or floats over it.
   ///
@@ -2465,6 +2473,7 @@ class AlertDialog extends StatelessWidget
     },
     childRules: ChildRules.column,
     children: [
+      if (showClose) const DialogCloseCorner(),
       if (title != null)
         WrapWith(
           WrapData(
@@ -2538,6 +2547,7 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.label,
     this.controller,
     this.modal = true,
+    this.showClose = false,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
@@ -2546,6 +2556,12 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
   /// Whether the dialog blocks the page (default) or floats over it; see
   /// `AlertDialog.modal`.
   final bool modal;
+
+  /// Whether the dialog brings its own close button in the top corner
+  /// (`DialogClose` with a close icon, named by the localized "Close").
+  ///
+  /// `// web:` Flutter's dialogs have no built-in close button.
+  final bool showClose;
 
   /// DOM id (the triggers point at it); optional, see `AlertDialog.id`.
   final String? id;
@@ -2677,7 +2693,7 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
         dialogControllerAttr: ?controllerIdOf(controller),
       },
       childRules: ChildRules.column,
-      children: [child],
+      children: [if (showClose) const DialogCloseCorner(), child],
     );
   }
 }
@@ -2696,6 +2712,11 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
 /// `// web:` the button needs no `onPressed` (Flutter code writes one only
 /// to enable the button): the browser opens the dialog and the button
 /// stays enabled.
+///
+/// The child may also be a tappable box (an `InkWell` or `GestureDetector`
+/// around a card): the browser only runs the command on a `<button>`, so
+/// that element is a focusable `role="button"` and the engine opens the
+/// dialog on a click, Enter or Space. [DialogClose] works the same.
 ///
 /// ```dart
 /// DialogTrigger(
@@ -3163,6 +3184,7 @@ class ModalBottomSheet extends StatelessWidget
     this.shape,
     this.constraints,
     this.barrierColor,
+    this.showClose = false,
   });
 
   /// DOM id (the triggers point at it); optional, see `AlertDialog.id`.
@@ -3176,6 +3198,12 @@ class ModalBottomSheet extends StatelessWidget
 
   /// Content of the sheet.
   final Widget child;
+
+  /// Whether the sheet brings its own close button in the top corner
+  /// (`DialogClose` with a close icon, named by the localized "Close").
+  ///
+  /// `// web:` Flutter's sheets have no built-in close button.
+  final bool showClose;
 
   /// Whether to show the drag handle at the top (Flutter's default: true).
   final bool showDragHandle;
@@ -3300,6 +3328,7 @@ class ModalBottomSheet extends StatelessWidget
           },
           attributes: const {'aria-hidden': 'true'},
         ),
+      if (showClose) const DialogCloseCorner(),
       child,
     ],
   );

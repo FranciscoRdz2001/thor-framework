@@ -6023,8 +6023,9 @@ thor_ui	AlertDialog.content	Widget? content
 thor_ui	AlertDialog.controller	DialogController? controller
 thor_ui	AlertDialog.id	String? id
 thor_ui	AlertDialog.modal	bool modal
-thor_ui	AlertDialog.new	AlertDialog({Key? key, String? id, Widget? title, Widget? content, List<Widget> actions = const [], String? semanticLabel, bool barrierDismissible = true, DialogController? controller, bool modal = true})
+thor_ui	AlertDialog.new	AlertDialog({Key? key, String? id, Widget? title, Widget? content, List<Widget> actions = const [], String? semanticLabel, bool barrierDismissible = true, DialogController? controller, bool modal = true, bool showClose = false})
 thor_ui	AlertDialog.semanticLabel	String? semanticLabel
+thor_ui	AlertDialog.showClose	bool showClose
 thor_ui	AlertDialog.title	Widget? title
 thor_ui	Align	class
 thor_ui	Align.alignment	AlignmentGeometry alignment
@@ -7751,9 +7752,10 @@ thor_ui	Dialog.id	String? id
 thor_ui	Dialog.insetPadding	EdgeInsets? insetPadding
 thor_ui	Dialog.label	String? label
 thor_ui	Dialog.modal	bool modal
-thor_ui	Dialog.new	Dialog({Key? key, String? id, required Widget child, Color? backgroundColor, double? elevation, OutlinedBorder? shape, EdgeInsets? insetPadding, BoxConstraints? constraints, List<BoxShadow>? shadows, Color? barrierColor, ImageFilter? barrierFilter, bool barrierDismissible = true, String? label, DialogController? controller, bool modal = true})
+thor_ui	Dialog.new	Dialog({Key? key, String? id, required Widget child, Color? backgroundColor, double? elevation, OutlinedBorder? shape, EdgeInsets? insetPadding, BoxConstraints? constraints, List<BoxShadow>? shadows, Color? barrierColor, ImageFilter? barrierFilter, bool barrierDismissible = true, String? label, DialogController? controller, bool modal = true, bool showClose = false})
 thor_ui	Dialog.shadows	List<BoxShadow>? shadows
 thor_ui	Dialog.shape	OutlinedBorder? shape
+thor_ui	Dialog.showClose	bool showClose
 thor_ui	DialogClose	class
 thor_ui	DialogClose.enabled	bool enabled
 thor_ui	DialogClose.id	String? id
@@ -7915,11 +7917,12 @@ thor_ui	Drawer.closeOnNavigate	bool closeOnNavigate
 thor_ui	Drawer.controller	DialogController? controller
 thor_ui	Drawer.id	String? id
 thor_ui	Drawer.label	String? label
-thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding})
+thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, bool showClose = false})
 thor_ui	Drawer.padding	EdgeInsetsGeometry padding
 thor_ui	Drawer.permanentFrom	WindowSizeClass? permanentFrom
 thor_ui	Drawer.permanentPadding	EdgeInsetsGeometry? permanentPadding
 thor_ui	Drawer.permanentWidth	double? permanentWidth
+thor_ui	Drawer.showClose	bool showClose
 thor_ui	Drawer.side	DrawerSide? side
 thor_ui	Drawer.width	double? width
 thor_ui	DrawerButton	class
@@ -18351,8 +18354,9 @@ thor_ui	ModalBottomSheet.controller	DialogController? controller
 thor_ui	ModalBottomSheet.elevation	double? elevation
 thor_ui	ModalBottomSheet.id	String? id
 thor_ui	ModalBottomSheet.label	String? label
-thor_ui	ModalBottomSheet.new	ModalBottomSheet({Key? key, String? id, required Widget child, bool showDragHandle = true, String? label, DialogController? controller, Color? backgroundColor, double? elevation, OutlinedBorder? shape, BoxConstraints? constraints, Color? barrierColor})
+thor_ui	ModalBottomSheet.new	ModalBottomSheet({Key? key, String? id, required Widget child, bool showDragHandle = true, String? label, DialogController? controller, Color? backgroundColor, double? elevation, OutlinedBorder? shape, BoxConstraints? constraints, Color? barrierColor, bool showClose = false})
 thor_ui	ModalBottomSheet.shape	OutlinedBorder? shape
+thor_ui	ModalBottomSheet.showClose	bool showClose
 thor_ui	ModalBottomSheet.showDragHandle	bool showDragHandle
 thor_ui	MouseCursor	class
 thor_ui	MouseCursor.css	String css

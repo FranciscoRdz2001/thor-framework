@@ -94,6 +94,92 @@ Watch.list(
 )
 ```
 
+### Datos fijos: búsqueda, «cargar más» y fila elegida
+
+Una lista que vive en tu app como `const` (importada de un JSON o escrita a mano) no se copia al ViewModel: sus métodos la leen por su nombre, también desde otro archivo. El estado guarda solo lo que cambia (el texto de búsqueda, cuántas filas se ven, la fila elegida) y `Watch.list` muestra el resultado. Las tarjetas son widgets a los que pasas `row.text(...)` o `row.bind(...)`, así siguen reactivas sin una segunda copia de los datos.
+
+```dart
+// lib/data/catalog.dart
+class Shop {
+  const Shop(this.id, this.name, this.city);
+  final String id;
+  final String name;
+  final String city;
+}
+
+const catalog = [
+  Shop('a', 'Alpha', 'Lima'),
+  Shop('b', 'Beta', 'Quito'),
+  Shop('c', 'Gamma', 'Lima'),
+];
+```
+
+```dart
+// lib/finder_view_model.dart
+import 'package:thor_ui/thor_ui.dart';
+
+import 'data/catalog.dart';
+
+class FinderViewModel extends ThorState {
+  final query = state('');
+  final shown = state(8);
+  final selected = state('');
+
+  late final matches = derived(
+    () => [
+      for (final s in catalog)
+        if (s.name.toLowerCase().contains(query.value.toLowerCase())) s,
+    ],
+  );
+
+  List<Shop> rows() => matches.value.take(shown.value).toList();
+  String keyOf(Shop s) => s.id;
+  String nameOf(Shop s) => s.name;
+  bool hasMore() => matches.value.length > shown.value;
+
+  Shop? get current {
+    for (final s in catalog) {
+      if (s.id == selected.value) return s;
+    }
+    return null;
+  }
+
+  String currentName() => current?.name ?? '';
+  String currentCity() => current?.city ?? '';
+
+  void search(String text) {
+    query.value = text;
+    shown.value = 8;
+  }
+
+  void more() => shown.value += 8;
+  void select(String id) => selected.value = id;
+}
+
+final finder = FinderViewModel();
+```
+
+```dart
+Column(children: [
+  TextField(onChanged: finder.search),
+  Watch.list(
+    finder.rows,
+    itemKey: finder.keyOf,
+    each: (row) => InkWell(
+      onTap: finder.select.withArg(row.key),
+      child: ListTile(title: row.text(finder.nameOf)),
+    ),
+  ),
+  Watch(
+    finder.hasMore,
+    builder: (bool more) => more
+        ? TextButton(onPressed: finder.more, child: const Text('Cargar más'))
+        : const SizedBox.shrink(),
+  ),
+  Watch(finder.currentName), // the selected row: one place, no copy per row
+])
+```
+
 ### Árboles
 
 `Watch.tree` es una lista cuyas filas llevan a sus hijos, a cualquier profundidad: `children` da los hijos de un item y `each` pone `children` donde van. El navegador dibuja cada nivel con la misma plantilla, también un árbol que llega después de un `query`. Las keys son únicas en todo el árbol.

@@ -395,7 +395,11 @@ List<String> missingFeatures(web.Element scope, List<EngineFeature> features) {
       (VariantsFeature, 'VariantsFeature', '[$variantAttr]'),
       (ListsFeature, 'ListsFeature', '[$listAttr]'),
       (FormsFeature, 'FormsFeature', '[$validateAttr]'),
-      if (!commandsNative) (CommandsFeature, 'CommandsFeature', '[commandfor]'),
+      (
+        CommandsFeature,
+        'CommandsFeature',
+        commandsNative ? '[commandfor]:not(button):not(input)' : '[commandfor]',
+      ),
       (TransitionsFeature, 'TransitionsFeature', '[$onAttr*="transitionend:"]'),
       (KeyboardFeature, 'KeyboardFeature', '[role="button"][$onAttr]'),
       (GesturesFeature, 'GesturesFeature', '[$gestureAttr]'),
@@ -2082,18 +2086,20 @@ void Function() _installValidation(web.Element scope) {
 
 /// `<button commandfor="id" command="show-modal|close">` opens and closes a
 /// `<dialog>` natively (Invoker Commands). Where the browser lacks it, one
-/// delegated listener does the same. Returns the remover, or null when
-/// nothing is needed.
+/// delegated listener does the same; where it has it, the listener serves
+/// what is not a button (a tappable card), pressed also with Enter / Space.
+/// Returns the remover.
 void Function()? _polyfillCommands(web.Element scope) {
   final supported = (web.document.createElement('button') as JSObject).has(
     'command',
   );
-  if (supported) return null;
-  final listener = ((web.Event e) {
-    final target = e.target;
-    if (target == null || !target.isA<web.Element>()) return;
-    final button = (target as web.Element).closest('[commandfor]');
-    if (button == null) return;
+  bool isButton(web.Element e) => e.tagName == 'BUTTON' || e.tagName == 'INPUT';
+  void run(web.Element? button) {
+    if (button == null ||
+        (supported && isButton(button)) ||
+        button.getAttribute('aria-disabled') == 'true') {
+      return;
+    }
     final dialog = web.document.getElementById(
       button.getAttribute('commandfor')!,
     );
@@ -2105,9 +2111,35 @@ void Function()? _polyfillCommands(web.Element scope) {
       case 'close':
         d.close();
     }
+  }
+
+  final onClick = ((web.Event e) {
+    final target = e.target;
+    if (target == null || !target.isA<web.Element>()) return;
+    run((target as web.Element).closest('[commandfor]'));
   }).toJS;
-  scope.addEventListener('click', listener);
-  return () => scope.removeEventListener('click', listener);
+  final onKey = ((web.KeyboardEvent e) {
+    final target = e.target;
+    if ((e.key != 'Enter' && e.key != ' ') ||
+        target == null ||
+        !target.isA<web.Element>()) {
+      return;
+    }
+    final el = target as web.Element;
+    if (isButton(el) ||
+        !el.hasAttribute('commandfor') ||
+        el.getAttribute('role') != 'button') {
+      return;
+    }
+    e.preventDefault();
+    run(el);
+  }).toJS;
+  scope.addEventListener('click', onClick);
+  scope.addEventListener('keydown', onKey);
+  return () {
+    scope.removeEventListener('click', onClick);
+    scope.removeEventListener('keydown', onKey);
+  };
 }
 
 /// A checkbox's mixed state only exists as the `indeterminate` property
