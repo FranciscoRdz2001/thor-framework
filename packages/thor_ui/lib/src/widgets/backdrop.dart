@@ -84,6 +84,17 @@ const openBeforeUpgrade =
       'z-index': '1000',
     });
 
+/// What an [openForUpgrade] side panel or bottom sheet (`Drawer`,
+/// `ModalBottomSheet`) looks like until the script upgrades it: fixed to the
+/// window, against the edge its own margins already choose (they keep its
+/// side, width and height).
+const openBeforeUpgradePanel =
+    ConditionalCss(CssCondition.selector('[data-thor-open]:not(:modal)'), {
+      'position': 'fixed',
+      'inset': '0',
+      'z-index': '1000',
+    });
+
 /// Ships the script that upgrades the dialogs drawn with [openForUpgrade].
 void useOpenUpgrade(BuildContext context) {
   ThorStyleRegistry.of(context)?.useLazyScript();

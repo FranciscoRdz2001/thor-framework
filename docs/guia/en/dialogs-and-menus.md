@@ -82,7 +82,7 @@ PageRoute<Widget, Product?>(
 | Looks | a modal dialog: backdrop, focus trap, Esc, page behind inert | an open, non-modal `<dialog>` centered in the window; no backdrop |
 | Closes with | Esc, backdrop click, `DialogClose` | `DialogClose` only |
 
-The HTML carries `<dialog open data-thor-open>`. The page's small inline script (the same one that loads `Region`s; no engine needed) closes it and shows it again with `showModal()` as soon as it runs, so there can be a first paint of the non-modal form. Closing it does not change the URL; `AlertDialog` takes the same option, and a `Dialog(modal: false)` is always open. A `Drawer` or `ModalBottomSheet` does not have it.
+The HTML carries `<dialog open data-thor-open>`. The page's small inline script (the same one that loads `Region`s; no engine needed) closes it and shows it again with `showModal()` as soon as it runs, so there can be a first paint of the non-modal form. Closing it does not change the URL; `AlertDialog`, `Drawer` and `ModalBottomSheet` take the same option (a drawer keeps its `side` and `width`, and still slides in on the upgrade; without JavaScript it is fixed against its edge, over the page), and a `Dialog(modal: false)` is always open.
 
 ## Separate dialog and button
 

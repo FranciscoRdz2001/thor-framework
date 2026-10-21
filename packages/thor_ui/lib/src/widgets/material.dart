@@ -3258,6 +3258,7 @@ class ModalBottomSheet extends StatelessWidget
     this.shape,
     this.constraints,
     this.barrierColor,
+    this.initiallyOpen = false,
     this.showClose = false,
     this.closeLabel,
   });
@@ -3273,6 +3274,23 @@ class ModalBottomSheet extends StatelessWidget
 
   /// Content of the sheet.
   final Widget child;
+
+  /// Whether the server draws the sheet open: a modal sheet that is showing
+  /// when the page arrives (the page decides from its request: `initiallyOpen:
+  /// request.uri.queryParameters.containsKey('share')`).
+  ///
+  /// The HTML carries `<dialog open data-thor-open>` and, as soon as the
+  /// page's script runs (it is inline, no engine needed), the sheet is closed
+  /// and shown again with `showModal()`: focus trap, backdrop, Esc and the
+  /// page behind inert, sliding up as if a [DialogTrigger] had opened it.
+  /// Closing it does not change the URL.
+  ///
+  /// `// web:` without JavaScript a `<dialog open>` can only be non-modal: the
+  /// sheet shows fixed at the bottom of the window over the page, with no
+  /// backdrop, nothing behind it inert, and Esc and the backdrop do not close
+  /// it (a [DialogClose] does). Flutter has no counterpart
+  /// (`showModalBottomSheet` runs from code, after the first frame).
+  final bool initiallyOpen;
 
   /// Whether the sheet brings its own close button in the top corner
   /// (`DialogClose` with a close icon, named by the localized "Close").
@@ -3320,6 +3338,7 @@ class ModalBottomSheet extends StatelessWidget
       owner: this,
     );
     lockScrollWhileModal(context);
+    if (initiallyOpen) useOpenUpgrade(context);
     return DialogScope(
       id: id,
       child: _element(id, Theme.of(context).bottomSheetTheme),
@@ -3382,12 +3401,14 @@ class ModalBottomSheet extends StatelessWidget
         'translate': '0 100%',
       }),
       ...fadingBackdrop('250ms', color: barrier),
+      if (initiallyOpen) openBeforeUpgradePanel,
       const ConditionalCss(CssCondition.reducedMotion, {
         'transition-duration': '1ms',
       }),
     ],
     attributes: {
       'closedby': 'any',
+      if (initiallyOpen) ...openForUpgrade,
       'aria-label': ?label,
       dialogControllerAttr: ?controllerIdOf(controller),
     },
