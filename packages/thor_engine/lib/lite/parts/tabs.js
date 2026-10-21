@@ -47,6 +47,9 @@
       radio.setAttribute('aria-hidden', 'true');
       radio.removeAttribute('aria-controls');
       radio.tabIndex = -1;
+      // Not focusable at all (no interactive control nested in the tab); a
+      // click on the label and `radio.click()` still check it.
+      radio.inert = true;
     }
     sync(bar);
   }

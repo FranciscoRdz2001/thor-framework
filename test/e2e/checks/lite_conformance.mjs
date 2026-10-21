@@ -922,7 +922,7 @@ await e2e('lite-conformance', { site: sites.c, handle, timeout: 300_000 }, async
           ['number editor', async (p) => {
             await p.click(cell(1, 5));
             await p.keyboard.press('Enter');
-            await p.keyboard.press('Meta+a');
+            await p.keyboard.press('ControlOrMeta+a');
             await p.keyboard.type('123456');
             await p.keyboard.press('Enter');
           }],

@@ -62,9 +62,7 @@ class StudioThemeChoice extends StatelessWidget implements ThorElementWidget {
       css(
         ':root:root:has(input[name="$studioThemeChoiceName"]'
         '[value="${mode.name}"]:checked)',
-      ).props(
-        StyleProps(colorScheme: mode.colorScheme),
-      ),
+      ).props(StyleProps(colorScheme: mode.colorScheme)),
   ];
 
   @override

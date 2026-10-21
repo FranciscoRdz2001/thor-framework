@@ -130,7 +130,7 @@ await e2e('grid', { timeout: 180_000 }, async (t) => {
   t.check('select editor: search and pick with Enter', (await page.textContent(cell(1, 1))) === 'Paused');
   await page.click(cell(1, 5));
   await page.keyboard.press('Enter');
-  await page.keyboard.press('Meta+a');
+  await page.keyboard.press('ControlOrMeta+a');
   await page.keyboard.type('123456');
   await page.keyboard.press('Enter');
   t.check('number editor', (await page.textContent(cell(1, 5))) === '$123,456');
@@ -140,7 +140,7 @@ await e2e('grid', { timeout: 180_000 }, async (t) => {
   await page.click(cell(2, 10));
   await page.keyboard.press('ArrowLeft');
   await page.keyboard.press('Enter');
-  await page.keyboard.press('Meta+a');
+  await page.keyboard.press('ControlOrMeta+a');
   await page.keyboard.type('javascript:alert(1)');
   await page.keyboard.press('Enter');
   t.check('a javascript: URL typed into a cell is no link',

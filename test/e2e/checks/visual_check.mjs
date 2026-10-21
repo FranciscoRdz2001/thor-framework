@@ -58,7 +58,7 @@ const FIXED_TIME = new Date('2026-01-15T12:00:00Z');
 const ALL_PAGES = [
   ['landing', 'landing', '/'],
   ['docs-home', 'docs', '/es'],
-  ['docs-guide', 'docs', '/es/ui/tema-y-estilos'],
+  ['docs-guide', 'docs', '/es/interfaz/tema-y-estilos'],
   ['realworld-home', 'realworld', '/'],
   ['realworld-article', 'realworld', '/article/server-rendering-without-the-hydration-tax'],
   ['realworld-login', 'realworld', '/login'],
