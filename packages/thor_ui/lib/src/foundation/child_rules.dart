@@ -138,6 +138,33 @@ class ChildRules {
 
   static final _directional = <String, ChildRules>{};
 
+  /// Whether a child is stretched across by `align-self: stretch`.
+  bool get growsAcross =>
+      fillWidth.containsKey('align-self') ||
+      fillHeight.containsKey('align-self') ||
+      fillMaxWidth.containsKey('align-self');
+
+  /// These rules for the children of a flex container that is a grid
+  /// instead (`display: grid` from a `Styled`): without `align-self`, so the
+  /// grid's `align-items` places each child, and a child's own `alignSelf`
+  /// is the only thing that overrides it.
+  ChildRules get inGrid => _inGrid[this] ??= ChildRules(
+    all: all,
+    fillWidth: _withoutAlignSelf(fillWidth),
+    fillHeight: _withoutAlignSelf(fillHeight),
+    flexible: flexible,
+    fillMaxWidth: _withoutAlignSelf(fillMaxWidth),
+  );
+
+  static final _inGrid = Expando<ChildRules>('ChildRules.inGrid');
+
+  static CssDeclarations _withoutAlignSelf(CssDeclarations css) => css.isEmpty
+      ? css
+      : Map.unmodifiable({
+          for (final e in css.entries)
+            if (e.key != 'align-self') e.key: e.value,
+        });
+
   /// Whether these rules add no declarations at all.
   bool get isEmpty =>
       all.isEmpty &&

@@ -208,17 +208,21 @@ class StyleProps extends ConstAdaptable<StyleProps> {
   /// Paint order among overlapping siblings (`z-index`).
   final int? zIndex;
 
-  /// How much a flex item grows from its natural size (`flex-grow`, basis
-  /// `auto`). `Expanded` (1 1 0) and `Flexible` (0 1 auto) cover the
-  /// Flutter cases; this one is the web's.
+  /// The flex factor of a flex item, as CSS `flex: n` (`n 1 0%`): the item
+  /// shares the free space like `Expanded(flex: n)`. `flex: 0` keeps the
+  /// content's size (`0 1 auto`). For the Flutter cases in a `Row` or
+  /// `Column`, `Expanded` and `Flexible` are the widgets; this is for a
+  /// stylesheet rule or a variant.
   final int? flex;
 
-  /// How much a flex item shrinks when the line is too short (`flex-shrink`).
+  /// How much a flex item shrinks when the line is too short
+  /// (`flex-shrink`; 1 with [flex]).
   final int? flexShrink;
 
-  /// The size a flex item starts from before growing (`flex-basis`):
-  /// `Length.px(0)` with [flex] shares the space like `Expanded`, only
-  /// where the variant applies (a `Column` that turns into a row).
+  /// The size a flex item starts from before growing (`flex-basis`). With it
+  /// the three values are written as longhands (`flex-grow`, `flex-shrink`,
+  /// `flex-basis`), so `flex: 1` with `Length.maxContent` shares what is
+  /// left of the line after the contents.
   final Length? flexBasis;
 
   // web: what Flutter does with slivers, overlays or the render
@@ -651,6 +655,25 @@ class StyleProps extends ConstAdaptable<StyleProps> {
         : s.position;
   }
 
+  // `flex` is the CSS shorthand `flex: n`, as for `Expanded` (`n 1 0%`; a
+  // zero factor keeps the content's size: `0 1 auto`, as `Flexible`), with
+  // [flexShrink] as its shrink factor. A [flexBasis] is a size of its own,
+  // so the three longhands are written instead.
+  CssDeclarations _flexCss() {
+    final grow = flex, shrink = flexShrink, basis = flexBasis;
+    if (basis != null) {
+      return {
+        if (grow != null) 'flex-grow': '$grow',
+        if (shrink != null) 'flex-shrink': '$shrink',
+        'flex-basis': basis.css,
+      };
+    }
+    if (grow != null) {
+      return {'flex': '$grow ${shrink ?? 1} ${grow == 0 ? 'auto' : '0%'}'};
+    }
+    return {if (shrink != null) 'flex-shrink': '$shrink'};
+  }
+
   CssDeclarations _ownCss() => {
     if (padding != null) ...padding!.toCss('padding'),
     if (margin != null) ...margin!.toCss('margin'),
@@ -669,9 +692,7 @@ class StyleProps extends ConstAdaptable<StyleProps> {
     if (widthFactor case final f?) 'width': '${cssNum(f * 100)}%',
     if (heightFactor case final f?) 'height': '${cssNum(f * 100)}%',
     if (zIndex case final z?) 'z-index': '$z',
-    if (flex != null) 'flex-grow': '$flex',
-    if (flexShrink != null) 'flex-shrink': '$flexShrink',
-    if (flexBasis case final b?) 'flex-basis': b.css,
+    ..._flexCss(),
     ...?position?.toCss(),
     if (overflowX case final o?) 'overflow-x': o.css,
     if (overflowY case final o?) 'overflow-y': o.css,

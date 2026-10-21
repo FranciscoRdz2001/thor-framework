@@ -1046,7 +1046,7 @@ void main() {
             styles: Styles(raw: {'white-space': style}),
             children: [
               Widget.text(value),
-              _el('b', [Widget.text('a\nb')]),
+              _el('b', const [Widget.text('a\nb')]),
             ],
           ),
           _el('p'),

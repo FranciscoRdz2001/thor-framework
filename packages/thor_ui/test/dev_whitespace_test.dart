@@ -21,7 +21,7 @@ void main() {
     final app = ThorApp(
       child: Column(
         children: [
-          Container(padding: const EdgeInsets.all(4), child: const Text(text)),
+          const Container(padding: EdgeInsets.all(4), child: Text(text)),
           for (var i = 0; i < 12; i++) Text('filler number $i'),
           const Text(text, softWrap: false),
         ],
