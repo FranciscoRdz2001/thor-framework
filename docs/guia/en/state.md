@@ -94,6 +94,92 @@ Watch.list(
 )
 ```
 
+### Fixed data: search, load more and a selected row
+
+A list that lives in your app as a `const` (imported from JSON or written by hand) is not copied into the ViewModel: its methods read it by name, also from another file. The state keeps only what changes (the search text, how many rows show, the chosen row) and `Watch.list` shows the result. The cards are widgets you pass `row.text(...)` or `row.bind(...)` to, so they stay reactive without a second copy of the data.
+
+```dart
+// lib/data/catalog.dart
+class Shop {
+  const Shop(this.id, this.name, this.city);
+  final String id;
+  final String name;
+  final String city;
+}
+
+const catalog = [
+  Shop('a', 'Alpha', 'Lima'),
+  Shop('b', 'Beta', 'Quito'),
+  Shop('c', 'Gamma', 'Lima'),
+];
+```
+
+```dart
+// lib/finder_view_model.dart
+import 'package:thor_ui/thor_ui.dart';
+
+import 'data/catalog.dart';
+
+class FinderViewModel extends ThorState {
+  final query = state('');
+  final shown = state(8);
+  final selected = state('');
+
+  late final matches = derived(
+    () => [
+      for (final s in catalog)
+        if (s.name.toLowerCase().contains(query.value.toLowerCase())) s,
+    ],
+  );
+
+  List<Shop> rows() => matches.value.take(shown.value).toList();
+  String keyOf(Shop s) => s.id;
+  String nameOf(Shop s) => s.name;
+  bool hasMore() => matches.value.length > shown.value;
+
+  Shop? get current {
+    for (final s in catalog) {
+      if (s.id == selected.value) return s;
+    }
+    return null;
+  }
+
+  String currentName() => current?.name ?? '';
+  String currentCity() => current?.city ?? '';
+
+  void search(String text) {
+    query.value = text;
+    shown.value = 8;
+  }
+
+  void more() => shown.value += 8;
+  void select(String id) => selected.value = id;
+}
+
+final finder = FinderViewModel();
+```
+
+```dart
+Column(children: [
+  TextField(onChanged: finder.search),
+  Watch.list(
+    finder.rows,
+    itemKey: finder.keyOf,
+    each: (row) => InkWell(
+      onTap: finder.select.withArg(row.key),
+      child: ListTile(title: row.text(finder.nameOf)),
+    ),
+  ),
+  Watch(
+    finder.hasMore,
+    builder: (bool more) => more
+        ? TextButton(onPressed: finder.more, child: const Text('Load more'))
+        : const SizedBox.shrink(),
+  ),
+  Watch(finder.currentName), // the selected row: one place, no copy per row
+])
+```
+
 ### Trees
 
 `Watch.tree` is a list whose rows hold their children, at any depth: `children` gives an item's children and `each` puts `children` where they go. The browser draws every level with the same template, a tree that arrives later from a `query` too. Keys are unique in the whole tree.
