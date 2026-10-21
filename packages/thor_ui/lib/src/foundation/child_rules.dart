@@ -275,6 +275,105 @@ class ChildRules {
     return terms.join(' + ');
   }
 
+  /// [outer] (the size constraints of the wrappers around an element:
+  /// `max-width`, `min-height`, `width`…) with the margins of [inner] (the
+  /// element's own, or a `Padding` folded into it) taken out of them.
+  ///
+  /// In Flutter a `Padding` or a `Container(margin:)` below a
+  /// `ConstrainedBox` or a `SizedBox` sits *inside* its constraints, so
+  /// `ConstrainedBox(maxWidth: 1180, child: Padding(horizontal: 28))` is
+  /// 1180 wide in total.
+  ///
+  /// `// web:` the padding is folded into the child's element as a margin,
+  /// and a margin lies outside the `max-width` of its own box, which would
+  /// make the band 1180 + 56. Instead of a second element, the constraint
+  /// gives up the margin (`max-width: 1124px`, or a `calc()` when the
+  /// lengths are not both pixels). Unchanged without margins, for a margin
+  /// that is not a fixed length, and for a key [inner] sets itself.
+  static CssDeclarations constraintsInside(
+    CssDeclarations outer,
+    CssDeclarations inner,
+  ) {
+    if (outer.isEmpty || inner.isEmpty) return outer;
+    CssDeclarations? out;
+    final horizontal = marginSum(inner);
+    final vertical = _verticalMarginSum(inner);
+    for (final e in outer.entries) {
+      final sum = switch (e.key) {
+        'width' || 'min-width' || 'max-width' => horizontal,
+        'height' || 'min-height' || 'max-height' => vertical,
+        _ => null,
+      };
+      if (sum == null || sum.isEmpty || inner.containsKey(e.key)) continue;
+      final value = _lessMargins(e.value, sum);
+      if (value != null) (out ??= {...outer})[e.key] = value;
+    }
+    return out ?? outer;
+  }
+
+  // `value` minus `sum`, or null when `value` is not a length that can be
+  // reduced (a keyword, a breakpoint value, zero).
+  static String? _lessMargins(String value, String sum) {
+    final v = value.trim();
+    // `calc(100% - margin)`: already made room for them (an `Align` folded
+    // into a capped child with a margin of its own).
+    if (isAdaptive(v) ||
+        v == '0' ||
+        v.startsWith('calc(100% - ') ||
+        RegExp(r'^[a-z-]+$').hasMatch(v)) {
+      return null;
+    }
+    final a = _px(v), b = _px(sum);
+    if (a != null && b != null) return cssPx(a > b ? a - b : 0);
+    return 'calc($v - ${sum.contains(' ') ? '($sum)' : sum})';
+  }
+
+  static double? _px(String v) =>
+      v.endsWith('px') ? double.tryParse(v.substring(0, v.length - 2)) : null;
+
+  /// [marginSum] for the vertical margins.
+  static String? _verticalMarginSum(CssDeclarations css) {
+    String? top, bottom;
+    for (final e in css.entries) {
+      final key = e.key;
+      if (key != 'margin' &&
+          key != 'margin-top' &&
+          key != 'margin-bottom' &&
+          key != 'margin-block' &&
+          key != 'margin-block-start' &&
+          key != 'margin-block-end') {
+        continue;
+      }
+      final value = e.value.trim();
+      if (isAdaptive(value) || value.contains('auto')) return null;
+      final parts = value.split(RegExp(r'\s+'));
+      switch (key) {
+        case 'margin':
+          if (parts.isEmpty || parts.length > 4) return null;
+          top = parts.first;
+          bottom = parts.length >= 3 ? parts[2] : top;
+        case 'margin-block':
+          if (parts.length > 2) return null;
+          top = parts.first;
+          bottom = parts.last;
+        case 'margin-top' || 'margin-block-start':
+          top = value;
+        default:
+          bottom = value;
+      }
+    }
+    final terms = [
+      for (final v in [?top, ?bottom])
+        if (v != '0' && v != '0px') v,
+    ];
+    final px = [for (final t in terms) _px(t)];
+    if (!px.contains(null)) {
+      final total = px.fold<double>(0, (a, b) => a + b!);
+      return total == 0 ? '' : cssPx(total);
+    }
+    return terms.join(' + ');
+  }
+
   /// [css] with a vertical-only `margin` shorthand (`0 0 16px`) split into
   /// `margin-top`/`margin-bottom`, so it doesn't reset the auto margins a
   /// parent positions a [capsWidth] child with.

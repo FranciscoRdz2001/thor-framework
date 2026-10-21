@@ -381,13 +381,25 @@ class _ThorElement {
       mergeCss(under, css),
       wrap == null
           ? const <String, String>{}
-          : mergeCss({...flexible, ...wrap.classCss}, wrap.css),
+          : mergeCss({
+              ...flexible,
+              ...wrap.classCss,
+            }, ChildRules.constraintsInside(wrap.css, css)),
     );
     // A wrapper's `transform` (`Transform.rotate`) nests around the
     // element's own (`Container(transform:)`), it does not replace it.
     if (wrap != null) {
       final composed = composeTransforms(wrap.css, css);
       if (composed != null) combined = {...combined, ...composed};
+    }
+    // web: a `Padding` folded into a bare element (a `Text`) sits inside the
+    // size a wrapper gives it (`ConstrainedBox`, `SizedBox`), but CSS adds
+    // the padding to the content box: `border-box` brings it back inside.
+    if (wrap != null &&
+        !combined.containsKey('box-sizing') &&
+        _hasPadding(combined) &&
+        _hasSize(combined)) {
+      combined = {...combined, 'box-sizing': 'border-box'};
     }
     // A vertical-only margin must not reset the parent's auto margins.
     // A fixed horizontal margin comes out of its `width: 100%`.
@@ -605,3 +617,18 @@ String _kebab(String name) => name
     .first
     .replaceAllMapped(RegExp('([a-z0-9])([A-Z])'), (m) => '${m[1]}-${m[2]}')
     .toLowerCase();
+
+bool _hasPadding(CssDeclarations css) =>
+    css.keys.any((k) => k == 'padding' || k.startsWith('padding-'));
+
+bool _hasSize(CssDeclarations css) => css.keys.any(
+  (k) => switch (k) {
+    'width' ||
+    'height' ||
+    'min-width' ||
+    'max-width' ||
+    'min-height' ||
+    'max-height' => css[k] != '0',
+    _ => false,
+  },
+);

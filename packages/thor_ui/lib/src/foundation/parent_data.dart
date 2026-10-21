@@ -120,7 +120,11 @@ class WrapData {
   WrapData merge(WrapData inner) => WrapData(
     classes: [...classes, ...inner.classes],
     baseCss: mergeCss(inner.baseCss, baseCss),
-    css: _composeTransform(css, inner.css, mergeCss(css, inner.css)),
+    css: _composeTransform(
+      css,
+      inner.css,
+      mergeCss(ChildRules.constraintsInside(css, inner.css), inner.css),
+    ),
     classCss: mergeCss(classCss, inner.classCss),
     conditions: [
       ...conditions,
