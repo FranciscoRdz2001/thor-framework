@@ -205,7 +205,39 @@ class DevCommand extends Command<int> with ProjectCommand {
   var _codegenWatching = false;
 
   @override
-  Future<int> run() async {
+  Future<int> run() {
+    final done = Completer<int>();
+    // An error nobody caught (a file that went while it was read, a VM that
+    // closed during a restart) must not end a run that is serving: it is
+    // logged, shown on the page, and the next save tries again.
+    runZonedGuarded(
+      () => _run().then(done.complete, onError: done.completeError),
+      (error, stack) {
+        if (_started && !_stopping) return _survive(error, stack);
+        if (!done.isCompleted) done.completeError(error, stack);
+      },
+    );
+    return done.future;
+  }
+
+  /// Reports [error] from a running `thor dev` and keeps serving.
+  void _survive(Object error, StackTrace stack) {
+    final text = error is ThorException ? error.message : '$error\n$stack';
+    Say.error('unexpected error (still serving): $text');
+    Say.json?.call({
+      'event': 'fatal',
+      'error': '$error',
+      'stack': '$stack',
+      'recovered': true,
+    });
+    _proxy?.problem(
+      'internal',
+      'thor dev hit an error',
+      '$text\nSave again to retry.',
+    );
+  }
+
+  Future<int> _run() async {
     // A bad --port fails before anything else.
     final flag = argResults!.wasParsed('port')
         ? argResults!['port'] as String
@@ -576,7 +608,14 @@ class DevCommand extends Command<int> with ProjectCommand {
         _pending.clear();
         final restart = _restartBecause;
         _restartBecause = null;
-        await _apply(changes, restartBecause: restart);
+        try {
+          await _apply(changes, restartBecause: restart);
+          _proxy?.clearProblem('internal');
+        } on Object catch (e, stack) {
+          // One bad update (a file that went while it was read) does not
+          // end the run: the next save applies again.
+          _survive(e, stack);
+        }
       }
       await _restartWorker();
     } finally {
@@ -607,8 +646,13 @@ class DevCommand extends Command<int> with ProjectCommand {
   static bool _touchesStates(List<String> files) {
     for (final f in files) {
       final file = File(f);
-      if (!file.existsSync()) return true;
-      final source = file.readAsStringSync();
+      final String source;
+      try {
+        source = file.readAsStringSync();
+      } on FileSystemException {
+        // Gone (or going): the registry may list it.
+        return true;
+      }
       if (source.contains('ThorState') || source.contains('ActionResult')) {
         return true;
       }
@@ -666,6 +710,7 @@ class DevCommand extends Command<int> with ProjectCommand {
 
   Future<void> _apply(Set<String> changes, {String? restartBecause}) async {
     final clock = Stopwatch()..start();
+    final stages = _Stages(clock);
     final dart = changes.where((f) => f.endsWith('.dart')).toList();
     final lib = p.join(_app.dir, 'lib');
     final inLib = [
@@ -674,13 +719,15 @@ class DevCommand extends Command<int> with ProjectCommand {
     ];
     // A state's members (or a new or deleted file) change the generated
     // registry: write it before the server runs the code.
-    final entries = _touchesStates(inLib) ? await _writeEntries() : <String>{};
+    final entries = _touchesStates(inLib)
+        ? await stages.time('entries', _writeEntries)
+        : <String>{};
     final hadEngine = _app.hasEngine;
     if (_app.hasEngine &&
         (changes.any(_inEngine) ||
             entries.contains('engine.dart') ||
             entries.contains('states.dart'))) {
-      await _compileEngine();
+      await stages.time('engine', _compileEngine);
     }
     // The last state went: no engine to fail.
     if (!_app.hasEngine) _engineGone();
@@ -721,7 +768,10 @@ class DevCommand extends Command<int> with ProjectCommand {
     }
     final ReloadOutcome outcome;
     try {
-      outcome = await guardStage('hot reload', _timeouts.reload, vm.reload());
+      outcome = await stages.time(
+        'reload',
+        () => guardStage('hot reload', _timeouts.reload, vm.reload()),
+      );
     } on StageTimeout catch (e) {
       // The VM may be wedged: its client is dropped with the server.
       Say.warn('${e.message}: restarting the server');
@@ -732,6 +782,11 @@ class DevCommand extends Command<int> with ProjectCommand {
       );
       await _startServer();
       return;
+    } on Object catch (e) {
+      // The VM went away mid-reload (the server died or was restarted).
+      Say.warn('hot reload failed ($e): restarting the server');
+      await _startServer();
+      return;
     }
     switch (outcome) {
       case Reloaded(setUps: false) when states:
@@ -739,7 +794,7 @@ class DevCommand extends Command<int> with ProjectCommand {
         await _startServer();
       case Reloaded():
         _proxy?.ready();
-        Say.info('reloaded in ${clock.elapsedMilliseconds} ms');
+        Say.info('reloaded in ${clock.elapsedMilliseconds} ms${stages.report}');
       case NotReloaded(compileError: true, :final reason):
         // The old code keeps running; the page shows the error until the
         // next save fixes it.
@@ -1306,4 +1361,28 @@ Future<void> stopGracefully(
       return process.exitCode;
     },
   );
+}
+
+/// How long each stage of one update took, for the line that reports it
+/// (`reloaded in 310 ms (entries 120, engine 150, reload 40)`).
+class _Stages {
+  _Stages(this._clock);
+
+  final Stopwatch _clock;
+  final _ms = <String, int>{};
+
+  /// Runs [stage], adding its time under [name].
+  Future<T> time<T>(String name, Future<T> Function() stage) async {
+    final start = _clock.elapsedMilliseconds;
+    try {
+      return await stage();
+    } finally {
+      _ms[name] = (_ms[name] ?? 0) + _clock.elapsedMilliseconds - start;
+    }
+  }
+
+  /// ` (entries 120, engine 150)`, or nothing when no stage ran.
+  String get report => _ms.isEmpty
+      ? ''
+      : ' (${[for (final e in _ms.entries) '${e.key} ${e.value}'].join(', ')})';
 }

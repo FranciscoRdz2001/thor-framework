@@ -56,6 +56,23 @@ Future<int> writeAppEntries(
   ]..sort();
   final collection = analysis ?? appAnalysis(lib.path);
   final context = collection.contextFor(lib.path);
+  // Each library resolves once per run: the stages below ask for the same
+  // files again, and resolving the bodies again is most of the cost.
+  final libraries = <String, Future<SomeResolvedLibraryResult>>{};
+  final units = <String, Future<SomeResolvedUnitResult>>{};
+  Future<SomeResolvedLibraryResult> resolvedLibrary(String path) =>
+      libraries[path] ??= context.currentSession.getResolvedLibrary(path);
+  Future<SomeResolvedUnitResult> resolvedUnit(String path) =>
+      units[path] ??= () async {
+        // A library already resolved has its unit.
+        final library = await libraries[path];
+        if (library is ResolvedLibraryResult) {
+          for (final unit in library.units) {
+            if (unit.path == path) return unit;
+          }
+        }
+        return context.currentSession.getResolvedUnit(path);
+      }();
   final classes = <(ClassElement, String)>[];
   // What each state's library asks the page for (`confirm`, `toast`).
   final uses = <ClassElement, Set<String>>{};
@@ -63,7 +80,7 @@ Future<int> writeAppEntries(
   String rel(String path) =>
       path.startsWith('$app/') ? path.substring(app.length + 1) : path;
   for (final path in declaring) {
-    final result = await context.currentSession.getResolvedLibrary(path);
+    final result = await resolvedLibrary(path);
     if (result is! ResolvedLibraryResult) continue;
     // What the library calls, and what the functions of other files it calls
     // do (a helper `askDelete()` that calls `confirm(…)`).
@@ -92,7 +109,7 @@ Future<int> writeAppEntries(
         e.key,
   ]..sort();
   for (final path in creating) {
-    final result = await context.currentSession.getResolvedLibrary(path);
+    final result = await resolvedLibrary(path);
     if (result is! ResolvedLibraryResult) continue;
     for (final v in result.element.topLevelVariables) {
       final name = v.name;
@@ -112,7 +129,7 @@ Future<int> writeAppEntries(
   for (final path in sources.keys.toList()..sort()) {
     final source = sources[path]!;
     if (!mayUseStates(source, used) && !mayFailSilently(source)) continue;
-    final result = await context.currentSession.getResolvedUnit(path);
+    final result = await resolvedUnit(path);
     if (result is! ResolvedUnitResult) continue;
     misuses.addAll(stateMisuses(result.unit, rel(path)));
     warnings.addAll(stateWarnings(result.unit, rel(path)));
@@ -122,7 +139,7 @@ Future<int> writeAppEntries(
   final pages = <(ClassElement, String)>[];
   for (final path in sources.keys.toList()..sort()) {
     if (!mayDeclareActions(sources[path]!)) continue;
-    final result = await context.currentSession.getResolvedLibrary(path);
+    final result = await resolvedLibrary(path);
     if (result is! ResolvedLibraryResult) continue;
     for (final c in result.element.classes) {
       if (isPageClass(c)) pages.add((c, rel(path)));
@@ -140,7 +157,7 @@ Future<int> writeAppEntries(
     if (!source.contains('WatchRow') && !source.contains('Watch.list')) {
       continue;
     }
-    final result = await context.currentSession.getResolvedUnit(path);
+    final result = await resolvedUnit(path);
     if (result is! ResolvedUnitResult) continue;
     for (final lambda in rowLambdasIn(result.unit, rel(path))) {
       if (lambda.message case final message?) {

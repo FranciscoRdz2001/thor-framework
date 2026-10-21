@@ -924,6 +924,69 @@ class HomePage extends ThorPage<Slow> {
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );
+
+  test(
+    'a server that dies in the middle of a burst of saves does not end it',
+    () async {
+      final site = p.join(tmp.path, 'burst');
+      writeApp(site, 'burst', source: LocalSource(checkout));
+      final pub = await Process.run('dart', [
+        'pub',
+        'get',
+        '--offline',
+      ], workingDirectory: site);
+      expect(pub.exitCode, 0, reason: '${pub.stdout}${pub.stderr}');
+      final port = await _anyPort();
+      final dev = await _Dev.start(site, checkout, port);
+      await dev.next(
+        'http://localhost:$port',
+        timeout: const Duration(minutes: 3),
+      );
+      final page = File(
+        p.join(site, 'lib', 'modules', 'home', 'pages', 'home_page.dart'),
+      );
+      final original = page.readAsStringSync();
+
+      // The server is gone while the save is being applied (the VM
+      // connection closes under the reload), and more saves follow, one of
+      // them not valid Dart.
+      var exited = false;
+      unawaited(dev.process.exitCode.then((_) => exited = true));
+      Process.killPid(dev.pids.first, ProcessSignal.sigkill);
+      for (var i = 0; i < 6; i++) {
+        page.writeAsStringSync(
+          i == 3 ? 'class {{{' : '$original\n// save $i\n',
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      page.writeAsStringSync(
+        original.replaceFirst("'Hello, Thor',", "'Hola, otra vez',"),
+      );
+
+      // Still running, and the next save shows up.
+      final clock = Stopwatch()..start();
+      while (true) {
+        expect(exited, isFalse, reason: dev.log.join('\n'));
+        try {
+          if ((await get(port, '/')).$2.contains('Hola, otra vez')) break;
+        } on Object {
+          // Restarting.
+        }
+        expect(
+          clock.elapsed,
+          lessThan(const Duration(seconds: 60)),
+          reason: dev.log.join('\n'),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      }
+
+      final pids = dev.pids;
+      dev.process.kill();
+      expect(await dev.process.exitCode, 0);
+      await _gone(pids);
+    },
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
 }
 
 /// A 3 × 2 PNG.
