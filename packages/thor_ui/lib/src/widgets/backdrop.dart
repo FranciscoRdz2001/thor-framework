@@ -65,3 +65,26 @@ List<ConditionalCss> fadingBackdrop(String duration, {Color? color}) => [
     'background-color': 'rgba(0, 0, 0, 0)',
   }),
 ];
+
+/// The attributes of a modal dialog the server draws open
+/// (`Dialog(initiallyOpen:)`): `open` shows it without JavaScript, and
+/// `data-thor-open` tells the page's script to close it and show it again
+/// with `showModal()`.
+const openForUpgrade = {'open': '', 'data-thor-open': ''};
+
+/// What an [openForUpgrade] dialog looks like until the script upgrades it
+/// (or forever, without JavaScript): a `<dialog open>` is non-modal, so it
+/// would sit in the page flow; this fixes it centered in the window.
+const openBeforeUpgrade =
+    ConditionalCss(CssCondition.selector('[data-thor-open]:not(:modal)'), {
+      'position': 'fixed',
+      'inset': '0',
+      'margin': 'auto',
+      'height': 'fit-content',
+      'z-index': '1000',
+    });
+
+/// Ships the script that upgrades the dialogs drawn with [openForUpgrade].
+void useOpenUpgrade(BuildContext context) {
+  ThorStyleRegistry.of(context)?.useLazyScript();
+}

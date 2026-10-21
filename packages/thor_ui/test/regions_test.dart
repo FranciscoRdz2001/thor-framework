@@ -173,6 +173,13 @@ void main() {
         ),
       ),
       PageRoute<Widget, void>(
+        path: 'shop/lamp',
+        build: (s) => const Region(
+          id: 'detail',
+          child: Dialog(id: 'lamp', initiallyOpen: true, child: Text('Lamp')),
+        ),
+      ),
+      PageRoute<Widget, void>(
         path: 'shop/mug',
         build: (s) => const Column(
           children: [
@@ -840,6 +847,34 @@ eval(input.script);
           out.calls = calls.length;
         ''');
         expect(out['calls'], 0);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a modal dialog drawn open inside a fragment is upgraded on arrival',
+      () async {
+        final h = handler();
+        final lamp = (await h.handle(get('/shop/lamp?thor-piece=detail'))).text;
+        final out = await run(
+          '/shop',
+          [],
+          r'''
+          Object.getPrototypeOf(D.createElement('dialog')).showModal = function () {
+            calls.push(['showModal', this.id, this.hasAttribute('open')]);
+          };
+          D.getElementById('product').matches = () => false;
+          click(D.querySelector('[data-thor-lazy-as="into"]'));
+          await tick();
+          out.calls = calls.filter((c) => c[1] == 'lamp');
+          out.mark = D.getElementById('lamp').hasAttribute('data-thor-open');
+        ''',
+          extra: {'/shop/mug?thor-piece=detail': lamp},
+        );
+        expect(out['calls'], [
+          ['showModal', 'lamp', false],
+        ]);
+        expect(out['mark'], isFalse);
       },
       skip: hasNode ? false : 'node is not installed',
     );

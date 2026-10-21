@@ -54,6 +54,36 @@ DialogTrigger(
 
 `Dialog(modal: false)` y `AlertDialog(modal: false)` son un `<dialog open>` sin `showModal`: se ven desde el primer pintado, el resto de la página sigue activa y no hay fondo oscuro, ni bloqueo del scroll ni cierre con Esc. Se cierran con `DialogClose` y se colocan como cualquier caja (con `Positioned`). No admiten `controller` ni `DialogTrigger`.
 
+## Un diálogo que el servidor dibuja abierto
+
+`initiallyOpen: true` hace que el servidor dibuje un diálogo modal que ya se está mostrando cuando llega la página: la página decide a partir de la petición (un parámetro de la consulta, una ruta), así que un enlace de producto que recarga la página llega con el diálogo del producto abierto.
+
+```dart no-check
+PageRoute<Widget, Product?>(
+  path: 'shop',
+  load: (request) => products.byId(request.uri.queryParameters['product']),
+  build: (state) => Column(
+    children: [
+      Dialog(
+        id: 'product',
+        initiallyOpen: state.data != null,
+        child: state.data == null ? const SizedBox.shrink() : ProductDetail(state.data!),
+      ),
+      for (final p in products.all)
+        // Sin JS: el enlace recarga con `?product=` y el diálogo abierto.
+        Link(href: RouteUrl('/shop?product=${p.id}'), child: ProductCard(p)),
+    ],
+  ),
+)
+```
+
+| | Con JavaScript | Sin JavaScript |
+|---|---|---|
+| Aspecto | un diálogo modal: fondo oscuro, foco atrapado, Esc, página inerte detrás | un `<dialog>` abierto y no modal, centrado en la ventana; sin fondo oscuro |
+| Se cierra con | Esc, clic en el fondo, `DialogClose` | solo `DialogClose` |
+
+El HTML lleva `<dialog open data-thor-open>`. El script en línea y pequeño de la página (el mismo que carga las `Region`; no necesita motor) lo cierra y lo vuelve a mostrar con `showModal()` en cuanto corre, así que puede haber un primer pintado de la forma no modal. Cerrarlo no cambia la URL; `AlertDialog` acepta la misma opción, y un `Dialog(modal: false)` siempre está abierto. Un `Drawer` o `ModalBottomSheet` no la tiene.
+
 ## Diálogo y botón separados
 
 Cuando el botón y el diálogo están lejos (un diálogo por fila, o uno que abre

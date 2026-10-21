@@ -126,7 +126,7 @@
   "constructors": [
    {
     "name": "AlertDialog",
-    "signature": "AlertDialog({\n  Key? key,\n  String? id,\n  Widget? title,\n  Widget? content,\n  List<Widget> actions = const [],\n  String? semanticLabel,\n  bool barrierDismissible = true,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n  String? closeLabel,\n})",
+    "signature": "AlertDialog({\n  Key? key,\n  String? id,\n  Widget? title,\n  Widget? content,\n  List<Widget> actions = const [],\n  String? semanticLabel,\n  bool barrierDismissible = true,\n  DialogController? controller,\n  bool modal = true,\n  bool initiallyOpen = false,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "Creates a Material alert dialog.",
     "params": [
      {
@@ -184,6 +184,13 @@
       "required": false,
       "default": "true",
       "doc": "Whether the dialog blocks the page (default) or floats over it."
+     },
+     {
+      "name": "initiallyOpen",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the server draws the dialog open: a modal dialog that is showing when the page arrives, e.g. the product a link opened (the page decides from its request: `initiallyOpen: request.uri.queryParameters .containsKey('product')`)."
      },
      {
       "name": "showClose",
@@ -3653,7 +3660,7 @@
   "constructors": [
    {
     "name": "Dialog",
-    "signature": "Dialog({\n  Key? key,\n  String? id,\n  required Widget child,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  EdgeInsets? insetPadding,\n  BoxConstraints? constraints,\n  List<BoxShadow>? shadows,\n  Color? barrierColor,\n  ImageFilter? barrierFilter,\n  bool barrierDismissible = true,\n  String? label,\n  DialogController? controller,\n  bool modal = true,\n  bool showClose = false,\n  String? closeLabel,\n})",
+    "signature": "Dialog({\n  Key? key,\n  String? id,\n  required Widget child,\n  Color? backgroundColor,\n  double? elevation,\n  OutlinedBorder? shape,\n  EdgeInsets? insetPadding,\n  BoxConstraints? constraints,\n  List<BoxShadow>? shadows,\n  Color? barrierColor,\n  ImageFilter? barrierFilter,\n  bool barrierDismissible = true,\n  String? label,\n  DialogController? controller,\n  bool modal = true,\n  bool initiallyOpen = false,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "A dialog with [child] as its content.",
     "params": [
      {
@@ -3753,6 +3760,13 @@
       "required": false,
       "default": "true",
       "doc": "Whether the dialog blocks the page (default) or floats over it; see `AlertDialog.modal`."
+     },
+     {
+      "name": "initiallyOpen",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the server draws the dialog open: a modal dialog that is showing when the page arrives, e.g. the product a link opened (the page decides from its request: `initiallyOpen: request.uri.queryParameters .containsKey('product')`)."
      },
      {
       "name": "showClose",

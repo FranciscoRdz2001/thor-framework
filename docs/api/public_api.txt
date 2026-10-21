@@ -6125,8 +6125,9 @@ thor_ui	AlertDialog.closeLabel	String? closeLabel
 thor_ui	AlertDialog.content	Widget? content
 thor_ui	AlertDialog.controller	DialogController? controller
 thor_ui	AlertDialog.id	String? id
+thor_ui	AlertDialog.initiallyOpen	bool initiallyOpen
 thor_ui	AlertDialog.modal	bool modal
-thor_ui	AlertDialog.new	AlertDialog({Key? key, String? id, Widget? title, Widget? content, List<Widget> actions = const [], String? semanticLabel, bool barrierDismissible = true, DialogController? controller, bool modal = true, bool showClose = false, String? closeLabel})
+thor_ui	AlertDialog.new	AlertDialog({Key? key, String? id, Widget? title, Widget? content, List<Widget> actions = const [], String? semanticLabel, bool barrierDismissible = true, DialogController? controller, bool modal = true, bool initiallyOpen = false, bool showClose = false, String? closeLabel})
 thor_ui	AlertDialog.semanticLabel	String? semanticLabel
 thor_ui	AlertDialog.showClose	bool showClose
 thor_ui	AlertDialog.title	Widget? title
@@ -7862,10 +7863,11 @@ thor_ui	Dialog.constraints	BoxConstraints? constraints
 thor_ui	Dialog.controller	DialogController? controller
 thor_ui	Dialog.elevation	double? elevation
 thor_ui	Dialog.id	String? id
+thor_ui	Dialog.initiallyOpen	bool initiallyOpen
 thor_ui	Dialog.insetPadding	EdgeInsets? insetPadding
 thor_ui	Dialog.label	String? label
 thor_ui	Dialog.modal	bool modal
-thor_ui	Dialog.new	Dialog({Key? key, String? id, required Widget child, Color? backgroundColor, double? elevation, OutlinedBorder? shape, EdgeInsets? insetPadding, BoxConstraints? constraints, List<BoxShadow>? shadows, Color? barrierColor, ImageFilter? barrierFilter, bool barrierDismissible = true, String? label, DialogController? controller, bool modal = true, bool showClose = false, String? closeLabel})
+thor_ui	Dialog.new	Dialog({Key? key, String? id, required Widget child, Color? backgroundColor, double? elevation, OutlinedBorder? shape, EdgeInsets? insetPadding, BoxConstraints? constraints, List<BoxShadow>? shadows, Color? barrierColor, ImageFilter? barrierFilter, bool barrierDismissible = true, String? label, DialogController? controller, bool modal = true, bool initiallyOpen = false, bool showClose = false, String? closeLabel})
 thor_ui	Dialog.shadows	List<BoxShadow>? shadows
 thor_ui	Dialog.shape	OutlinedBorder? shape
 thor_ui	Dialog.showClose	bool showClose

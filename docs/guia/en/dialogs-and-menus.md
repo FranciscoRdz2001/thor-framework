@@ -54,6 +54,36 @@ DialogTrigger(
 
 `Dialog(modal: false)` and `AlertDialog(modal: false)` are a `<dialog open>` drawn without `showModal`: they show from the first paint, the rest of the page stays active and there is no backdrop, scroll lock or close with Esc. `DialogClose` closes them and they are placed like any box (with `Positioned`). They take no `controller` or `DialogTrigger`.
 
+## A dialog drawn open by the server
+
+`initiallyOpen: true` makes the server draw a modal dialog that is already showing when the page arrives: the page decides from the request (a query parameter, a path), so a product link that reloads the page lands with the product's dialog open.
+
+```dart no-check
+PageRoute<Widget, Product?>(
+  path: 'shop',
+  load: (request) => products.byId(request.uri.queryParameters['product']),
+  build: (state) => Column(
+    children: [
+      Dialog(
+        id: 'product',
+        initiallyOpen: state.data != null,
+        child: state.data == null ? const SizedBox.shrink() : ProductDetail(state.data!),
+      ),
+      for (final p in products.all)
+        // No JS: the link reloads with `?product=` and the dialog open.
+        Link(href: RouteUrl('/shop?product=${p.id}'), child: ProductCard(p)),
+    ],
+  ),
+)
+```
+
+| | With JavaScript | Without JavaScript |
+|---|---|---|
+| Looks | a modal dialog: backdrop, focus trap, Esc, page behind inert | an open, non-modal `<dialog>` centered in the window; no backdrop |
+| Closes with | Esc, backdrop click, `DialogClose` | `DialogClose` only |
+
+The HTML carries `<dialog open data-thor-open>`. The page's small inline script (the same one that loads `Region`s; no engine needed) closes it and shows it again with `showModal()` as soon as it runs, so there can be a first paint of the non-modal form. Closing it does not change the URL; `AlertDialog` takes the same option, and a `Dialog(modal: false)` is always open. A `Drawer` or `ModalBottomSheet` does not have it.
+
 ## Separate dialog and button
 
 When the button and the dialog are far apart (one dialog per row, or one that
