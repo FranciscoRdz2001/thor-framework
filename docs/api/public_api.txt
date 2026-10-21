@@ -6938,6 +6938,7 @@ thor_ui	ChildRules.box	ChildRules box
 thor_ui	ChildRules.capsWidth	bool capsWidth(Iterable<CssDeclarations> own, Iterable<CssDeclarations> conditional, {bool margins = false})
 thor_ui	ChildRules.column	ChildRules column
 thor_ui	ChildRules.columnAligned	ChildRules columnAligned
+thor_ui	ChildRules.constraintsInside	CssDeclarations constraintsInside(CssDeclarations outer, CssDeclarations inner)
 thor_ui	ChildRules.directional	ChildRules directional(ChildRules base, Map<String, ChildRules> variants)
 thor_ui	ChildRules.fillHeight	CssDeclarations fillHeight
 thor_ui	ChildRules.fillMaxWidth	CssDeclarations fillMaxWidth
