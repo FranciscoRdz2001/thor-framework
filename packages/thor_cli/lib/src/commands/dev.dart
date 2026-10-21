@@ -205,7 +205,39 @@ class DevCommand extends Command<int> with ProjectCommand {
   var _codegenWatching = false;
 
   @override
-  Future<int> run() async {
+  Future<int> run() {
+    final done = Completer<int>();
+    // An error nobody caught (a file that went while it was read, a VM that
+    // closed during a restart) must not end a run that is serving: it is
+    // logged, shown on the page, and the next save tries again.
+    runZonedGuarded(
+      () => _run().then(done.complete, onError: done.completeError),
+      (error, stack) {
+        if (_started && !_stopping) return _survive(error, stack);
+        if (!done.isCompleted) done.completeError(error, stack);
+      },
+    );
+    return done.future;
+  }
+
+  /// Reports [error] from a running `thor dev` and keeps serving.
+  void _survive(Object error, StackTrace stack) {
+    final text = error is ThorException ? error.message : '$error\n$stack';
+    Say.error('unexpected error (still serving): $text');
+    Say.json?.call({
+      'event': 'fatal',
+      'error': '$error',
+      'stack': '$stack',
+      'recovered': true,
+    });
+    _proxy?.problem(
+      'internal',
+      'thor dev hit an error',
+      '$text\nSave again to retry.',
+    );
+  }
+
+  Future<int> _run() async {
     // A bad --port fails before anything else.
     final flag = argResults!.wasParsed('port')
         ? argResults!['port'] as String
@@ -576,7 +608,14 @@ class DevCommand extends Command<int> with ProjectCommand {
         _pending.clear();
         final restart = _restartBecause;
         _restartBecause = null;
-        await _apply(changes, restartBecause: restart);
+        try {
+          await _apply(changes, restartBecause: restart);
+          _proxy?.clearProblem('internal');
+        } on Object catch (e, stack) {
+          // One bad update (a file that went while it was read) does not
+          // end the run: the next save applies again.
+          _survive(e, stack);
+        }
       }
       await _restartWorker();
     } finally {
@@ -607,8 +646,13 @@ class DevCommand extends Command<int> with ProjectCommand {
   static bool _touchesStates(List<String> files) {
     for (final f in files) {
       final file = File(f);
-      if (!file.existsSync()) return true;
-      final source = file.readAsStringSync();
+      final String source;
+      try {
+        source = file.readAsStringSync();
+      } on FileSystemException {
+        // Gone (or going): the registry may list it.
+        return true;
+      }
       if (source.contains('ThorState') || source.contains('ActionResult')) {
         return true;
       }
@@ -730,6 +774,11 @@ class DevCommand extends Command<int> with ProjectCommand {
         'Hot reload hung',
         '${e.message}.\nThe server restarts.',
       );
+      await _startServer();
+      return;
+    } on Object catch (e) {
+      // The VM went away mid-reload (the server died or was restarted).
+      Say.warn('hot reload failed ($e): restarting the server');
       await _startServer();
       return;
     }
