@@ -15,8 +15,13 @@
 // `thor.local.has(state, ...keys)`: whether any key is stored (the runtime
 // then starts that state at load, as it does for a set cookie); a state not
 // started yet starts when another tab stores one of its keys.
+//
+// A scoped field (`localScope:`) passes its scope signal as the sixth
+// argument: its key is `<k>:<scope value>`, read when the field is made (a
+// scope that is empty or over 100 characters keeps the field in memory). Its
+// `has` entry is `<k>:*`, any key with that prefix.
 ((T, W, D) => {
-  const N = {}, P = 'thor-s.', mem = new Map(), subs = new Map(), owner = new Map(), q = new Map();
+  const N = {}, P = 'thor-s.', mem = new Map(), subs = new Map(), owner = new Map(), pre = new Map(), q = new Map();
   let st, h = 0, on = 0;
   const store = () => {
     if (st === undefined)
@@ -81,9 +86,16 @@
       mem.delete(k);
       if (l?.length) l.forEach((f) => f(x.newValue));
       else if (owner.has(k)) T.use(owner.get(k));
+      else for (const [p, n] of pre) if (k.startsWith(p)) return void T.use(n);
     });
   };
-  const local = (s, c, e, t, d) => {
+  const local = (s, c, e, t, d, z) => {
+    if (z) {
+      const v = z.peek();
+      // No usable scope: the field lives in memory, as with blocked storage.
+      if (typeof v != 'string' || !v || v.length > 100) return s;
+      c += ':' + v;
+    }
     // `p`: the value the field just took from the storage. It is there
     // already, so that change writes nothing (no echo between tabs).
     const k = P + c, r = get(k), v = r != null && read(r, t, d), take = (v) => (s.value = p = v[0]);
@@ -120,10 +132,17 @@
     subs.set(k, [...(subs.get(k) || []).filter(live), u]);
     return s;
   };
+  const keys = () => {
+    const l = [...mem.keys()];
+    try {
+      for (let i = 0, o = store(); o && i < o.length; i++) l.push(o.key(i));
+    } catch {}
+    return l;
+  };
   local.has = (n, ...c) => {
     listen();
-    c.forEach((c) => owner.set(P + c, n));
-    return c.some((c) => get(P + c) != null);
+    c.forEach((c) => (c.endsWith(':*') ? pre.set(P + c.slice(0, -1), n) : owner.set(P + c, n)));
+    return c.some((c) => (c.endsWith(':*') ? keys().some((k) => k.startsWith(P + c.slice(0, -1))) : get(P + c) != null));
   };
   T.local = local;
 })(thor, globalThis, document);

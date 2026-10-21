@@ -193,6 +193,17 @@ final note = NoteViewModel();
 
 The server paints the value in the code and the browser applies the stored one when the engine starts, so Chromium and Firefox show the initial value for a moment. For what shows on load (theme, a collapsed panel), use `cookie:`. If the browser blocks storage, the value only lasts while the page is open, without errors.
 
+One ViewModel can keep a separate value per store, document or account: `localScope:` names a field the server fills for the page, and the storage key is `thor-s.<local>:<its value>`.
+
+```dart no-check
+class CartViewModel extends ThorState {
+  final store = state('');                       // the page sets it to the store's slug
+  final items = state(<String>[], local: 'cart', localScope: store);
+}
+```
+
+The page or layout sets it while building (`cart.store.value = slug;`, as with the locale in [Localization](localization.md)). The browser reads the scope when the state starts, so the page of another store starts from its own key. An empty scope keeps the value in memory only. Declare the scope field before the one that uses it, in the same class.
+
 ## What Thor doesn't do
 
 - **Offline-first.** There is no database in the browser and no sync: a `query` or a `command` without a connection ends with `errorKind` set to `network`, and `data.value` keeps the last data received.

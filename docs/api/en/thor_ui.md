@@ -3996,7 +3996,7 @@ Teaches the engine to read and write a class of the app as JSON, so a `state<Lis
 
 A reactive field of a [ThorState]: `final count = state(0);`. Values that are not JSON (numbers, strings, bools, lists and maps of them) need [encode] and [decode] to travel from the server to the page.
 
-- `StateSignal<T> state<T>(T initial, {Object? Function(T)? encode, T Function(Object?)? decode, String? cookie, String? local})`
+- `StateSignal<T> state<T>(T initial, {Object? Function(T)? encode, T Function(Object?)? decode, String? cookie, String? local, StateSignal<String>? localScope})`
 
 ### `toast` · function
 

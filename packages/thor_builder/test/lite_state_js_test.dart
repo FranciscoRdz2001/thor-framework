@@ -1320,6 +1320,112 @@ globalThis.queueMicrotask = (f) => f();
     expect(out['reads'], 1);
   });
 
+  test('state(localScope:): one local field per value of another field, '
+      'started when any is stored', () async {
+    final js = await _translate('''
+$_header
+class CartState extends ThorState {
+  final store = state('shop-a');
+  final items = state(<String>[], local: 'cart', localScope: store);
+
+  String label() => items.value.join(',');
+  void add(String s) => items.value = [...items.value, s];
+}
+
+class OtherCartState extends ThorState {
+  final store = state('shop-b');
+  final items = state(<String>[], local: 'cart', localScope: store);
+
+  String label() => items.value.join(',');
+}
+
+class NoScopeState extends ThorState {
+  final store = state('');
+  final items = state(<String>[], local: 'cart', localScope: store);
+
+  String label() => items.value.join(',');
+  void add(String s) => items.value = [...items.value, s];
+}
+''');
+    expect(js, contains(r"eager: $local.has('CartState', 'cart:*')"));
+    expect(
+      js,
+      contains(r"$local($.state('items', []), 'cart', null, "),
+    );
+    expect(js, contains(', store)'));
+    if (!_node) return markTestSkipped('node is not installed');
+    final out = _run(
+      js,
+      r'''
+const run = () => { for (const f of effects) f(); };
+const b = make('OtherCartState'), n = make('NoScopeState');
+out.has = thor.local.has('CartState', 'cart:*');
+out.hasNot = thor.local.has('CartState', 'other:*');
+out.a = S.label();
+out.b = b.label();
+out.empty = n.label();
+S.add('w'); n.add('lost'); run();
+frames.splice(0).forEach((f) => f());
+out.writes = writes.splice(0);
+// Another tab stores the cart of shop-b: only that field takes it.
+fire({ key: 'thor-s.cart:shop-b', newValue: '["q"]', storageArea: store });
+out.afterTab = [S.label(), b.label()];
+''',
+      head: r'''
+const writes = [];
+const data = new Map([['thor-s.cart:shop-a', '["x"]'], ['thor-s.cart:shop-b', '["y","z"]'], ['thor-s.other', '1']]);
+const store = {
+  get length() { return data.size; },
+  key: (i) => [...data.keys()][i],
+  getItem: (k) => (data.has(k) ? data.get(k) : null),
+  setItem: (k, v) => { writes.push(`${k}=${v}`); data.set(k, v); },
+};
+const effects = [], frames = [], listeners = {};
+globalThis.localStorage = store;
+globalThis.document = { visibilityState: 'visible', addEventListener() {} };
+globalThis.requestAnimationFrame = (f) => frames.push(f);
+globalThis.addEventListener = (t, f) => (listeners[t] ||= []).push(f);
+const fire = (e) => {
+  data.set(e.key, e.newValue);
+  listeners.storage.forEach((f) => f(e));
+};
+''',
+      pre: r'''
+thor.effect = (fn) => { effects.push(fn); fn(); };
+globalThis.queueMicrotask = (f) => f();
+''',
+    );
+    expect(out['has'], isTrue);
+    expect(out['hasNot'], isFalse);
+    expect(out['a'], 'x');
+    expect(out['b'], 'y,z');
+    expect(out['empty'], '', reason: 'an empty scope keeps nothing stored');
+    // The stub reruns every field's effect: only the cart of shop-a is a
+    // real change; an empty scope never reaches the storage.
+    expect(
+      (out['writes']! as List).where((w) => (w as String).contains('cart')),
+      ['thor-s.cart:shop-a=["x","w"]'],
+    );
+    expect(out['afterTab'], ['x,w', 'q']);
+  });
+
+  test('state(localScope:) needs local: and a field made before it', () async {
+    final errors = await _errors('''
+$_header
+class BadState extends ThorState {
+  final a = state('x');
+  final b = state(false, localScope: a);
+  final c = state(false, local: 'c', localScope: later);
+  final later = state('y');
+  final d = state(false, local: 'd', localScope: 'literal');
+}
+''');
+    final text = errors.join('\n');
+    expect(text, contains('state(localScope:) needs local:'));
+    expect(text, contains('takes a `state(...)` field of the same class'));
+    expect(errors.where((e) => e.contains('THOR-S009')).length, 3);
+  });
+
   test('state(local:) needs a literal name, a type lite can check and only '
       'one place', () async {
     final errors = await _errors('''

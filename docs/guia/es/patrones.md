@@ -193,6 +193,17 @@ final note = NoteViewModel();
 
 El servidor pinta el valor del código y el navegador pone el guardado al arrancar, así que en Chromium y Firefox se ve un instante el valor inicial. Para lo que se ve al cargar (tema, panel plegado), usa `cookie:`. Si el navegador bloquea el almacenamiento, el valor solo dura mientras la página está abierta, sin errores.
 
+Un ViewModel puede guardar un valor distinto por tienda, documento o cuenta: `localScope:` nombra un campo que el servidor llena para la página, y la clave de almacenamiento es `thor-s.<local>:<su valor>`.
+
+```dart no-check
+class CartViewModel extends ThorState {
+  final store = state('');                       // la página lo fija al slug de la tienda
+  final items = state(<String>[], local: 'cart', localScope: store);
+}
+```
+
+La página o el layout lo fija al construirse (`cart.store.value = slug;`, como la localización en [Idiomas](idiomas.md)). El navegador lee el alcance cuando el estado arranca, así que la página de otra tienda parte de su propia clave. Un alcance vacío deja el valor solo en memoria. Declara el campo de alcance antes del que lo usa, en la misma clase.
+
 ## Lo que Thor no hace
 
 - **Offline-first.** No hay base de datos en el navegador ni sincronización: una `query` o un `command` sin conexión terminan con `errorKind` en `network`, y `data.value` conserva el último dato recibido.

@@ -167,7 +167,10 @@ void Function() _persistLocal(
   }
 
   for (final s in signals) {
-    final key = '$persistedStateLocalPrefix${s.local}';
+    // An empty scope keeps the field in memory (no key).
+    final name = s.localKey;
+    if (name == null) continue;
+    final key = '$persistedStateLocalPrefix$name';
     (byKey[key] ??= []).add(s);
     if (_readLocal(key) case final text?) apply(s, text);
     var first = true;

@@ -122,4 +122,33 @@ void main() {
       ),
     );
   });
+
+  group('localScope', () {
+    test('names the storage key after the scope field', () {
+      final store = state('shop-a');
+      final cart = state(<String>[], local: 'cart', localScope: store);
+      expect(cart.localKey, 'cart:shop-a');
+      store.value = 'shop-b';
+      expect(cart.localKey, 'cart:shop-b');
+      expect(state(0, local: 'plain').localKey, 'plain');
+      expect(state(0).localKey, isNull);
+    });
+
+    test('an empty or huge scope has no key (memory only)', () {
+      final store = state('');
+      final cart = state(0, local: 'cart', localScope: store);
+      expect(cart.localKey, isNull);
+      store.value = 'x' * (StateSignal.maxLocalScopeLength + 1);
+      expect(cart.localKey, isNull);
+      store.value = 'x' * StateSignal.maxLocalScopeLength;
+      expect(cart.localKey, isNotNull);
+    });
+
+    test('needs local:', () {
+      expect(
+        () => state(0, cookie: 'c', localScope: state('a')),
+        throwsArgumentError,
+      );
+    });
+  });
 }

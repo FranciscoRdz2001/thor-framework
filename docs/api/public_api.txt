@@ -2104,7 +2104,10 @@ thor_engine	StateSignal.dispose	void dispose()
 thor_engine	StateSignal.fromJson	T fromJson(Object? json)
 thor_engine	StateSignal.hasListeners	bool get hasListeners
 thor_engine	StateSignal.local	String? local
+thor_engine	StateSignal.localKey	String? get localKey
+thor_engine	StateSignal.localScope	StateSignal<String>? localScope
 thor_engine	StateSignal.maxCookieLength	int maxCookieLength
+thor_engine	StateSignal.maxLocalScopeLength	int maxLocalScopeLength
 thor_engine	StateSignal.notifyListeners	void notifyListeners()
 thor_engine	StateSignal.peek	T peek()
 thor_engine	StateSignal.removeListener	void removeListener(void Function() listener)
@@ -19632,7 +19635,10 @@ thor_ui	StateSignal.dispose	void dispose()
 thor_ui	StateSignal.fromJson	T fromJson(Object? json)
 thor_ui	StateSignal.hasListeners	bool get hasListeners
 thor_ui	StateSignal.local	String? local
+thor_ui	StateSignal.localKey	String? get localKey
+thor_ui	StateSignal.localScope	StateSignal<String>? localScope
 thor_ui	StateSignal.maxCookieLength	int maxCookieLength
+thor_ui	StateSignal.maxLocalScopeLength	int maxLocalScopeLength
 thor_ui	StateSignal.notifyListeners	void notifyListeners()
 thor_ui	StateSignal.peek	T peek()
 thor_ui	StateSignal.removeListener	void removeListener(void Function() listener)
