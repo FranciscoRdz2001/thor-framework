@@ -905,6 +905,55 @@ out.log = log;
     ]);
   });
 
+  test('PageRegion.refresh: the page\'s loader is told which region, also '
+      'from a timer (polling)', () async {
+    final js = await _translate('''
+$_header
+class PollState extends ThorState {
+  final at = state('');
+  Timer? _poll;
+
+  void refresh() => PageRegion.refresh('tracking');
+  void other(String id) => PageRegion.refresh(id);
+
+  // (started by `onHydrated` in a real state)
+  void start() {
+    _poll = Timer.periodic(
+      const Duration(seconds: 5),
+      (t) => PageRegion.refresh('tracking'),
+    );
+  }
+}
+''');
+    expect(js, contains(r"$region('tracking')"));
+    expect(js, contains(r'$region(id)'));
+    if (!_node) return markTestSkipped('node is not installed');
+    final out = _run(js, r'''
+const log = [];
+globalThis.CustomEvent = class { constructor(t, o) { this.type = t; this.detail = o.detail; } };
+globalThis.document = { dispatchEvent: (e) => log.push(e.type + ' ' + e.detail) };
+const q = [];
+globalThis.setTimeout = (f, ms) => q.push([f, ms, false]);
+globalThis.setInterval = (f, ms) => q.push([f, ms, true]);
+globalThis.clearTimeout = globalThis.clearInterval = (h) => (q[h - 1] = null);
+S.refresh();
+S.other('week-grid');
+S.start();
+out.interval = q.filter(Boolean).map((t) => [t[1], t[2]]);
+q[0][0](); q[0][0]();
+out.log = log;
+''');
+    expect(out['log'], [
+      'thor:region tracking',
+      'thor:region week-grid',
+      'thor:region tracking',
+      'thor:region tracking',
+    ]);
+    expect(out['interval'], [
+      [5000, true],
+    ]);
+  });
+
   test('PageNavigator.canPop / pop without the Navigation API: a new tab, a '
       'hash entry, a first entry (adversarial)', () async {
     final js = await _translate('''

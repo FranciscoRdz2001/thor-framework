@@ -217,6 +217,7 @@ const topics = <(String, String, List<String>)>[
       'thor_engine/src/feedback.dart',
       'thor_engine/src/frame_messages.dart',
       'thor_engine/src/navigation.dart',
+      'thor_engine/src/regions.dart',
       'thor_engine/src/query.dart',
       'thor_engine/src/async_snapshot.dart',
       'thor_ui/src/foundation/deferred.dart',

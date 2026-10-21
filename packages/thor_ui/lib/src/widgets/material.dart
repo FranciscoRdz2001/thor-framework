@@ -2359,6 +2359,7 @@ class AlertDialog extends StatelessWidget
     this.barrierDismissible = true,
     this.controller,
     this.modal = true,
+    this.initiallyOpen = false,
     this.showClose = false,
     this.closeLabel,
   }) : assert(
@@ -2376,6 +2377,25 @@ class AlertDialog extends StatelessWidget
   /// tooltip. Null is the localized "Close" of `MaterialLocalizations`; give
   /// it when the page's text is not in the app's locale.
   final String? closeLabel;
+
+  /// Whether the server draws the dialog open: a modal dialog that is showing
+  /// when the page arrives, e.g. the product a link opened (the page decides
+  /// from its request: `initiallyOpen: request.uri.queryParameters
+  /// .containsKey('product')`).
+  ///
+  /// The HTML carries `<dialog open data-thor-open>` and, as soon as the
+  /// page's script runs (it is inline, no engine needed), the dialog is
+  /// closed and shown again with `showModal()`: focus trap, backdrop, Esc and
+  /// the page behind inert, as if a [DialogTrigger] had opened it. Closing it
+  /// does not change the URL.
+  ///
+  /// `// web:` without JavaScript a `<dialog open>` can only be non-modal: it
+  /// shows centered in the window over the page, with no backdrop, nothing
+  /// behind it inert, and Esc and the backdrop do not close it (a
+  /// [DialogClose] does). A non-modal dialog (`modal: false`) is always open
+  /// and ignores this. Flutter has no counterpart (`showDialog` runs from
+  /// code, after the first frame).
+  final bool initiallyOpen;
 
   /// Whether the dialog blocks the page (default) or floats over it.
   ///
@@ -2430,6 +2450,7 @@ class AlertDialog extends StatelessWidget
       owner: this,
     );
     if (modal) lockScrollWhileModal(context);
+    if (modal && initiallyOpen) useOpenUpgrade(context);
     return DialogScope(
       id: id,
       child: _element(id, Theme.of(context).dialogTheme),
@@ -2458,6 +2479,7 @@ class AlertDialog extends StatelessWidget
       if (modal) ...modalOverscroll,
     },
     conditions: [
+      if (modal && initiallyOpen) openBeforeUpgrade,
       if (modal)
         ConditionalCss(const CssCondition.selector('::backdrop'), {
           'background-color': theme?.barrierColor?.css ?? 'rgba(0, 0, 0, 0.32)',
@@ -2476,9 +2498,10 @@ class AlertDialog extends StatelessWidget
         'aria-label': semanticLabel!
       else if (title != null)
         'aria-labelledby': '$id-title',
-      if (modal)
-        'closedby': barrierDismissible ? 'any' : 'closerequest'
-      else
+      if (modal) ...{
+        'closedby': barrierDismissible ? 'any' : 'closerequest',
+        if (initiallyOpen) ...openForUpgrade,
+      } else
         'open': '',
       dialogControllerAttr: ?controllerIdOf(controller),
     },
@@ -2558,12 +2581,32 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.label,
     this.controller,
     this.modal = true,
+    this.initiallyOpen = false,
     this.showClose = false,
     this.closeLabel,
   }) : assert(
          modal || controller == null,
          'A non-modal dialog has no controller',
        );
+
+  /// Whether the server draws the dialog open: a modal dialog that is showing
+  /// when the page arrives, e.g. the product a link opened (the page decides
+  /// from its request: `initiallyOpen: request.uri.queryParameters
+  /// .containsKey('product')`).
+  ///
+  /// The HTML carries `<dialog open data-thor-open>` and, as soon as the
+  /// page's script runs (it is inline, no engine needed), the dialog is
+  /// closed and shown again with `showModal()`: focus trap, backdrop, Esc and
+  /// the page behind inert, as if a [DialogTrigger] had opened it. Closing it
+  /// does not change the URL.
+  ///
+  /// `// web:` without JavaScript a `<dialog open>` can only be non-modal: it
+  /// shows centered in the window over the page, with no backdrop, nothing
+  /// behind it inert, and Esc and the backdrop do not close it (a
+  /// [DialogClose] does). A non-modal dialog (`modal: false`) is always open
+  /// and ignores this. Flutter has no counterpart (`showDialog` runs from
+  /// code, after the first frame).
+  final bool initiallyOpen;
 
   /// Whether the dialog blocks the page (default) or floats over it; see
   /// `AlertDialog.modal`.
@@ -2634,6 +2677,7 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       owner: this,
     );
     if (modal) lockScrollWhileModal(context);
+    if (modal && initiallyOpen) useOpenUpgrade(context);
     return DialogScope(
       id: id,
       child: _element(id, Theme.of(context).dialogTheme),
@@ -2693,6 +2737,7 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
         ...?(constraints ?? theme?.constraints)?.toCss(),
       },
       conditions: [
+        if (modal && initiallyOpen) openBeforeUpgrade,
         if (modal)
           ConditionalCss(const CssCondition.selector('::backdrop'), {
             'background-color':
@@ -2703,9 +2748,10 @@ class Dialog extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       ],
       attributes: {
         'aria-label': ?label,
-        if (modal)
-          'closedby': barrierDismissible ? 'any' : 'closerequest'
-        else
+        if (modal) ...{
+          'closedby': barrierDismissible ? 'any' : 'closerequest',
+          if (initiallyOpen) ...openForUpgrade,
+        } else
           'open': '',
         dialogControllerAttr: ?controllerIdOf(controller),
       },

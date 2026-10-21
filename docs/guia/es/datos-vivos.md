@@ -224,6 +224,98 @@ Un clic pide `/shop/mug?thor-piece=detail`, la región del diálogo la recibe y 
 - Un `Watch` o un botón dentro de la parte funcionan; un estado que la parte trae se enlaza cuando llega.
 - Un sitio estático no tiene quién responda: `LoadMore` y `Region` dibujan su contenido y los enlaces son enlaces simples.
 
+### Chips que filtran y conservan la dirección
+
+`Link(fetch:)` llena una región sin tocar la barra de direcciones. Para enlaces que filtran una lista en el lugar (chips de categoría, un selector de semana), `history:` escribe el `href` del enlace una vez que llega la respuesta:
+
+```dart no-check
+Link(
+  href: RouteUrl('/shop?category=mugs'),
+  fetch: const FragmentFetch(
+    piece: 'results',
+    into: 'results',
+    history: FragmentHistory.push,
+  ),
+  child: const Chip(label: Text('Mugs')),
+)
+```
+
+| `history:` | La barra de direcciones | Botón atrás |
+|---|---|---|
+| `FragmentHistory.none` (predeterminado) | se queda | sale de la página |
+| `FragmentHistory.push` | pasa a ser el `href` del enlace | vuelve al filtro anterior |
+| `FragmentHistory.replace` | pasa a ser el `href` del enlace | sale de la página, como `Form(live:)` |
+
+Atrás y adelante piden de nuevo la región para la URL a la que llegan (`?thor-piece=results` en la página de esa URL), así que `piece` debe ser el id de una `Region` que la página tenga en todas las URL de los enlaces; si esa petición falla, el navegador carga la página. Sin JavaScript el enlace es un enlace: la página carga en la nueva dirección.
+
+> **Nota:** Un diálogo abierto con `open:` sigue abierto al volver atrás: usa `history:` para listas y semanas, no para el contenido de un diálogo.
+
+### Los estados que lee la región
+
+Un intercambio pone HTML nuevo en la región, pero un estado que la página ya envió conserva su valor: un fragmento trae solo los estados que la página aún no había enviado. Para un valor que depende de la región (los horarios libres de la semana que muestra), dale a la región `syncState: true`:
+
+```dart no-check
+class BookingViewModel extends ThorState {
+  final slots = state<List<String>>(const []);
+  String firstFree() => slots.value.isEmpty ? '' : slots.value.first;
+}
+
+// El `load` de la página llena `slots` para el `?week=` que se pidió.
+Column(
+  children: [
+    Watch(booking.firstFree), // fuera de la región: también se actualiza
+    Region(
+      id: 'week',
+      syncState: true,
+      child: SlotGrid(),
+    ),
+  ],
+)
+```
+
+La respuesta lleva entonces el valor, tal como el servidor lo calculó para esa petición, de **todos** los estados que lee la región, y el navegador reemplaza los suyos: el HTML de la región y cada `Watch` enlazado a esos campos cambian juntos. Reglas:
+
+- Solo se envían los estados que lee el contenido de la región, y reemplazan los de la página, también los que ya corren; nada más se toca.
+- Un campo que el visitante edita en el navegador (un borrador, un contador) y que la región lee se sobrescribe: usa `syncState` en regiones cuyos estados vienen del servidor.
+- Funciona con el motor lite; un estado que aún no arrancó arranca con el valor nuevo.
+- Sin `syncState` (el predeterminado) nada cambia: un estado que la página tiene conserva su valor.
+
+### Refrescar una región desde un ViewModel
+
+`PageRegion.refresh('id')` le pide al navegador que dibuje de nuevo una `Region` desde un método de un ViewModel, sin formulario ni enlace de por medio: al terminar un comando, o con un temporizador para sondear.
+
+```dart no-check
+class TrackingViewModel extends ThorState {
+  Timer? _poll;
+
+  @override
+  void onHydrated() {
+    // El `load` de la página lee el pedido; la región es lo que cambia.
+    _poll = Timer.periodic(
+      const Duration(seconds: 10),
+      (t) => PageRegion.refresh('tracking'),
+    );
+  }
+
+  @override
+  void dispose() => _poll?.cancel();
+
+  void cancelled() => PageRegion.refresh('tracking'); // tras un comando
+}
+
+// en la página
+Region(id: 'tracking', syncState: true, child: OrderTimeline(order))
+```
+
+El navegador pide la URL actual de la página más `thor-piece=tracking` y cambia el contenido por la respuesta. Reglas:
+
+- Un refresco nuevo cancela el que sigue en camino, así que una respuesta lenta nunca sobrescribe una más reciente.
+- Una región que la página no tiene, o una petición que falla, no cambia nada (el contenido se queda; el siguiente refresco lo intenta de nuevo).
+- Una región que llenó un `Link(fetch:)` se refresca desde el fragmento que muestra, no desde la URL de la página.
+- El id es el `id` de una `Region` de la página, no una ruta (`results:people`).
+- Agrega `syncState: true` cuando la región lee estados que cambian con cada respuesta, como en el ejemplo.
+- El servidor nunca corre un temporizador: el sondeo es el reloj del navegador, y el `load` de la página corre en cada petición, así que mantenlo ligero o con caché. Un flujo que el servidor empuja (`events()`) no necesita sondeo.
+
 ## Siguientes pasos
 
 :::cards

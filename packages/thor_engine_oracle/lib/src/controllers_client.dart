@@ -12,6 +12,7 @@ import 'package:thor_engine/src/controllers.dart';
 import 'package:thor_engine/src/navigation.dart';
 import 'package:thor_engine/src/protocol.dart';
 import 'package:thor_engine/src/reactive.dart';
+import 'package:thor_engine/src/regions.dart';
 import 'package:thor_engine/src/thor_state.dart';
 import 'package:thor_engine_oracle/client.dart' show EngineFeature, EngineRun;
 import 'package:web/web.dart' as web;
@@ -297,8 +298,13 @@ final class ControllersFeature extends EngineFeature {
     };
     // ignore: unnecessary_lambdas, an interop member cannot be torn off.
     PageNavigator.reloadHandler = () => web.window.location.reload();
+    // PageRegion.refresh: the fragment loader of the page listens for it.
+    PageRegion.handler = (id) => web.document.dispatchEvent(
+      web.CustomEvent('thor:region', web.CustomEventInit(detail: id.toJS)),
+    );
     undo.add(() {
       PageNavigator.handler = null;
+      PageRegion.handler = null;
       PageNavigator.canPopHandler = null;
       PageNavigator.popHandler = null;
       PageNavigator.reloadHandler = null;

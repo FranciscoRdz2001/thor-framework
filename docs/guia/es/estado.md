@@ -266,6 +266,7 @@ Para preguntar o avisar desde un método del ViewModel sin declarar un diálogo,
 | Mover el cursor o seleccionar | `name.selection = TextSelection(baseOffset: 0, extentOffset: 3)` |
 | Que un `select` o un segmentado siga un campo (también uno `local:`, que el navegador cambia al cargar) | `DropdownButton(valueWatch: editor.deviceId, …)`, `DropdownButtonFormField(valueWatch: …)`, `SegmentedButton(selectedWatch: …)`; el método devuelve el texto del valor (el nombre de un enum) |
 | Ir a otra URL desde un método | `PageNavigator.go(url)`, con la URL construida en el servidor ([Rutas y navegación](navegacion.md)) |
+| Dibujar de nuevo una `Region` de la página desde un método | `PageRegion.refresh('id')` ([Datos en vivo](datos-vivos.md#refrescar-una-región-desde-un-viewmodel)) |
 | Enviar un formulario al servidor | [Formularios](formularios.md) |
 
 ### `PageView` y `PageController`

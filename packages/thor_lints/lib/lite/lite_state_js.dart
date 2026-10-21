@@ -534,6 +534,10 @@ const _helpers = {
   r'$goBack':
       r"const $goBack = (f) => { const c = $canPop(); $go(f, false, c); if (!c) return; const n = globalThis.navigation; const a = n && typeof n.canGoBack === 'boolean'; let t; const d = () => { clearTimeout(t); removeEventListener('pagehide', d); removeEventListener('popstate', d); }; if (!a) { addEventListener('pagehide', d); addEventListener('popstate', d); t = setTimeout(() => { d(); location.assign(f); }, 600); } history.back(); };",
   r'$reload': r'const $reload = () => location.reload();',
+  // PageRegion.refresh: the page's fragment loader (script `lazyScript`)
+  // asks the server for the region again and swaps it in.
+  r'$region':
+      r"const $region = (id) => document.dispatchEvent(new CustomEvent('thor:region', { detail: id }));",
   // state(…, local: 'k'): the `local_storage` part keeps the field in
   // localStorage (`thor-s.k`), like `$persist` keeps one in a cookie.
   r'$local': r'const $local = thor.local;',
@@ -6016,6 +6020,7 @@ class _Translator {
         args.isEmpty ||
             te.name == 'SystemNavigator' ||
             te.name == 'PageNavigator' ||
+            te.name == 'PageRegion' ||
             te.name == 'Clipboard' ||
             te.name == 'FrameMessages'
         ? ''
@@ -6135,6 +6140,9 @@ class _Translator {
         case 'reload':
           return '${_use(r'$reload')}()';
       }
+    }
+    if (te.name == 'PageRegion' && _inThor(te) && name == 'refresh') {
+      return '${_use(r'$region')}(${_expr(args.single, ctx)})';
     }
     if (te.name == 'Clipboard' && _inThor(te)) {
       // The part answers in the key's own copy/paste event (no prompt).

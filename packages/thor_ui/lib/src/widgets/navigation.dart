@@ -95,6 +95,23 @@ class Link extends ParentDataWrapper {
   );
 }
 
+/// What a [Link] with a [FragmentFetch] does to the browser's history once the
+/// region it fetched is in place.
+enum FragmentHistory {
+  /// Nothing: the address bar and the back button stay as they were (the
+  /// default, e.g. for a dialog's content).
+  none,
+
+  /// Adds an entry for the link's `href` (`history.pushState`): back returns
+  /// to the previous filter, and the address can be copied and shared.
+  push,
+
+  /// Replaces the current entry with the link's `href` (`replaceState`),
+  /// like `Form(live:)` does as the visitor types: the address follows, the
+  /// back button does not.
+  replace,
+}
+
 /// What a [Link] fetches instead of navigating: the [Region] [piece] of the
 /// page the link points to, put into the [Region] [into] of the page that
 /// has the link, and the dialog or popover [open] opened once it is there.
@@ -120,11 +137,30 @@ class Link extends ParentDataWrapper {
 /// Clicking again on the same link only reopens the dialog. If the request
 /// fails the browser goes to the link's page.
 ///
+/// Category chips that filter a list in place and keep the address bar true:
+///
+/// ```dart
+/// Link(
+///   href: RouteUrl('/shop?category=mugs'),
+///   fetch: const FragmentFetch(
+///     piece: 'results',
+///     into: 'results',
+///     history: FragmentHistory.push,
+///   ),
+///   child: const Chip(label: Text('Mugs')),
+/// )
+/// ```
+///
 /// `// web:` Flutter's `showDialog(builder:)` builds the content in the
 /// device; here the server draws it, and only when it is asked for.
 class FragmentFetch {
   /// Fetches [piece] of the link's page into [into].
-  const FragmentFetch({required this.piece, required this.into, this.open});
+  const FragmentFetch({
+    required this.piece,
+    required this.into,
+    this.open,
+    this.history = FragmentHistory.none,
+  });
 
   /// The id of the `Region` of the page the link points to.
   final String piece;
@@ -135,6 +171,16 @@ class FragmentFetch {
   /// The id of the `Dialog`, `Drawer` or popover to open once the region has
   /// its content, or null.
   final String? open;
+
+  /// Whether the link's `href` also goes to the address bar once the region
+  /// has its content, and how (see [FragmentHistory]).
+  ///
+  /// The back and forward buttons then ask the region again for the URL they
+  /// land on: [piece] should be the id of a `Region` that the page at *this*
+  /// URL has too (the filtered results of a catalog), so that the same
+  /// request works for any of its URLs. If that request fails, the browser
+  /// loads the page.
+  final FragmentHistory history;
 
   Map<String, String> _attributes(RouteUrl href) {
     final url = '$href';
@@ -148,6 +194,8 @@ class FragmentFetch {
       'data-thor-lazy-as': 'into',
       'data-thor-lazy-into': into,
       'data-thor-lazy-open': ?open,
+      if (history != FragmentHistory.none)
+        'data-thor-lazy-history': history.name,
     };
   }
 }

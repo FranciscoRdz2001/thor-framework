@@ -224,6 +224,98 @@ A click asks `/shop/mug?thor-piece=detail`, the region of the dialog receives it
 - A `Watch` or a button inside the part work; a state the part brings is bound when it arrives.
 - A static site has nothing to answer: `LoadMore` and `Region` draw their content, and the links are plain links.
 
+### Chips that filter and keep the address
+
+`Link(fetch:)` fills a region without touching the address bar. For links that filter a list in place (category chips, a week selector), `history:` writes the link's `href` once the answer is in:
+
+```dart no-check
+Link(
+  href: RouteUrl('/shop?category=mugs'),
+  fetch: const FragmentFetch(
+    piece: 'results',
+    into: 'results',
+    history: FragmentHistory.push,
+  ),
+  child: const Chip(label: Text('Mugs')),
+)
+```
+
+| `history:` | The address bar | Back button |
+|---|---|---|
+| `FragmentHistory.none` (default) | stays | leaves the page |
+| `FragmentHistory.push` | becomes the link's `href` | returns to the previous filter |
+| `FragmentHistory.replace` | becomes the link's `href` | leaves the page, like `Form(live:)` |
+
+Back and forward ask the region again for the URL they land on (`?thor-piece=results` on the page at that URL), so `piece` must be the id of a `Region` that the page has at every URL of the links; if that request fails, the browser loads the page. Without JavaScript the link is a link: the page loads at the new address.
+
+> **Note:** A dialog opened with `open:` stays open on back: use `history:` for lists and weeks, not for dialog content.
+
+### States the region reads
+
+A swap puts new HTML in the region, but a state the page already sent keeps the value it has: a fragment brings only the states the page did not send yet. For a value that depends on the region (the free slots of the week it shows), give the region `syncState: true`:
+
+```dart no-check
+class BookingViewModel extends ThorState {
+  final slots = state<List<String>>(const []);
+  String firstFree() => slots.value.isEmpty ? '' : slots.value.first;
+}
+
+// The page's `load` fills `slots` for the `?week=` it was asked for.
+Column(
+  children: [
+    Watch(booking.firstFree), // outside the region: also updated
+    Region(
+      id: 'week',
+      syncState: true,
+      child: SlotGrid(),
+    ),
+  ],
+)
+```
+
+The answer then carries the value, as the server computed it for that request, of **every** state the region reads, and the browser replaces its own: the HTML in the region and every `Watch` bound to those fields change together. Rules:
+
+- Only the states the region's content reads are sent, and they replace the page's, also those that run already; nothing else is touched.
+- A field the visitor edits in the browser (a draft, a counter) and the region reads is overwritten: use `syncState` on regions whose states come from the server.
+- It works with the lite engine; a state that has not started yet starts from the new value.
+- Without `syncState` (the default) nothing changes: a state the page has keeps its value.
+
+### Refreshing a region from a ViewModel
+
+`PageRegion.refresh('id')` asks the browser to draw a `Region` again from a ViewModel method, with no form or link involved: after a command finishes, or on a timer to poll.
+
+```dart no-check
+class TrackingViewModel extends ThorState {
+  Timer? _poll;
+
+  @override
+  void onHydrated() {
+    // The page's `load` reads the order; the region is what changes.
+    _poll = Timer.periodic(
+      const Duration(seconds: 10),
+      (t) => PageRegion.refresh('tracking'),
+    );
+  }
+
+  @override
+  void dispose() => _poll?.cancel();
+
+  void cancelled() => PageRegion.refresh('tracking'); // after a command
+}
+
+// in the page
+Region(id: 'tracking', syncState: true, child: OrderTimeline(order))
+```
+
+The browser asks for the page's current URL plus `thor-piece=tracking`, and swaps the answer. Rules:
+
+- A new refresh cancels the one still on its way, so a slow answer never overwrites a newer one.
+- A region the page does not have, or a request that fails, changes nothing (the content stays; the next refresh tries again).
+- A region that a `Link(fetch:)` filled is refreshed from the fragment it shows, not from the page's URL.
+- The id is the `id` of a `Region` of the page, not a path (`results:people`).
+- Add `syncState: true` when the region reads states that change with every answer, as in the example.
+- The server never runs a timer: polling is the browser's clock, and the page's `load` runs for every request, so keep it light or cached. A stream the server pushes (`events()`) needs no polling.
+
 ## Next steps
 
 :::cards

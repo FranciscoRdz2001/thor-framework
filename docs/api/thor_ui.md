@@ -2488,7 +2488,13 @@ Flutter's `FilterChip`: toggles; `onSelected(!selected)`.
 
 What a [Link] fetches instead of navigating: the [Region] [piece] of the page the link points to, put into the [Region] [into] of the page that has the link, and the dialog or popover [open] opened once it is there.
 
-- `FragmentFetch({required String piece, required String into, String? open})` — Fetches [piece] of the link's page into [into].
+- `FragmentFetch({required String piece, required String into, String? open, FragmentHistory history = FragmentHistory.none})` — Fetches [piece] of the link's page into [into].
+
+### `FragmentHistory` · enum
+
+What a [Link] with a [FragmentFetch] does to the browser's history once the region it fetched is in place.
+
+- valores: `none`, `push`, `replace`
 
 ### `Hero` · class
 
@@ -3811,6 +3817,12 @@ Goes to another page from a state method, like following a link: the browser loa
 
 - `PageNavigator()`
 
+### `PageRegion` · abstract class
+
+Refreshes the parts of the page that the server draws alone (a `Region`): the browser asks the page again for the region, from the page's current URL, and swaps the answer in.
+
+- `PageRegion()`
+
 ### `QueryBuilder` · class
 
 Flutter's `FutureBuilder` for a `query`: [builder] draws the query's [AsyncSnapshot], on the server for the first paint and, in the browser, by switching among the states the server shipped.
@@ -3833,7 +3845,7 @@ What can be read as `.value` and tracked: a [Signal] is one of those to its read
 
 A part of the page that can be asked for alone: the server draws the page as always and answers only this region (`GET` the page's URL plus `thor-piece=<id>`), and the browser puts the answer in place of the region's content. It is what a live search, a product shown in a dialog or any "update this part" needs, with the page's own `load` and `build` deciding what is inside.
 
-- `Region({Key? key, required String id, required Widget child})` — A region called [id] that holds [child].
+- `Region({Key? key, required String id, required Widget child, bool syncState = false})` — A region called [id] that holds [child].
 
 ### `RowColor` · class
 
