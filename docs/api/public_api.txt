@@ -502,6 +502,16 @@ router	ActionResult.data	Object? data
 router	ActionResult.fail	ActionResult.fail(int status, [Object? data])
 router	ActionResult.status	int status
 router	ActionResult.success	ActionResult.success([Object? data])
+router	CacheControl	class
+router	CacheControl.==	bool ==(Object other)
+router	CacheControl.hashCode	int get hashCode
+router	CacheControl.header	String get header
+router	CacheControl.maxAge	Duration maxAge
+router	CacheControl.new	CacheControl({required Duration maxAge, Duration? sharedMaxAge, Duration? staleWhileRevalidate, Duration? staleIfError})
+router	CacheControl.sharedMaxAge	Duration? sharedMaxAge
+router	CacheControl.staleIfError	Duration? staleIfError
+router	CacheControl.staleWhileRevalidate	Duration? staleWhileRevalidate
+router	CacheControl.toString	String toString()
 router	ChangeFrequency	enum
 router	ChangeFrequency.always	ChangeFrequency always
 router	ChangeFrequency.daily	ChangeFrequency daily
@@ -722,12 +732,13 @@ router	FrameOptions.sameOrigin	FrameOptions sameOrigin
 router	FrameOptions.value	String value
 router	Group	class
 router	Group.cache	Duration? cache
+router	Group.cacheControl	CacheControl? cacheControl
 router	Group.children	List<RouteTableNode> children
 router	Group.earlyHints	bool? earlyHints
 router	Group.error	ErrorPage? error
 router	Group.layout	ThorLayout<Object?>? layout
 router	Group.middleware	List<Middleware> middleware
-router	Group.new	Group({ThorLayout<Object?>? layout, String? prefix, List<Middleware> middleware = const [], ErrorPage? error, ErrorPage? notFound, List<StyleRule>? styles, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteTableNode> children})
+router	Group.new	Group({ThorLayout<Object?>? layout, String? prefix, List<Middleware> middleware = const [], ErrorPage? error, ErrorPage? notFound, List<StyleRule>? styles, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteTableNode> children})
 router	Group.notFound	ErrorPage? notFound
 router	Group.personalized	bool? personalized
 router	Group.prefetch	bool? prefetch
@@ -835,6 +846,7 @@ router	LayoutRoute	class
 router	LayoutRoute.build	P Function(PageState<T>, P) build
 router	LayoutRoute.buildWith	P buildWith(PageState<Object?> state, P child)
 router	LayoutRoute.cache	Duration? cache
+router	LayoutRoute.cacheControl	CacheControl? cacheControl
 router	LayoutRoute.children	List<RouteNode<P>> children
 router	LayoutRoute.dataType	Type get dataType
 router	LayoutRoute.earlyHints	bool? earlyHints
@@ -846,7 +858,7 @@ router	LayoutRoute.loadsUntyped	bool get loadsUntyped
 router	LayoutRoute.meta	PageMeta Function(PageState<T>)? meta
 router	LayoutRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
 router	LayoutRoute.middleware	Middleware? middleware
-router	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
+router	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
 router	LayoutRoute.notFound	P Function(ErrorState)? notFound
 router	LayoutRoute.notFoundMeta	PageMeta Function(ErrorState)? notFoundMeta
 router	LayoutRoute.personalized	bool? personalized
@@ -1062,6 +1074,7 @@ router	PageRoute.actions	Map<String, FormAction> actions
 router	PageRoute.build	P Function(PageState<T>) build
 router	PageRoute.buildWith	P buildWith(PageState<Object?> state)
 router	PageRoute.cache	Duration? cache
+router	PageRoute.cacheControl	CacheControl? cacheControl
 router	PageRoute.earlyHints	bool? earlyHints
 router	PageRoute.forLayouts	List<Object> Function(PageState<T>)? forLayouts
 router	PageRoute.forLayoutsWith	List<Object> forLayoutsWith(PageState<Object?> state)
@@ -1070,7 +1083,7 @@ router	PageRoute.load	Loader<T>? load
 router	PageRoute.maxBodyBytes	int? maxBodyBytes
 router	PageRoute.meta	PageMeta Function(PageState<T>)? meta
 router	PageRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
-router	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
+router	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
 router	PageRoute.personalized	bool? personalized
 router	PageRoute.prefetch	bool? prefetch
 router	PageRoute.prerender	bool? prerender
@@ -1399,10 +1412,11 @@ router	ThorHttpResponse.uri	Uri uri
 router	ThorLayout	abstract class
 router	ThorLayout.build	Widget build(BuildContext context, PageState<T> state, Widget child)
 router	ThorLayout.cache	Duration? cache
+router	ThorLayout.cacheControl	CacheControl? cacheControl
 router	ThorLayout.earlyHints	bool? earlyHints
 router	ThorLayout.load	FutureOr<T> load(PageRequest request)
 router	ThorLayout.meta	PageMeta meta(PageState<T> state)
-router	ThorLayout.new	ThorLayout<T>({Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})
+router	ThorLayout.new	ThorLayout<T>({Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})
 router	ThorLayout.personalized	bool? personalized
 router	ThorLayout.prefetch	bool? prefetch
 router	ThorLayout.prerender	bool? prerender
@@ -1411,13 +1425,14 @@ router	ThorLayout.transition	PageTransition? transition
 router	ThorPage	abstract class
 router	ThorPage.build	Widget build(BuildContext context, PageState<T> state)
 router	ThorPage.cache	Duration? cache
+router	ThorPage.cacheControl	CacheControl? cacheControl
 router	ThorPage.earlyHints	bool? earlyHints
 router	ThorPage.forLayouts	List<Object> forLayouts(PageState<T> state)
 router	ThorPage.invalidateOnWrite	bool invalidateOnWrite
 router	ThorPage.load	FutureOr<T> load(PageRequest request)
 router	ThorPage.maxBodyBytes	int? maxBodyBytes
 router	ThorPage.meta	PageMeta meta(PageState<T> state)
-router	ThorPage.new	ThorPage<T>({Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch})
+router	ThorPage.new	ThorPage<T>({Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch})
 router	ThorPage.personalized	bool? personalized
 router	ThorPage.prefetch	bool? prefetch
 router	ThorPage.prerender	bool? prerender
@@ -2497,6 +2512,16 @@ thor_server	ActionResult.data	Object? data
 thor_server	ActionResult.fail	ActionResult.fail(int status, [Object? data])
 thor_server	ActionResult.status	int status
 thor_server	ActionResult.success	ActionResult.success([Object? data])
+thor_server	CacheControl	class
+thor_server	CacheControl.==	bool ==(Object other)
+thor_server	CacheControl.hashCode	int get hashCode
+thor_server	CacheControl.header	String get header
+thor_server	CacheControl.maxAge	Duration maxAge
+thor_server	CacheControl.new	CacheControl({required Duration maxAge, Duration? sharedMaxAge, Duration? staleWhileRevalidate, Duration? staleIfError})
+thor_server	CacheControl.sharedMaxAge	Duration? sharedMaxAge
+thor_server	CacheControl.staleIfError	Duration? staleIfError
+thor_server	CacheControl.staleWhileRevalidate	Duration? staleWhileRevalidate
+thor_server	CacheControl.toString	String toString()
 thor_server	ChangeFrequency	enum
 thor_server	ChangeFrequency.always	ChangeFrequency always
 thor_server	ChangeFrequency.daily	ChangeFrequency daily
@@ -2762,6 +2787,7 @@ thor_server	LayoutRoute	class
 thor_server	LayoutRoute.build	P Function(PageState<T>, P) build
 thor_server	LayoutRoute.buildWith	P buildWith(PageState<Object?> state, P child)
 thor_server	LayoutRoute.cache	Duration? cache
+thor_server	LayoutRoute.cacheControl	CacheControl? cacheControl
 thor_server	LayoutRoute.children	List<RouteNode<P>> children
 thor_server	LayoutRoute.dataType	Type get dataType
 thor_server	LayoutRoute.earlyHints	bool? earlyHints
@@ -2773,7 +2799,7 @@ thor_server	LayoutRoute.loadsUntyped	bool get loadsUntyped
 thor_server	LayoutRoute.meta	PageMeta Function(PageState<T>)? meta
 thor_server	LayoutRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
 thor_server	LayoutRoute.middleware	Middleware? middleware
-thor_server	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
+thor_server	LayoutRoute.new	LayoutRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>, P) build, Guard? redirect, PageMeta Function(PageState<T>)? meta, P Function(ErrorState)? error, P Function(ErrorState)? notFound, PageMeta Function(ErrorState)? errorMeta, PageMeta Function(ErrorState)? notFoundMeta, Middleware? middleware, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, bool? prefetch, required List<RouteNode<P>> children})
 thor_server	LayoutRoute.notFound	P Function(ErrorState)? notFound
 thor_server	LayoutRoute.notFoundMeta	PageMeta Function(ErrorState)? notFoundMeta
 thor_server	LayoutRoute.personalized	bool? personalized
@@ -2957,6 +2983,7 @@ thor_server	PageRoute.actions	Map<String, FormAction> actions
 thor_server	PageRoute.build	P Function(PageState<T>) build
 thor_server	PageRoute.buildWith	P buildWith(PageState<Object?> state)
 thor_server	PageRoute.cache	Duration? cache
+thor_server	PageRoute.cacheControl	CacheControl? cacheControl
 thor_server	PageRoute.earlyHints	bool? earlyHints
 thor_server	PageRoute.forLayouts	List<Object> Function(PageState<T>)? forLayouts
 thor_server	PageRoute.forLayoutsWith	List<Object> forLayoutsWith(PageState<Object?> state)
@@ -2965,7 +2992,7 @@ thor_server	PageRoute.load	Loader<T>? load
 thor_server	PageRoute.maxBodyBytes	int? maxBodyBytes
 thor_server	PageRoute.meta	PageMeta Function(PageState<T>)? meta
 thor_server	PageRoute.metaWith	PageMeta? metaWith(PageState<Object?> state)
-thor_server	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
+thor_server	PageRoute.new	PageRoute<P, T>({String path = '', Loader<T>? load, required P Function(PageState<T>) build, Map<String, FormAction> actions = const {}, Guard? redirect, PageMeta Function(PageState<T>)? meta, Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, int? maxBodyBytes, List<String> tags = const [], bool invalidateOnWrite = true, bool? prefetch, List<Object> Function(PageState<T>)? forLayouts})
 thor_server	PageRoute.personalized	bool? personalized
 thor_server	PageRoute.prefetch	bool? prefetch
 thor_server	PageRoute.prerender	bool? prerender
@@ -3103,6 +3130,7 @@ thor_server	RobotsRule.new	RobotsRule({String userAgent = '*', List<String> allo
 thor_server	RobotsRule.userAgent	String userAgent
 thor_server	RouteEntry	class
 thor_server	RouteEntry.cache	Duration? get cache
+thor_server	RouteEntry.cacheControl	CacheControl? get cacheControl
 thor_server	RouteEntry.earlyHints	bool get earlyHints
 thor_server	RouteEntry.invalidateOnWrite	bool get invalidateOnWrite
 thor_server	RouteEntry.isStatic	bool get isStatic

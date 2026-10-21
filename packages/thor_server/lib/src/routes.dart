@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'cache_control.dart' show CacheControl;
 import 'handler.dart' show ThorResponse;
 import 'http_types.dart' show HttpMethod;
 import 'locale.dart' show Locale;
@@ -57,6 +58,7 @@ class PageRoute<P, T> extends RouteNode<P> {
     this.redirect,
     this.meta,
     this.cache,
+    this.cacheControl,
     this.personalized,
     this.prerender,
     this.earlyHints,
@@ -121,6 +123,15 @@ class PageRoute<P, T> extends RouteNode<P> {
   /// sends past the cache. A successful form action clears the cache.
   /// `null`: the nearest layout's.
   final Duration? cache;
+
+  /// What the page tells browsers and CDNs about keeping it
+  /// (`public, max-age=60, stale-while-revalidate=600`), when it is the same
+  /// for every visitor. Not the server's own copy ([cache]): both can be
+  /// set. A personal page, one that sets a cookie or fails keeps
+  /// `private, no-cache`, and a `Cache-Control` the load wrote in
+  /// `request.response.headers` wins. `null`: the nearest layout's, else the
+  /// page is asked again on every visit (`no-cache`).
+  final CacheControl? cacheControl;
 
   /// Whether the page belongs to its visitor: never in the shared cache,
   /// `Cache-Control: private`. `false` shares it even when
@@ -215,6 +226,7 @@ class LayoutRoute<P, T> extends RouteNode<P> {
     this.notFoundMeta,
     this.middleware,
     this.cache,
+    this.cacheControl,
     this.personalized,
     this.prerender,
     this.earlyHints,
@@ -256,6 +268,9 @@ class LayoutRoute<P, T> extends RouteNode<P> {
 
   /// Default `cache` of the pages below (a page's own wins).
   final Duration? cache;
+
+  /// Default `cacheControl` of the pages below (see [PageRoute.cacheControl]).
+  final CacheControl? cacheControl;
 
   /// Default `personalized` of the pages below (see [PageRoute.personalized]).
   final bool? personalized;

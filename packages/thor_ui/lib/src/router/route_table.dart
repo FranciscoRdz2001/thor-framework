@@ -43,6 +43,7 @@ abstract class ThorPage<T> {
   /// A page with its settings.
   const ThorPage({
     this.cache,
+    this.cacheControl,
     this.personalized,
     this.prerender,
     this.earlyHints,
@@ -56,6 +57,11 @@ abstract class ThorPage<T> {
   /// How long the rendered page stays in the shared cache (inherited from
   /// the groups above when null).
   final Duration? cache;
+
+  /// What browsers and CDNs may keep of the page (`public, max-age=…,
+  /// stale-while-revalidate=…`); see `PageRoute.cacheControl`. Inherited
+  /// from the groups above when null.
+  final CacheControl? cacheControl;
 
   /// Whether the page differs per visitor (never shared-cached).
   final bool? personalized;
@@ -184,6 +190,7 @@ abstract class ThorPage<T> {
     redirect: redirect,
     meta: meta,
     cache: cache,
+    cacheControl: cacheControl,
     personalized: personalized,
     prerender: prerender,
     earlyHints: earlyHints,
@@ -233,6 +240,7 @@ abstract class ThorLayout<T> {
   /// A layout with its settings.
   const ThorLayout({
     this.cache,
+    this.cacheControl,
     this.personalized,
     this.prerender,
     this.earlyHints,
@@ -242,6 +250,9 @@ abstract class ThorLayout<T> {
 
   /// See [ThorPage.cache]: the pages below inherit it.
   final Duration? cache;
+
+  /// See [ThorPage.cacheControl]: the pages below inherit it.
+  final CacheControl? cacheControl;
 
   /// See [ThorPage.personalized]: the pages below inherit it.
   final bool? personalized;
@@ -299,6 +310,7 @@ abstract class ThorLayout<T> {
     middleware: chainMiddleware(group.middleware, owner: group._owner),
     styles: group.styles,
     cache: group.cache ?? cache,
+    cacheControl: group.cacheControl ?? cacheControl,
     personalized: group.personalized ?? personalized,
     prerender: group.prerender ?? prerender,
     earlyHints: group.earlyHints ?? earlyHints,
@@ -669,6 +681,7 @@ final class Group extends RouteTableNode {
     this.notFound,
     this.styles,
     this.cache,
+    this.cacheControl,
     this.personalized,
     this.prerender,
     this.earlyHints,
@@ -707,6 +720,9 @@ final class Group extends RouteTableNode {
 
   /// See [ThorPage.cache] (wins over the layout's).
   final Duration? cache;
+
+  /// See [ThorPage.cacheControl] (wins over the layout's).
+  final CacheControl? cacheControl;
 
   /// See [ThorPage.personalized] (wins over the layout's).
   final bool? personalized;
@@ -846,6 +862,7 @@ final class ThorRouter {
       middleware: chainMiddleware(group.middleware, owner: group._owner),
       styles: group.styles,
       cache: group.cache,
+      cacheControl: group.cacheControl,
       personalized: group.personalized,
       prerender: group.prerender,
       earlyHints: group.earlyHints,

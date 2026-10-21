@@ -4077,6 +4077,12 @@ What an action returns: a [Redirect], or the page again ([ActionResult.fail], [A
 - `ActionResult.fail(int status, [Object? data])` — The action failed: the page renders again with [status] and [data] as its `state.form` (the values to re-fill and the errors to show).
 - `ActionResult.success([Object? data])` — The action worked and the page renders again (no redirect) with [data] as its `state.form`.
 
+### `CacheControl` · class
+
+How long a browser or a CDN may keep a page that is the same for every visitor, and how long it may keep serving it while it fetches a new copy:
+
+- `CacheControl({required Duration maxAge, Duration? sharedMaxAge, Duration? staleWhileRevalidate, Duration? staleIfError})` — A page kept for [maxAge], and served stale for [staleWhileRevalidate] (and [staleIfError] when the server fails) while a new copy is fetched.
+
 ### `ChangeFrequency` · enum
 
 `<changefreq>` values.
@@ -4682,7 +4688,7 @@ A complete response from a backend.
 
 A layout: the frame a [Group] puts around its pages ([build]'s `child`). Like [ThorPage]: [T] is its [load]'s data (a page below reads it with `request.parent<T>()`), one const instance, settings in `super(…)`; the pages below inherit them.
 
-- `ThorLayout<T>({Duration? cache, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})` — A layout with its settings.
+- `ThorLayout<T>({Duration? cache, CacheControl? cacheControl, bool? personalized, bool? prerender, bool? earlyHints, PageTransition? transition, bool? prefetch})` — A layout with its settings.
 
 ### `ThorPage` · abstract class
 

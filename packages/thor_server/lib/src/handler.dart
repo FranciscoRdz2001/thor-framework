@@ -2549,6 +2549,29 @@ class RouteHandler<P> {
     }
   }
 
+  /// The `Cache-Control` of a page that offers browsers and CDNs to keep it
+  /// (`PageRoute.cacheControl`), or null: only an ordinary `200` `GET` that is
+  /// the same for everyone (nothing personal, no cookie set, no flash).
+  String? _publicCaching(
+    PageRequest request,
+    RouteEntry<P>? entry,
+    int status,
+  ) {
+    final control = entry?.cacheControl;
+    if (control == null ||
+        status != 200 ||
+        request.method != HttpMethod.get ||
+        request.isPersonal ||
+        // A nonce is this response's alone.
+        request.cspNonce != null ||
+        request.response.cookies.isNotEmpty ||
+        request.frameworkCookies.containsKey(flashCookie) ||
+        (entry!.personalized ?? personalized?.call(request) ?? false)) {
+      return null;
+    }
+    return control.header;
+  }
+
   Future<ThorResponse> _document(
     PageRequest request,
     P page,
@@ -2625,7 +2648,8 @@ class RouteHandler<P> {
     }
     final headers = <HttpHeader, String>{
       HttpHeader.contentType: 'text/html; charset=utf-8',
-      HttpHeader.cacheControl: 'no-cache',
+      HttpHeader.cacheControl: _publicCaching(request, queriesOf, status) ??
+          'no-cache',
       ...request.response.headers,
     };
     _addLinks(headers, _merge(links, found));

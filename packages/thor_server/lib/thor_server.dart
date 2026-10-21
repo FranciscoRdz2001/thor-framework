@@ -9,6 +9,7 @@ library;
 
 export 'image_manifest.dart' show ImageEntry, ImageManifest, ImageVariant;
 export 'server_messages.dart' show ServerMessages;
+export 'src/cache_control.dart' show CacheControl;
 export 'src/confirm_page.dart' show askField, askQueryKey, confirmedField;
 export 'src/cookies.dart'
     show SetCookie, SignedCookies, parseCookies, persistedStateCookiePrefix;
