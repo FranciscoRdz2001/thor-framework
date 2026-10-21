@@ -87,6 +87,16 @@ void main() {
     expect(liteCheckArgs(), ['run', 'thor_builder:lite_state', '.', '--check']);
   });
 
+  test('the lite check runs by default for a project with thor_builder', () {
+    expect(runsLiteCheck(asked: null, dependencies: {'thor_builder'}), isTrue);
+    expect(runsLiteCheck(asked: null, dependencies: {'thor_ui'}), isFalse);
+    expect(runsLiteCheck(asked: true, dependencies: {'thor_ui'}), isTrue);
+    expect(
+      runsLiteCheck(asked: false, dependencies: {'thor_builder'}),
+      isFalse,
+    );
+  });
+
   test('thor_lints enabled is read from analysis_options', () {
     expect(
       pluginEnabledIn('plugins:\n  thor_lints:\n    path: ../x\n'),
