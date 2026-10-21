@@ -51,4 +51,14 @@ void main() {
     );
     expect(Length.inherit.css, 'inherit');
   });
+
+  test('a negative margin is not a value a widget owns', () {
+    const negative = StyleProps(margin: EdgeInsets.symmetric(vertical: -12));
+    expect(negative.widgetProps(), isEmpty);
+    expect(negative.toCss()['margin'], '-12px 0px');
+    expect(
+      const StyleProps(margin: EdgeInsets.all(8)).widgetProps(),
+      isNotEmpty,
+    );
+  });
 }

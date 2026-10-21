@@ -1348,10 +1348,7 @@ class NoScopeState extends ThorState {
 }
 ''');
     expect(js, contains(r"eager: $local.has('CartState', 'cart:*')"));
-    expect(
-      js,
-      contains(r"$local($.state('items', []), 'cart', null, "),
-    );
+    expect(js, contains(r"$local($.state('items', []), 'cart', null, "));
     expect(js, contains(', store)'));
     if (!_node) return markTestSkipped('node is not installed');
     final out = _run(

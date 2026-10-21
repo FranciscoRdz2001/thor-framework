@@ -476,6 +476,11 @@ class BoxDecoration with Adaptable<BoxDecoration> {
 
   /// This decoration with the given fields replaced, like Flutter's (on every
   /// variant too, when built with `.when()`).
+  ///
+  /// A `.when()` variant replaces the whole decoration, as in Flutter: what
+  /// it does not name goes back to none. To change one field in a state, copy
+  /// the base: `base.when(hover: base.copyWith(border: …))`; the page only
+  /// repeats what differs.
   BoxDecoration copyWith({
     Color? color,
     DecorationImage? image,

@@ -207,12 +207,14 @@ enum _GridSizeKind { flex, fixed, auto }
 /// (`aspect-ratio`, with its variants), over [base] the grid's own ratio.
 CssDeclarations gridCellCss(GridLayout? layout, {double? base}) {
   CssDeclarations ratio(GridLayout l) => {
-    if (l.childAspectRatio case final r?) 'aspect-ratio': cssNum(r),
+    if (l.childAspectRatio case final r?) 'aspect-ratio': cssAspectRatio(r),
   };
   final own =
       layout?.adaptive?.declarations(ratio) ??
       (layout == null ? const <String, String>{} : ratio(layout));
-  return mergeAdaptive({if (base != null) 'aspect-ratio': cssNum(base)}, own);
+  return mergeAdaptive({
+    if (base != null) 'aspect-ratio': cssAspectRatio(base),
+  }, own);
 }
 
 final _areaName = RegExp(r'^[A-Za-z_][A-Za-z0-9_-]*$');

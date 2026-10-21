@@ -151,7 +151,9 @@ class StyleProps extends ConstAdaptable<StyleProps> {
   /// Same as `Padding`'s `padding`.
   final EdgeInsetsGeometry? padding;
 
-  /// Same as `Container`'s `margin`.
+  /// Same as `Container`'s `margin`. `// web:` it may be negative
+  /// (`EdgeInsets.symmetric(vertical: -12)`, a tap target taller than its
+  /// line): `Container(margin:)` refuses that, as Flutter's does.
   final EdgeInsetsGeometry? margin;
 
   /// Same as `SizedBox`'s `width`.
@@ -513,7 +515,10 @@ class StyleProps extends ConstAdaptable<StyleProps> {
     final out = <String>{};
     for (final p in parts) {
       if (p.padding != null) out.add('padding → Padding(padding:)');
-      if (p.margin != null) out.add('margin → Container(margin:)');
+      // A negative margin is the web's: `Container(margin:)` refuses it.
+      if (p.margin != null && p.margin!.isNonNegative) {
+        out.add('margin → Container(margin:)');
+      }
       if (p.constraints != null) {
         out.add('constraints → ConstrainedBox(constraints:)');
       }

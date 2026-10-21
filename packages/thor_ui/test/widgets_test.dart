@@ -38,7 +38,7 @@ void main() {
       final html = await renderHtml(
         const AspectRatio(aspectRatio: 16 / 9, child: _box),
       );
-      expect(html, contains('aspect-ratio: 1.7778'));
+      expect(html, contains('aspect-ratio: 16 / 9'));
     });
 
     test('ColoredBox paints a background', () async {
