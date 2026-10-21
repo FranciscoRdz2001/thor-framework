@@ -1258,8 +1258,18 @@ class ThorStyleRegistry {
     for (final c in conditions) {
       rule.write(c.when._wrap(selector, cssInline(c.css)));
     }
+    assert(
+      _noAdaptiveMarkers(rule.toString()),
+      'An adaptive value (`.when()`) reached the CSS of .$className '
+      'unresolved: $rule',
+    );
     return rule.toString();
   }
+
+  // The characters that mark a value with variants (`Adaptable.when`):
+  // `expandAdaptive` turns them into conditions, none may reach the page.
+  static bool _noAdaptiveMarkers(String css) =>
+      !css.contains(RegExp('[\u27e6\u27e7\u241f\u241e]'));
 
   /// Renders the rule block for [className] (one `@layer` rule, so it can be
   /// inserted with a single `insertRule`).

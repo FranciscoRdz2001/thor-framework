@@ -256,4 +256,52 @@ void main() {
       'border': 'none',
     });
   });
+
+  group('mergeAdaptive', () {
+    test('a marker over a marker is one marker, the upper one wins', () {
+      final merged = mergeAdaptive(
+        {
+          'align-self': markAdaptive('stretch', {
+            'c640': 'auto',
+            'c900': 'auto',
+          }),
+        },
+        {
+          'align-self': markAdaptive('', {'c640': 'stretch'}),
+        },
+      );
+      final value = merged['align-self']!;
+      // Markers never nest: a nested one would leak into the CSS.
+      expect('\u27e6'.allMatches(value), hasLength(1));
+      final split = splitAdaptive(merged);
+      expect(split.base, {'align-self': 'stretch'});
+      expect(split.byBreakpoint['c640'], {'align-self': 'stretch'});
+      expect(split.byBreakpoint['c900'], {'align-self': 'auto'});
+    });
+
+    test('a marker over a plain value takes it as its base', () {
+      final merged = mergeAdaptive(
+        {'align-self': 'stretch'},
+        {
+          'align-self': markAdaptive('', {'c640': 'auto'}),
+        },
+      );
+      final split = splitAdaptive(merged);
+      expect(split.base, {'align-self': 'stretch'});
+      expect(split.byBreakpoint['c640'], {'align-self': 'auto'});
+    });
+
+    test('several markers in the lower value keep only its base', () {
+      final under = {
+        'padding': '${markAdaptive('1px', {'c640': '2px'})} 3px',
+      };
+      final merged = mergeAdaptive(under, {
+        'padding': markAdaptive('', {'c640': '9px'}),
+      });
+      expect(isAdaptive(merged['padding']!), isTrue);
+      final split = splitAdaptive(merged);
+      expect(split.base['padding'], '1px 3px');
+      expect(split.byBreakpoint['c640'], {'padding': '9px'});
+    });
+  });
 }

@@ -4,6 +4,7 @@ library;
 // The render core on its own: build order, lookups, wrappers, the head
 // portal, escaping and failure, on trees no app would write.
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:test/test.dart';
 import 'package:thor_server/thor_server.dart' show Locale;
@@ -14,6 +15,8 @@ import 'package:thor_ui/src/core/notifier.dart';
 import 'package:thor_ui/src/core/page.dart';
 import 'package:thor_ui/src/foundation/css_rules.dart' show css;
 import 'package:thor_ui/src/foundation/layout_hint.dart';
+import 'package:thor_ui/testing.dart' as ui;
+import 'package:thor_ui/thor_ui.dart' as ui;
 
 String _html(Widget c) =>
     writeComponent(c, standalone: true, compact: true).trim();
@@ -1364,6 +1367,69 @@ void main() {
     test('writes nothing when it is off', () {
       expect(PageBuild.trace, isNull);
       expect(_html(const _Build(_leaf)), isNot(contains('data-thor-w')));
+    });
+  });
+
+  group('adaptive markers', () {
+    setUpAll(ui.initializeThorTests);
+
+    // The internal marker of a value with variants (`⟦base␟c640␞value⟧`)
+    // is split into conditions of the class: none reaches the stylesheet.
+    test('never reach the stylesheet', () async {
+      // A parent that turns from column to row at a container width grants
+      // its child `align-self` per direction; a wrapper sets the same
+      // property for that width: both are one marker, not a marker in one.
+      final html = await ui.renderDocument(
+        ui.ThorApp(
+          child: ui.LayoutScope(
+            child: ui.Column(
+              crossAxisAlignment: ui.CrossAxisAlignment.stretch,
+              layout: const ui.FlexLayout().when(
+                container: {
+                  640: const ui.FlexLayout(direction: ui.Axis.horizontal),
+                },
+              ),
+              children: [
+                ui.Styled(
+                  style: const ui.StyleProps().when(
+                    container: {
+                      640: const ui.StyleProps(
+                        alignSelf: ui.CrossAxisAlignment.stretch,
+                      ),
+                    },
+                  ),
+                  child: const ui.SizedBox.expand(child: ui.Text('a')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      for (final marker in ['\u27e6', '\u27e7', '\u241f', '\u241e']) {
+        expect(html, isNot(contains(marker)));
+      }
+      expect(
+        html,
+        matches(
+          RegExp(
+            r'\{[^}]*align-self: stretch[^}]*\}'
+            r'@container \(min-width: 640px\)\{[^@]*align-self: stretch',
+          ),
+        ),
+      );
+    });
+
+    test('are in no recorded golden', () {
+      final golden = Directory('../../test/golden');
+      if (!golden.existsSync()) return;
+      final marker = RegExp('[\u27e6\u27e7\u241f\u241e]');
+      final leaks = [
+        for (final f in golden.listSync(recursive: true).whereType<File>())
+          if (RegExp(r'\.(css|html)$').hasMatch(f.path) &&
+              marker.hasMatch(f.readAsStringSync()))
+            f.path,
+      ];
+      expect(leaks, isEmpty);
     });
   });
 }
