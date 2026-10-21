@@ -227,7 +227,7 @@ Future<ActionResult?> add(PageRequest request, int id) async {
 
 `Form(stay: true)` guarda sin salir de la página. Con JavaScript el formulario se envía por `fetch` (con archivos si es `multipart`) y la página no navega: mientras va, el formulario queda ocupado y sus botones deshabilitados; al volver, el aviso de `Redirect.back(request).flash(…)` (o el mensaje de un `ActionResult.fail`) sale como toast, los archivos elegidos se limpian y las consultas del servidor (`query(fn)` de un `ThorState`) se piden otra vez. La acción es la misma de siempre.
 
-```dart
+```dart no-check
 Form(
   onPost: const SettingsPage().save,
   stay: true,
@@ -382,7 +382,7 @@ Al terminar el envío, la barra queda indeterminada mientras el servidor trabaja
 
 `FileField(submitOnChange: true)` envía el formulario en cuanto se eligen archivos. `submitWith` nombra el botón que lo envía (el de ese `name` o el de esa acción: `submitWith: 'store'` para el botón con `onPost: store`); sin él, el primero. Junto con `Form(stay: true)` la página no se mueve. Sin JavaScript, el campo es un campo de archivo normal junto a su botón.
 
-```dart
+```dart no-check
 Form(
   onPost: const PhotosPage().store,
   stay: true,
