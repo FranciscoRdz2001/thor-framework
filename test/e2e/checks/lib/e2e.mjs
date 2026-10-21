@@ -295,6 +295,31 @@ export async function scrollEnd(page, { quiet = 150, timeout = 5000 } = {}) {
 }
 
 /**
+ * Brings `locator` into view and resolves once it stops moving: the same
+ * box over `quiet` ms (a height transition above it, lazily laid out
+ * sections taking their real height), up to `timeout`. Call it before a
+ * click that may land while things still move in a page without
+ * JavaScript: Playwright's click retries an element that moved after an
+ * in-page timer, and such a page runs no timers, so the click would wait
+ * until its timeout. It polls from Node, like [settle].
+ */
+export async function still(locator, { quiet = 100, timeout = 5000 } = {}) {
+  await locator.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  const deadline = Date.now() + timeout;
+  let last = null;
+  let since = Date.now();
+  while (Date.now() < deadline) {
+    const now = await locator.evaluate((e) => {
+      const r = e.getBoundingClientRect();
+      return `${r.x},${r.y},${r.width},${r.height}`;
+    });
+    if (now !== last) [last, since] = [now, Date.now()];
+    else if (Date.now() - since >= quiet) return;
+    await new Promise((next) => setTimeout(next, 16));
+  }
+}
+
+/**
  * Makes every document of `page` record the engine's hydration
  * (`thor:hydrated`) in `window.__thorHydrated`, and a failed engine
  * script in `window.__thorEngineFailed`; call before `goto`.

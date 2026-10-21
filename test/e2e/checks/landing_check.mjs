@@ -5,7 +5,7 @@
 //
 //   tool/thor e2e landing                       (builds, serves, runs)
 //   node test/e2e/checks/landing_check.mjs [url]
-import { e2e, scrollEnd, settle } from './lib/e2e.mjs';
+import { e2e, scrollEnd, settle, still } from './lib/e2e.mjs';
 
 await e2e('landing', { site: 'test/fixtures/apps/landing/build/site' }, async (t) => {
   for (const js of [false, true]) {
@@ -52,9 +52,15 @@ await e2e('landing', { site: 'test/fixtures/apps/landing/build/site' }, async (t
     await p.keyboard.press('Escape');
     check('dropdown closes on Esc', await p.locator('#features-menu').isHidden());
 
-    await p.locator('#faq summary').nth(1).click();
+    // The FAQ section is laid out lazily (it takes its real height once in
+    // view) and an opening item grows over 250 ms, moving the ones below:
+    // click each header once it stands still (see `still`).
+    const question = (n) => p.locator('#faq summary').nth(n);
+    await still(question(1));
+    await question(1).click();
     check('faq item opens', await p.locator('#faq details').nth(1).evaluate((d) => d.open));
-    await p.locator('#faq summary').nth(2).click();
+    await still(question(2));
+    await question(2).click();
     check('faq is exclusive', !(await p.locator('#faq details').nth(1).evaluate((d) => d.open)));
 
     const car = p.locator('[aria-roledescription=carousel]');
