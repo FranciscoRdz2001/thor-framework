@@ -17,6 +17,7 @@ import 'package:thor_ui/src/foundation/css_rules.dart' show css;
 import 'package:thor_ui/src/foundation/layout_hint.dart';
 import 'package:thor_ui/testing.dart' as ui;
 import 'package:thor_ui/thor_ui.dart' as ui;
+import 'package:thor_ui/web.dart' as ui show WhiteSpace;
 
 String _html(Widget c) =>
     writeComponent(c, standalone: true, compact: true).trim();
@@ -1034,6 +1035,57 @@ void main() {
         final pretty = _page(tree, compact: false);
         expect(pretty, contains('<textarea>$value</textarea>'));
       }
+    });
+
+    test('text that preserves whitespace is written as in release', () {
+      final value = 'line one\n  indented\n${'long ' * 30}\nend';
+      for (final style in ['pre-wrap', 'pre', 'pre-line', 'break-spaces']) {
+        final tree = _el('section', [
+          Widget.element(
+            tag: 'div',
+            styles: Styles(raw: {'white-space': style}),
+            children: [
+              Widget.text(value),
+              _el('b', [Widget.text('a\nb')]),
+            ],
+          ),
+          _el('p'),
+        ]);
+        final pretty = _page(tree, compact: false);
+        expect(pretty, contains('>$value<b>a\nb</b></div>'), reason: style);
+        expect(_page(tree), contains('>$value<b>a\nb</b></div>'));
+      }
+    });
+
+    test('a class whose rule preserves whitespace keeps its text', () {
+      final value = 'one\ntwo ${'long ' * 30}\nend';
+      Widget tree() => _el('section', [
+        Widget.element(
+          tag: 'div',
+          classes: 'note',
+          children: [
+            _el('i', [Widget.text(value)]),
+          ],
+        ),
+        Widget.element(
+          tag: 'div',
+          classes: 'plain',
+          children: [
+            for (var i = 0; i < 4; i++) _el('i', [Widget.text('x $i')]),
+          ],
+        ),
+      ]);
+      final pretty = writeComponent(
+        tree(),
+        standalone: true,
+        compact: false,
+        styles: [
+          css(
+            '.note',
+          ).props(const ui.StyleProps(whiteSpace: ui.WhiteSpace.preWrap)),
+        ],
+      );
+      expect(pretty, contains('<i>$value</i>'));
     });
 
     test('a span keeps its content as it is', () {
