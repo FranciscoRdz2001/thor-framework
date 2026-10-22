@@ -164,13 +164,13 @@ void main() {
   });
 
   group('Image loading', () {
-    test('dims from a parent SizedBox only: eager', () async {
+    test('dims from a parent SizedBox only: still lazy', () async {
       final html = await _body(
         const SizedBox(width: 100, height: 100, child: Image.network('/a.png')),
       );
       expect(
         RegExp('<img[^>]*>').firstMatch(html)![0]!,
-        isNot(contains('loading="lazy"')),
+        contains('loading="lazy"'),
       );
     });
   });

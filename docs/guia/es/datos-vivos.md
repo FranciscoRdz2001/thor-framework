@@ -161,7 +161,7 @@ class PeoplePage extends ThorPage<People> {
 }
 ```
 
-Una lectura al backend por clic y sin recargar la página. El enlace es `<a href="?cursor=…" rel="next">`: sin JavaScript, con un clic con modificador, para un buscador y cuando la petición falla, el visitante va a la página siguiente. El resto de la query (`?q=pizza`) se conserva. `trigger: LoadMoreTrigger.visible` carga solo cuando el enlace se acerca a la pantalla (scroll infinito). `items` y el enlace son hermanos en el padre que los contiene: pon el widget en el `Column`, `Grid` o `Wrap` de las filas. `child` es el contenido del enlace (un `Text`, un `Container`), no un botón.
+Una lectura al backend por clic y sin recargar la página. El enlace es `<a href="?cursor=…" rel="next">`: sin JavaScript, con un clic con modificador, para un buscador y cuando la petición falla, el visitante va a la página siguiente. El resto de la query (`?q=pizza`) se conserva. Un clic normal siempre carga las filas en su lugar, sea cual sea el trigger. `trigger: LoadMoreTrigger.visible` además carga solo cuando el enlace se acerca a la pantalla (scroll infinito). `items` y el enlace son hermanos en el padre que los contiene: pon el widget en el `Column`, `Grid` o `Wrap` de las filas. `child` es el contenido del enlace (un `Text`, un `Container`), no un botón.
 
 ### Una búsqueda que se actualiza al escribir
 

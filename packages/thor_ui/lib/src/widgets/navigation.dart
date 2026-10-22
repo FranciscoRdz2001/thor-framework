@@ -267,6 +267,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
     this.permanentFrom,
     this.permanentWidth,
     this.permanentPadding,
+    this.sheetBelow,
     this.initiallyOpen = false,
     this.showClose = false,
     this.closeLabel,
@@ -275,6 +276,28 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
              permanentFrom != null,
          'permanentWidth / permanentPadding need permanentFrom',
        );
+
+  // web: not in Flutter.
+  /// Below this breakpoint the open drawer is a bottom sheet instead of a
+  /// side panel: full width, anchored to the bottom, rounded top corners
+  /// (28 px, like `ModalBottomSheet`) and a grab bar, sliding up. From the
+  /// breakpoint up it is the side panel (or the inline one with
+  /// [permanentFrom]). One `<dialog>` and one subtree: a filter list is
+  /// written once and is a sheet on a phone.
+  ///
+  /// ```dart
+  /// Drawer(
+  ///   id: 'filters',
+  ///   permanentFrom: WindowSizeClass.expanded,
+  ///   sheetBelow: WindowSizeClass.medium,
+  ///   child: Filters(),
+  /// )
+  /// ```
+  ///
+  /// The panel's [width] is ignored in the sheet; its [padding] still applies.
+  /// `// web:` Material 3 has the side sheet and the bottom sheet as two
+  /// widgets that the app swaps by window size; here CSS swaps them.
+  final WindowSizeClass? sheetBelow;
 
   // web: not in Flutter.
   /// From this breakpoint up the drawer stops being a modal and
@@ -373,6 +396,13 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      sheetBelow == null ||
+          permanentFrom == null ||
+          sheetBelow!.minWidth <= permanentFrom!.minWidth,
+      'sheetBelow must not be above permanentFrom: the drawer cannot be a '
+      'bottom sheet and the inline panel at the same width',
+    );
     if (permanentFrom != null) {
       ThorStyleRegistry.active(
         context,
@@ -486,6 +516,7 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
         const ConditionalCss(CssCondition.reducedMotion, {
           'transition-duration': '1ms',
         }),
+        if (sheetBelow case final bp?) ..._sheet(bp),
         if (permanentFrom case final bp?)
           ..._permanent(
             bp,
@@ -513,12 +544,63 @@ class Drawer extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       childRules: ChildRules.column,
       // Like Flutter's, the child gets the panel's full height.
       children: [
+        if (sheetBelow case final bp?)
+          thorElement(
+            'div',
+            debugName: 'DrawerGrabBar',
+            css: const {
+              'align-self': 'center',
+              'width': '32px',
+              'height': '4px',
+              'margin': '0 0 16px',
+              'border-radius': '2px',
+              'background-color': ThemeTokens.onSurfaceVariant,
+              'opacity': '0.4',
+              'flex': 'none',
+            },
+            conditions: [
+              ConditionalCss(CssCondition.breakpoint(bp), const {
+                'display': 'none',
+              }),
+            ],
+            attributes: const {'aria-hidden': 'true'},
+          ),
         if (showClose)
           DialogCloseCorner(hiddenFrom: permanentFrom, label: closeLabel),
         Expanded(child: child),
       ],
     );
   }
+}
+
+/// The rules that make an open drawer a bottom sheet below [bp].
+List<ConditionalCss> _sheet(WindowSizeClass bp) {
+  ConditionalCss below(CssCondition inner, Map<String, String> css) =>
+      ConditionalCss(
+        CssCondition.both(CssCondition.belowBreakpoint(bp), inner),
+        css,
+      );
+  const hidden = {'translate': '0 100%'};
+  const shown = {'translate': '0 0'};
+  return [
+    below(const CssCondition.selector(''), {
+      'margin': 'auto auto 0',
+      'width': '100%',
+      'height': 'auto',
+      'max-height': '90dvh',
+      'border-radius': '28px 28px 0 0',
+      ...hidden,
+    }),
+    below(const CssCondition.selector(':not([open]):dir(rtl)'), hidden),
+    below(const CssCondition.selector('[open]'), shown),
+    below(const CssCondition.selector('[open]:dir(rtl)'), shown),
+    below(const CssCondition.startingStyle('[open]'), hidden),
+    below(const CssCondition.startingStyle('[open]:dir(rtl)'), hidden),
+    // Its height is its content's: the `Expanded` basis of 0 would collapse.
+    below(const CssCondition.selector(' > :last-child'), const {
+      'flex': '1 1 auto',
+    }),
+  ];
 }
 
 const _permanentName = 't-drawer-permanent';

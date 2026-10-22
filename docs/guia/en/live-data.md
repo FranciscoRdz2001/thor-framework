@@ -161,7 +161,7 @@ class PeoplePage extends ThorPage<People> {
 }
 ```
 
-One backend read per click, and no page reload. The link is `<a href="?cursor=…" rel="next">`: without JavaScript, with a modified click, for a search engine and when the request fails, the visitor goes to the next page. The rest of the query (`?q=pizza`) is kept. `trigger: LoadMoreTrigger.visible` loads by itself when the link comes near the screen (infinite scroll). `items` and the link are siblings in the parent that holds them: put the widget in the `Column`, `Grid` or `Wrap` of the rows. `child` is the link's content (a `Text`, a `Container`), not a button.
+One backend read per click, and no page reload. The link is `<a href="?cursor=…" rel="next">`: without JavaScript, with a modified click, for a search engine and when the request fails, the visitor goes to the next page. The rest of the query (`?q=pizza`) is kept. A plain click always loads the rows in place, whatever the trigger. `trigger: LoadMoreTrigger.visible` also loads by itself when the link comes near the screen (infinite scroll). `items` and the link are siblings in the parent that holds them: put the widget in the `Column`, `Grid` or `Wrap` of the rows. `child` is the link's content (a `Text`, a `Container`), not a button.
 
 ### A search that updates as you type
 

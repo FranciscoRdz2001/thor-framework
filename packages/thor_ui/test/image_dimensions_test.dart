@@ -1,6 +1,6 @@
-// Chromium's "Lazy-loaded images should have explicit dimensions" (the
-// LazyLoadImageIssue): a lazy image needs both width and height, or a width
-// and an aspect ratio, in its computed style.
+// An image is lazy by default, sized or not: the size (both attributes, or a
+// ratio) is what keeps its late load from shifting the layout, `lazy: false`
+// and `priority` are the ways out.
 @TestOn('vm')
 library;
 
@@ -25,19 +25,19 @@ void main() {
     expect(img, contains('height="80"'));
   });
 
-  test('no size at all: not lazy (the browser would warn and shift)', () async {
+  test('no size at all: still lazy (the box around it sizes it)', () async {
     final img = _img(await _body(const Image.network('/a.png')));
-    expect(img, isNot(contains('loading=')));
+    expect(img, contains('loading="lazy"'));
   });
 
-  test('one side only: not lazy', () async {
+  test('one side only: lazy', () async {
     expect(
       _img(await _body(const Image.network('/a.png', width: 120))),
-      isNot(contains('loading=')),
+      contains('loading="lazy"'),
     );
     expect(
       _img(await _body(const Image.network('/a.png', height: 80))),
-      isNot(contains('loading=')),
+      contains('loading="lazy"'),
     );
   });
 
@@ -66,7 +66,7 @@ void main() {
         ),
       ),
     );
-    expect(onlyWidth, isNot(contains('loading=')));
+    expect(onlyWidth, contains('loading="lazy"'));
   });
 
   test('a width from a wrapper and an AspectRatio-like ratio: lazy', () async {
@@ -84,7 +84,7 @@ void main() {
   test('a row template image (empty src) follows the same rule', () async {
     expect(
       _img(await _body(const Image.network(''))),
-      isNot(contains('loading=')),
+      contains('loading="lazy"'),
     );
     expect(
       _img(await _body(const Image.network('', width: 260, height: 200))),
@@ -111,6 +111,19 @@ void main() {
       expect(html, contains('aspect-ratio: 2400 / 1600'));
     },
   );
+
+  test('an image in a sized box is lazy', () async {
+    final img = _img(
+      await _body(
+        const SizedBox(
+          width: 200,
+          height: 150,
+          child: Image.network('/a.png', fit: BoxFit.cover),
+        ),
+      ),
+    );
+    expect(img, contains('loading="lazy"'));
+  });
 
   test('priority is never lazy and keeps its fetchpriority', () async {
     final img = _img(
