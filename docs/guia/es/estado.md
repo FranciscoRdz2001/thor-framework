@@ -173,7 +173,7 @@ Column(children: [
   Watch(
     finder.hasMore,
     builder: (bool more) => more
-        ? TextButton(onPressed: finder.more, child: const Text('Cargar más'))
+        ? TextButton(onPressed: finder.more, child: const Text('Load more'))
         : const SizedBox.shrink(),
   ),
   Watch(finder.currentName), // the selected row: one place, no copy per row
@@ -305,7 +305,7 @@ final away = ScoreViewModel(key: 'away');
 
 ### Con retardo, o cada N segundos
 
-Un `Timer` cabe en lite dentro de un ViewModel, en un método o en `onHydrated`. Guárdalo en un campo para reiniciarlo o cancelarlo: un segundo toque empieza la cuenta otra vez, como haría `clearTimeout`.
+Un `Timer` funciona en el navegador dentro de un ViewModel, en un método o en `onHydrated`. Guárdalo en un campo para reiniciarlo o cancelarlo: un segundo toque empieza la cuenta otra vez, como haría `clearTimeout`.
 
 ```dart
 class SupportViewModel extends ThorState {

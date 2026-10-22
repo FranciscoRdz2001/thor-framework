@@ -149,7 +149,7 @@ ShareRequest(
 )
 ```
 
-> **Difference from Flutter:** these are packages there (`visibility_detector`, `geolocator`, `share_plus`) that return values to Dart; here the browser calls a ViewModel method. They need the lite engine, which is the default.
+> **Difference from Flutter:** these are packages there (`visibility_detector`, `geolocator`, `share_plus`) that return values to Dart; here the browser calls a ViewModel method.
 
 ## Next steps
 

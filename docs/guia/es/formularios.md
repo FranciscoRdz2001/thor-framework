@@ -151,7 +151,7 @@ Form(
 
 > **Diferencia con Flutter:** En Flutter, un botón sin `onPressed` queda deshabilitado. En Thor, un botón `buttonType: ButtonType.submit` dentro de un `Form` está activo sin manejador: su acción es enviar el formulario.
 
-Para deshabilitar un botón de envío según el estado y que siga sirviendo sin JavaScript, enlaza `disabled` con `clientOnly`: el servidor no lo escribe y el motor lo pone al arrancar.
+Para deshabilitar un botón de envío según el estado y que siga sirviendo sin JavaScript, enlaza `disabled` con `clientOnly`: el servidor no lo escribe y el navegador lo pone al cargar la página.
 
 ```dart
 WatchAttributes(
@@ -213,7 +213,7 @@ Column(
       formMethod: FormMethod.get,
       child: TextFormField(name: 'q'),
     ),
-    const FilledButton(formId: 'filters', child: Text('Aplicar')),
+    const FilledButton(formId: 'filters', child: Text('Apply')),
   ],
 )
 ```
@@ -254,7 +254,7 @@ Form(
   ]),
 )
 
-// en la página
+// in the page
 Future<Redirect> save(PageRequest request) async {
   await store(await request.form());
   return Redirect.back(request).flash('Saved', kind: FlashKind.success);

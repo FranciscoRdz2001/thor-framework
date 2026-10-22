@@ -277,7 +277,7 @@ The answer then carries the value, as the server computed it for that request, o
 
 - Only the states the region's content reads are sent, and they replace the page's, also those that run already; nothing else is touched.
 - A field the visitor edits in the browser (a draft, a counter) and the region reads is overwritten: use `syncState` on regions whose states come from the server.
-- It works with the lite engine; a state that has not started yet starts from the new value.
+- A state that has not started yet starts from the new value.
 - Without `syncState` (the default) nothing changes: a state the page has keeps its value.
 
 When the region does not read the state (a script or a button's handler uses it, or another part of the page shows it), name it: `Region(id: 'week', syncStates: [booking], child: SlotGrid())`. The answer carries the values of the listed states (all their fields that changed) and replaces the browser's, with the same rules. `syncState: true` and `syncStates` add up: with both, the answer carries the states the region reads and the ones listed.

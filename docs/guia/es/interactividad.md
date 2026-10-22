@@ -100,7 +100,7 @@ El editor lo marca y `thor dev` lo muestra en la consola.
 
 ## Funciones del navegador
 
-Tres funciones del navegador llegan a un ViewModel como callbacks, sin escribir JavaScript. Cada una es un envoltorio del widget sobre el que actúa, y los widgets funcionan sin ellas: simplemente no hacen nada hasta que el motor está cargado.
+Tres funciones del navegador llegan a un ViewModel como callbacks, sin escribir JavaScript. Cada una es un envoltorio del widget sobre el que actúa, y los widgets funcionan sin ellas: simplemente no hacen nada hasta que carga el JavaScript de la página.
 
 **Visible en pantalla.** `VisibilityDetector` llama a un método con `true` cuando su hijo aparece y con `false` cuando sale; `margin` lo adelanta antes de que se vea y `once` se detiene tras la primera vez. El uso típico es el scroll infinito: un centinela de un píxel tras la última fila y, dentro, un enlace «Ver más» para las páginas sin JavaScript.
 
@@ -128,13 +128,13 @@ Avisa de los cambios: un centinela que sigue en pantalla después de cargar sus 
 ```dart no-check
 class NearbyViewModel extends ThorState {
   void found(double latitude, double longitude, double accuracy) {}
-  void failed(String reason) {} // denied, unavailable, timeout o unsupported
+  void failed(String reason) {} // denied, unavailable, timeout or unsupported
 }
 
 GeolocationRequest(
   onPosition: nearby.found,
   onError: nearby.failed,
-  child: TextButton(onPressed: () {}, child: const Text('Usar mi ubicación')),
+  child: TextButton(onPressed: () {}, child: const Text('Use my location')),
 )
 ```
 
@@ -144,12 +144,12 @@ GeolocationRequest(
 ShareRequest(
   title: place.name,
   url: placeRoute.link().toString(),
-  onResult: place.shared, // void shared(String result) muestra «Enlace copiado»
-  child: TextButton(onPressed: () {}, child: const Text('Compartir')),
+  onResult: place.shared, // void shared(String result) shows "Link copied"
+  child: TextButton(onPressed: () {}, child: const Text('Share')),
 )
 ```
 
-> **Diferencia con Flutter:** allí son paquetes (`visibility_detector`, `geolocator`, `share_plus`) que devuelven valores a Dart; aquí el navegador llama a un método del ViewModel. Necesitan el motor lite, que es el predeterminado.
+> **Diferencia con Flutter:** allí son paquetes (`visibility_detector`, `geolocator`, `share_plus`) que devuelven valores a Dart; aquí el navegador llama a un método del ViewModel.
 
 ## Siguientes pasos
 

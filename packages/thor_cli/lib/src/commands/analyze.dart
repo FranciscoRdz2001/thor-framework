@@ -40,8 +40,8 @@ List<String> liteCheckArgs() => [
 /// Whether `thor analyze` also checks the lite subset: by default when the
 /// project has thor_builder (an app with states the browser runs), so
 /// `String.replaceAllMapped` or `Random` in code a state reaches is reported
-/// here and not by the first build; always when [asked] (`--lite`), never
-/// with `--no-lite`.
+/// here and not by the first build; always when [asked] (`--browser-check`), never
+/// with `--no-browser-check`.
 bool runsLiteCheck({required bool? asked, required Set<String> dependencies}) =>
     asked ?? dependencies.contains('thor_builder');
 
@@ -164,12 +164,12 @@ class AnalyzeCommand extends Command<int> with ProjectCommand<int> {
       help: 'Treat infos as errors, like the CI of a new project.',
     );
     argParser.addFlag(
-      'lite',
+      'browser-check',
       help:
           'Also check the package against the lite subset: its ThorState '
           'classes and every data class (a fromJson), as the build of an '
           'app that uses them would. On by default when thor_builder is a '
-          'dependency; --no-lite skips it.',
+          'dependency; --no-browser-check skips it.',
     );
   }
 
@@ -250,8 +250,8 @@ class AnalyzeCommand extends Command<int> with ProjectCommand<int> {
       );
     }
     Say.ok('No issues.');
-    final asked = argResults!.wasParsed('lite')
-        ? argResults!['lite'] as bool
+    final asked = argResults!.wasParsed('browser-check')
+        ? argResults!['browser-check'] as bool
         : null;
     if (runsLiteCheck(asked: asked, dependencies: project.dependencies)) {
       Say.step('Lite subset of ${project.name}');

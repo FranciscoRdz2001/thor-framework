@@ -180,7 +180,7 @@
   <span class="a">List</span>&lt;<span class="a">Object</span>&gt; forLayouts(<span class="a">PageState</span>&lt;<span class="g">void</span>&gt; state) =&gt; [<span class="g">const</span> <span class="a">HideFooter</span>()];
 
   <span class="g">@override</span>
-  <span class="a">Widget</span> build(<span class="a">BuildContext</span> context, <span class="a">PageState</span>&lt;<span class="g">void</span>&gt; state) =&gt; <span class="g">const</span> <span class="a">Text</span>(<span class="j">'Pagar'</span>);
+  <span class="a">Widget</span> build(<span class="a">BuildContext</span> context, <span class="a">PageState</span>&lt;<span class="g">void</span>&gt; state) =&gt; <span class="g">const</span> <span class="a">Text</span>(<span class="j">'Pay'</span>);
 }
 
 <span class="g">class</span> <span class="a">ShopLayout</span> <span class="g">extends</span> <span class="a">ThorLayout</span>&lt;<span class="g">void</span>&gt; {
@@ -191,7 +191,7 @@
       <span class="a">Column</span>(
         children: [
           child,
-          <span class="g">if</span> (state.fromPage&lt;<span class="a">HideFooter</span>&gt;() == <span class="g">null</span>) <span class="g">const</span> <span class="a">Text</span>(<span class="j">'Pie'</span>),
+          <span class="g">if</span> (state.fromPage&lt;<span class="a">HideFooter</span>&gt;() == <span class="g">null</span>) <span class="g">const</span> <span class="a">Text</span>(<span class="j">'Footer'</span>),
         ],
       );
 }</span></pre></div><button class="K" data-studio-copy="Copiado" aria-label="Copiar" title="Copiar" type="button"><div class="J"><svg class="G" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><use href="#lucide-copy"></use></svg><svg class="H" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14"><use href="#lucide-circle-check"></use></svg></div></button></div></div></div></div><div class="ga"><div class="M k"><p>Una pantalla sin marco, como el inicio de sesión, va en un grupo aparte.</p><h3 id="páginas-de-error" aria-labelledby="páginas-de-error-title"><span id="páginas-de-error-title">Páginas de error</span><a href="#páginas-de-error" data-anchor aria-label="Enlace a esta sección"><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span></a></h3><p>Una página de error extiende <code>ErrorPage</code>. Responde la del grupo más cercano a la ruta que falló, y <code>notFound:</code> atiende las URLs sin ruta.</p></div></div><div class="O"><div class="Y" data-studio-code><div class="s" data-studio-code><div class="t"><div class="L" tabindex="0" role="group" aria-label="dart"><pre class="F"><span class="r"><span class="g">class</span> <span class="a">AppErrorPage</span> <span class="g">extends</span> <span class="a">ErrorPage</span> {

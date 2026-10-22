@@ -70,7 +70,7 @@ PageRoute<Widget, Product?>(
         child: state.data == null ? const SizedBox.shrink() : ProductDetail(state.data!),
       ),
       for (final p in products.all)
-        // Sin JS: el enlace recarga con `?product=` y el diálogo abierto.
+        // No JS: the link reloads with `?product=` and the dialog open.
         Link(href: RouteUrl('/shop?product=${p.id}'), child: ProductCard(p)),
     ],
   ),
@@ -82,7 +82,7 @@ PageRoute<Widget, Product?>(
 | Aspecto | un diálogo modal: fondo oscuro, foco atrapado, Esc, página inerte detrás | un `<dialog>` abierto y no modal, centrado en la ventana; sin fondo oscuro |
 | Se cierra con | Esc, clic en el fondo, `DialogClose` | solo `DialogClose` |
 
-El HTML lleva `<dialog open data-thor-open>`. El script en línea y pequeño de la página (el mismo que carga las `Region`; no necesita motor) lo cierra y lo vuelve a mostrar con `showModal()` en cuanto corre, así que puede haber un primer pintado de la forma no modal. Cerrarlo no cambia la URL; `AlertDialog`, `Drawer` y `ModalBottomSheet` aceptan la misma opción (un cajón conserva su `side` y su `width`, y entra deslizándose al mejorarse; sin JavaScript queda fijo contra su borde, sobre la página), y un `Dialog(modal: false)` siempre está abierto.
+El HTML lleva `<dialog open>`. El script en línea y pequeño de la página (el mismo que carga las `Region`; no necesita el resto del JavaScript) lo cierra y lo vuelve a mostrar con `showModal()` en cuanto corre, así que puede haber un primer pintado de la forma no modal. Cerrarlo no cambia la URL; `AlertDialog`, `Drawer` y `ModalBottomSheet` aceptan la misma opción (un cajón conserva su `side` y su `width`, y entra deslizándose al mejorarse; sin JavaScript queda fijo contra su borde, sobre la página), y un `Dialog(modal: false)` siempre está abierto.
 
 ## Diálogo y botón separados
 

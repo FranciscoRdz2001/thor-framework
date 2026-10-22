@@ -213,7 +213,7 @@ thor fonts metrics <font> [--fallback <file>] [--json]
 
 ## Análisis y editor
 
-`thor analyze` ejecuta `dart analyze --fatal-infos` desde la raíz del proyecto o del workspace, que es donde corren las reglas de Thor; `thor format` formatea el proyecto y `thor format --check` falla en CI si hay cambios pendientes. En una app (un proyecto con `thor_builder`) también revisa el subconjunto lite que corre el navegador, la misma revisión que hace el build, así que un `String.replaceAllMapped` o un `Random` en código que un estado alcanza se reporta aquí y no en el primer build; `thor analyze --no-lite` la omite. Las mismas reglas aparecen en el editor mientras escribes.
+`thor analyze` ejecuta `dart analyze --fatal-infos` desde la raíz del proyecto o del workspace, que es donde corren las reglas de Thor; `thor format` formatea el proyecto y `thor format --check` falla en CI si hay cambios pendientes. En una app (un proyecto con `thor_builder`) también revisa el código que corre el navegador, la misma revisión que hace el build, así que un `String.replaceAllMapped` o un `Random` en código que un estado alcanza se reporta aquí y no en el primer build; `thor analyze --no-browser-check` la omite. Las mismas reglas aparecen en el editor mientras escribes.
 
 ### Reglas de Thor
 

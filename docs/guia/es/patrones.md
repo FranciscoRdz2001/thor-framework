@@ -197,7 +197,7 @@ Un ViewModel puede guardar un valor distinto por tienda, documento o cuenta: `lo
 
 ```dart
 class CartViewModel extends ThorState {
-  final store = state('');                       // la página lo fija al slug de la tienda
+  final store = state('');                       // the page sets it to the store's slug
   late final items = state(<String>[], local: 'cart', localScope: store);
 }
 

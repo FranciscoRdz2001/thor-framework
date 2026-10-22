@@ -305,7 +305,7 @@ final away = ScoreViewModel(key: 'away');
 
 ### After a delay, or every N seconds
 
-A `Timer` is lite-safe inside a ViewModel, in a method or in `onHydrated`. Keep it in a field to restart or cancel it: a second tap starts the count again, as `clearTimeout` would.
+A `Timer` works in the browser inside a ViewModel, in a method or in `onHydrated`. Keep it in a field to restart or cancel it: a second tap starts the count again, as `clearTimeout` would.
 
 ```dart
 class SupportViewModel extends ThorState {

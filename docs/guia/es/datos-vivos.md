@@ -153,8 +153,8 @@ class PeoplePage extends ThorPage<People> {
       LoadMore(
         id: 'people',
         items: [for (final p in state.data.items) PersonCard(p)],
-        next: state.data.next, // null en la última página: sin enlace
-        child: const Text('Cargar más'),
+        next: state.data.next, // null on the last page: no link
+        child: const Text('Load more'),
       ),
     ],
   );
@@ -179,7 +179,7 @@ Column(
       id: 'results',
       child: Column(
         children: [
-          LoadMore(id: 'people', items: rows, next: next, child: const Text('Cargar más')),
+          LoadMore(id: 'people', items: rows, next: next, child: const Text('Load more')),
         ],
       ),
     ),
@@ -213,7 +213,7 @@ Column(
   ],
 )
 
-// la página propia del producto
+// the product's own page
 Region(id: 'detail', child: ProductDetail(product))
 ```
 
@@ -260,10 +260,10 @@ class BookingViewModel extends ThorState {
   String firstFree() => slots.value.isEmpty ? '' : slots.value.first;
 }
 
-// El `load` de la página llena `slots` para el `?week=` que se pidió.
+// The page's `load` fills `slots` for the `?week=` it was asked for.
 Column(
   children: [
-    Watch(booking.firstFree), // fuera de la región: también se actualiza
+    Watch(booking.firstFree), // outside the region: also updated
     Region(
       id: 'week',
       syncState: true,
@@ -277,7 +277,7 @@ La respuesta lleva entonces el valor, tal como el servidor lo calculó para esa 
 
 - Solo se envían los estados que lee el contenido de la región, y reemplazan los de la página, también los que ya corren; nada más se toca.
 - Un campo que el visitante edita en el navegador (un borrador, un contador) y que la región lee se sobrescribe: usa `syncState` en regiones cuyos estados vienen del servidor.
-- Funciona con el motor lite; un estado que aún no arrancó arranca con el valor nuevo.
+- Un estado que aún no arrancó arranca con el valor nuevo.
 - Sin `syncState` (el predeterminado) nada cambia: un estado que la página tiene conserva su valor.
 
 Cuando la región no lee el estado (lo usa un script o el manejador de un botón, o lo muestra otra parte de la página), nómbralo: `Region(id: 'week', syncStates: [booking], child: SlotGrid())`. La respuesta lleva los valores de los estados listados (todos sus campos que cambiaron) y reemplaza los del navegador, con las mismas reglas. `syncState: true` y `syncStates` se suman: con ambos, la respuesta lleva los estados que lee la región y los listados.
@@ -292,7 +292,7 @@ class TrackingViewModel extends ThorState {
 
   @override
   void onHydrated() {
-    // El `load` de la página lee el pedido; la región es lo que cambia.
+    // The page's `load` reads the order; the region is what changes.
     _poll = Timer.periodic(
       const Duration(seconds: 10),
       (t) => PageRegion.refresh('tracking'),
@@ -302,10 +302,10 @@ class TrackingViewModel extends ThorState {
   @override
   void dispose() => _poll?.cancel();
 
-  void cancelled() => PageRegion.refresh('tracking'); // tras un comando
+  void cancelled() => PageRegion.refresh('tracking'); // after a command
 }
 
-// en la página
+// in the page
 Region(id: 'tracking', syncState: true, child: OrderTimeline(order))
 ```
 

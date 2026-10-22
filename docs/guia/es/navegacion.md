@@ -142,7 +142,7 @@ class CheckoutPage extends ThorPage<void> {
   List<Object> forLayouts(PageState<void> state) => [const HideFooter()];
 
   @override
-  Widget build(BuildContext context, PageState<void> state) => const Text('Pagar');
+  Widget build(BuildContext context, PageState<void> state) => const Text('Pay');
 }
 
 class ShopLayout extends ThorLayout<void> {
@@ -153,7 +153,7 @@ class ShopLayout extends ThorLayout<void> {
       Column(
         children: [
           child,
-          if (state.fromPage<HideFooter>() == null) const Text('Pie'),
+          if (state.fromPage<HideFooter>() == null) const Text('Footer'),
         ],
       );
 }
