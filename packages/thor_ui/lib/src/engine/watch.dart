@@ -19,6 +19,7 @@ import '../foundation/lazy_layout.dart';
 import '../foundation/parent_data.dart';
 import '../foundation/row_bind.dart';
 import '../foundation/transparent.dart';
+import '../widgets/basic.dart' show SizedBox;
 import '../widgets/flex.dart' show Column;
 import '../widgets/navigation.dart' show Link;
 import '../widgets/text.dart' show Text;
@@ -628,6 +629,10 @@ class Watch<T> extends StatelessWidget
   static Widget _own(Widget built) {
     // Also what an app component builds.
     final r = resolveComponent(built);
+    // `// web:` a state that draws nothing (`SizedBox.shrink()`) must not
+    // take a `gap` slot in its flex/grid parent: Flutter would have no
+    // child there at all. Its marked element generates no box.
+    if (r is SizedBox && r.isEmptyShrink) return const _EmptyState();
     // A `QueryBuilder` in a state of another one marks its element too.
     return (r is Watch && r._marksStates) ||
             r is _QueryStates ||
@@ -940,6 +945,22 @@ class QueryError extends StatelessWidget
   @override
   Widget build(BuildContext context) =>
       Watch<String>(query.message, style: style);
+}
+
+/// The marked element of a state that draws nothing: `display: contents`
+/// without children generates no box, so it takes no `gap` slot.
+class _EmptyState extends StatelessWidget
+    implements ThorElementWidget, ThorBuiltIn {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) => thorElement(
+    'div',
+    debugName: 'Watch',
+    css: const {'display': 'contents'},
+    childRules: ChildRules.none,
+    children: const [],
+  );
 }
 
 /// The box of a state whose builder returns another states `Watch`. It

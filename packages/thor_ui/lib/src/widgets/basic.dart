@@ -233,6 +233,11 @@ class SizedBox extends StatelessWidget
       heightLength = null;
 
   /// Creates a box with zero width and height.
+  ///
+  /// `// web:` outside a `Watch` it is a real `0 × 0` element, so a parent's
+  /// `spacing` counts it, like Flutter's Column/Row do. As the whole state
+  /// of a `Watch` (`Watch(…, builder: (on) => on ? x : SizedBox.shrink())`)
+  /// it draws no box at all, so the empty state takes no `gap` slot.
   const SizedBox.shrink({super.key, this.child})
     : width = 0,
       height = 0,
@@ -245,6 +250,14 @@ class SizedBox extends StatelessWidget
       height = dimension,
       widthLength = null,
       heightLength = null;
+
+  /// Whether this is a childless `0 × 0` box (`SizedBox.shrink()`).
+  bool get isEmptyShrink =>
+      child == null &&
+      width == 0 &&
+      height == 0 &&
+      widthLength == null &&
+      heightLength == null;
 
   /// Box width, in logical pixels.
   final double? width;
