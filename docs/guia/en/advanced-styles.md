@@ -288,6 +288,24 @@ final styles = css.states([
 ]);
 ```
 
+A rule nested in another is a descendant: inside `css('.mb', [...])`,
+`css('.row')` writes `.mb .row` (specificity 0,2,0). A breakpoint for it
+written *outside* the parent (`css.minWidth(480, [css('.row')...])`) writes
+`.row` (0,1,0) and loses. Put the media query inside the same parent, so the
+selector is the same and the later rule wins at its width:
+
+```dart no-check
+css('.mb', [
+  css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 8))),
+  css.minWidth(480, [
+    css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 10))),
+  ]),
+  WindowSizeClass.large.media([
+    css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 12))),
+  ]),
+]),
+```
+
 ### Stylesheets by level
 
 Each stylesheet belongs to a level (theme, components, app, module or page);

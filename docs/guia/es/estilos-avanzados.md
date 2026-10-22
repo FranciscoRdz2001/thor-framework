@@ -289,6 +289,24 @@ final styles = css.states([
 ]);
 ```
 
+Una regla anidada en otra es un descendiente: dentro de `css('.mb', [...])`,
+`css('.fila')` escribe `.mb .fila` (especificidad 0,2,0). Un breakpoint
+escrito *fuera* del padre (`css.minWidth(480, [css('.fila')...])`) escribe
+`.fila` (0,1,0) y pierde. Pon la media query dentro del mismo padre: el
+selector es el mismo y gana la regla posterior a su ancho:
+
+```dart no-check
+css('.mb', [
+  css('.fila').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 8))),
+  css.minWidth(480, [
+    css('.fila').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 10))),
+  ]),
+  WindowSizeClass.large.media([
+    css('.fila').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 12))),
+  ]),
+]),
+```
+
 ### Hojas de estilo por nivel
 
 Cada hoja pertenece a un nivel (tema, componentes, app, módulo o página);
