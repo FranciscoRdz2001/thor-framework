@@ -126,12 +126,12 @@ class Image extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
 
   /// Whether to defer loading until near the viewport (`loading="lazy"`).
   ///
-  /// web: only an image with explicit dimensions (its `width` and `height`, the
-  /// build manifest's, or a wrapper's) is deferred: one without them loads
-  /// eagerly, as the browser warns about a lazy one and its late load shifts
-  /// the layout. For unsized images eager and lazy tie on CLS and LCP, because a lazy image with no height
-  /// counts as visible and is fetched anyway; eager only delays the `load`
-  /// event.
+  /// web: on by default, sized or not: a card photo inside a box that
+  /// sizes it (`SizedBox`, `AspectRatio`, a clipped container) is deferred
+  /// too. Give it `width` and `height` (or an `AspectRatio`) when known so
+  /// its late load shifts nothing (CLS); an image that is always on the
+  /// first screen can pass `lazy: false` (or `priority: true` for the main
+  /// one) to load at once.
   final bool lazy;
 
   // web: not in Flutter.
@@ -296,12 +296,6 @@ class Image extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
             : '100vw');
     final scalesDown =
         fit == null && w != null && h != null && w.isFinite && h.isFinite;
-    final explicit = _hasExplicitSize(
-      context,
-      w: w,
-      h: h,
-      scalesDown: scalesDown,
-    );
     final src0 = !_asset
         ? src
         : entry != null
@@ -323,7 +317,7 @@ class Image extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       'alt': semanticLabel ?? '',
       if (priority && !twin)
         'fetchpriority': 'high'
-      else if ((lazy && explicit) || twin)
+      else if (lazy || twin)
         'loading': 'lazy',
       'decoding': 'async',
       // Beside the image, a fallback and a placeholder are told how it goes.
@@ -488,40 +482,6 @@ class Image extends StatelessWidget implements ThorElementWidget, ThorBuiltIn {
       children: [picture, twin(darkFile: true), twin(darkFile: false)],
     );
   }
-
-  /// Whether the browser sees explicit dimensions on the `<img>`: both its
-  /// width and height, or one of them and an aspect ratio, from the image's
-  /// own props, the manifest or the wrappers fused into it. Chromium warns
-  /// ("Lazy-loaded images should have explicit dimensions") about a lazy
-  /// image without them, and its late load shifts the layout.
-  ///
-  /// web: a lazy image of unknown size loads eagerly instead, so its
-  /// size (`width`/`height`, or `AspectRatio`) is what makes it lazy.
-  bool _hasExplicitSize(
-    BuildContext context, {
-    required double? w,
-    required double? h,
-    required bool scalesDown,
-  }) {
-    var hasWidth = width != null || w != null;
-    var hasHeight = height != null || h != null;
-    var ratio = scalesDown;
-    // The wrappers around it become its own class when it is the element
-    // (not behind an error/loading frame, not inside a <picture>).
-    if (errorBuilder == null && loadingBuilder == null) {
-      final pending = ChildRulesScope.maybeOf(context)?.pending;
-      if (pending != null) {
-        for (final css in [pending.baseCss, pending.classCss, pending.css]) {
-          if (_given(css['width'])) hasWidth = true;
-          if (_given(css['height'])) hasHeight = true;
-          if (_given(css['aspect-ratio'])) ratio = true;
-        }
-      }
-    }
-    return (hasWidth && hasHeight) || ((hasWidth || hasHeight) && ratio);
-  }
-
-  static bool _given(String? value) => value != null && value != 'auto';
 
   CssDeclarations get _fitCss => {
     if (fit != null) 'object-fit': fit!.css,
