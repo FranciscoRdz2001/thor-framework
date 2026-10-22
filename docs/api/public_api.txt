@@ -8913,6 +8913,7 @@ thor_ui	HtmlPolicy.defaultAttributes	Map<String, Set<String>> defaultAttributes
 thor_ui	HtmlPolicy.defaultSchemes	Set<String> defaultSchemes
 thor_ui	HtmlPolicy.defaultTags	Set<String> defaultTags
 thor_ui	HtmlPolicy.eagerImages	int eagerImages
+thor_ui	HtmlPolicy.inlineTags	Set<String> inlineTags
 thor_ui	HtmlPolicy.linkTarget	String? linkTarget
 thor_ui	HtmlPolicy.maxDepth	int maxDepth
 thor_ui	HtmlPolicy.maxLength	int maxLength
@@ -8924,7 +8925,8 @@ thor_ui	HtmlPolicy.tags	Set<String> tags
 thor_ui	HtmlWidget	class
 thor_ui	HtmlWidget.build	Widget build(BuildContext context)
 thor_ui	HtmlWidget.html	String html
-thor_ui	HtmlWidget.new	HtmlWidget(String html, {Key? key, HtmlPolicy policy = const HtmlPolicy()})
+thor_ui	HtmlWidget.inline	bool inline
+thor_ui	HtmlWidget.new	HtmlWidget(String html, {Key? key, HtmlPolicy policy = const HtmlPolicy(), bool inline = false})
 thor_ui	HtmlWidget.policy	HtmlPolicy policy
 thor_ui	Icon	class
 thor_ui	Icon.build	Widget build(BuildContext context)
@@ -20600,6 +20602,7 @@ thor_ui	ThorInspect.enabled	bool enabled
 thor_ui	ThorInspect.new	ThorInspect()
 thor_ui	ThorInspect.sourceOf	String? sourceOf(Object owner)
 thor_ui	ThorLayer	enum
+thor_ui	ThorLayer.base	ThorLayer base
 thor_ui	ThorLayer.cssName	String cssName
 thor_ui	ThorLayer.new	ThorLayer(String cssName)
 thor_ui	ThorLayer.overrides	ThorLayer overrides
@@ -21291,8 +21294,9 @@ thor_ui	WrapData.fillsHeight	bool fillsHeight
 thor_ui	WrapData.fillsWidth	bool fillsWidth
 thor_ui	WrapData.fixesWidth	bool fixesWidth
 thor_ui	WrapData.flexible	bool flexible
+thor_ui	WrapData.floorCss	CssDeclarations floorCss
 thor_ui	WrapData.merge	WrapData merge(WrapData inner)
-thor_ui	WrapData.new	WrapData({List<String> classes = const [], CssDeclarations baseCss = const {}, CssDeclarations css = const {}, CssDeclarations classCss = const {}, List<ConditionalCss> conditions = const [], Map<String, String> attributes = const {}, bool fillsWidth = false, bool fixesWidth = false, bool fillsHeight = false, Map<String, String> debugAttributes = const {}, String? tag, bool flexible = false, String? viewTransitionName, bool closesDialog = false})
+thor_ui	WrapData.new	WrapData({List<String> classes = const [], CssDeclarations baseCss = const {}, CssDeclarations floorCss = const {}, CssDeclarations css = const {}, CssDeclarations classCss = const {}, List<ConditionalCss> conditions = const [], Map<String, String> attributes = const {}, bool fillsWidth = false, bool fixesWidth = false, bool fillsHeight = false, Map<String, String> debugAttributes = const {}, String? tag, bool flexible = false, String? viewTransitionName, bool closesDialog = false})
 thor_ui	WrapData.tag	String? tag
 thor_ui	WrapData.viewTransitionName	String? viewTransitionName
 thor_ui	WrapWith	class

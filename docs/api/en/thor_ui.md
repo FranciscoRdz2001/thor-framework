@@ -1274,7 +1274,7 @@ What [sanitizeHtml] lets through.
 
 HTML you do not control (a catalog description, a CMS body, a comment) as safe markup, styled with the theme.
 
-- `HtmlWidget(String html, {Key? key, HtmlPolicy policy = const HtmlPolicy()})` — Shows [html] sanitized with [policy].
+- `HtmlWidget(String html, {Key? key, HtmlPolicy policy = const HtmlPolicy(), bool inline = false})` — Shows [html] sanitized with [policy].
 
 ### `Icon` · class
 
