@@ -83,7 +83,9 @@ class Link extends ParentDataWrapper {
   @override
   WrapData get wrapData => WrapData(
     tag: 'a',
-    baseCss: const {'text-decoration': 'none', 'color': 'inherit'},
+    // web: Flutter's `Link` imposes no color; the child's decides. These go
+    // under every class, the app's included.
+    floorCss: const {'text-decoration': 'none', 'color': 'inherit'},
     attributes: {
       'href': href,
       if (newTab) ...{'target': '_blank', 'rel': 'noopener noreferrer'},

@@ -496,7 +496,8 @@ class ConditionalCss {
 /// - `thor.reset`: the page reset (`thorResetStyles`);
 /// - `thor.tokens`: the app theme (variables on `:root`, `color-scheme`);
 /// - `thor.components`: component recipes (reserved);
-/// - `thor.props` / `thor.overrides`: one class per element ([ThorLayer]).
+/// - `thor.props` / `thor.overrides`: one class per element ([ThorLayer]);
+///   a few wrapper defaults (a `Link`'s color) sit in `thor.reset`.
 ///
 /// App stylesheets are unlayered, so they override every thor layer. Every
 /// page states this order first, so a stylesheet linked before it (a shared
@@ -510,7 +511,7 @@ const thorResetLayer = 'thor.reset';
 /// The layer of the app theme (variables on `:root`).
 const thorTokensLayer = 'thor.tokens';
 
-/// Cascade layers of the per-element classes, lowest first (see
+/// Cascade layers of the per-element classes (see
 /// [thorLayerOrder] for the whole order).
 enum ThorLayer {
   /// Widget props (`Container(color: …)`): the defaults.
@@ -518,7 +519,13 @@ enum ThorLayer {
 
   /// Explicit overrides (`Responsive`, conditional wrappers) that must beat
   /// the props of the element they wrap.
-  overrides('thor.overrides');
+  overrides('thor.overrides'),
+
+  /// Defaults under everything else, the app's classes included (a `Link`'s
+  /// `color: inherit`): it shares the page reset's layer. (Last in the
+  /// enum, so the content hash of the other classes stays as it was; the
+  /// cascade order is `thorLayerOrder`.)
+  base('thor.reset');
 
   const ThorLayer(this.cssName);
 

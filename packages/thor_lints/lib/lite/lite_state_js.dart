@@ -3163,7 +3163,9 @@ class _Translator {
                       );
                     } else if (localScope is SimpleIdentifier &&
                         stateFields.contains(localScope.name)) {
-                      scope = _mangle(localScope.name);
+                      // (the JS name the field's own `const` has: a short one
+                      // in a release build)
+                      scope = _stateName(localScope.name);
                     } else {
                       _fail(
                         localScope,

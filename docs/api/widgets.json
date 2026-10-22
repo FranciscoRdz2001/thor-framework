@@ -7869,12 +7869,12 @@
   "name": "HtmlWidget",
   "topic": "texto",
   "summary": "HTML you do not control (a catalog description, a CMS body, a comment) as safe markup, styled with the theme.",
-  "doc": "HTML you do not control (a catalog description, a CMS body, a comment)\nas safe markup, styled with the theme.\n\nThe [html] goes through [sanitizeHtml] with the [policy] on the server\n(the page never carries a script, an event handler or a `javascript:`\nURL from it), then is written as the children of one `<div>`. Paragraphs,\nheadings, lists, links, images and tables get the theme's typography and\ncolors through descendant rules in the page's stylesheet: no inline\nstyles, and nothing nested widgets (a `Card` inside the content) can\ninherit by accident.\n\n```dart\nHtmlWidget(product.description)\nHtmlWidget(comment.body, policy: HtmlPolicy(linkTarget: '_blank', nofollow: true))\nHtmlWidget(post.body, policy: HtmlPolicy(eagerImages: 1)) // a cover image on top\n```\n\nImages load lazily (`loading=\"lazy\"`) except the first\n[HtmlPolicy.eagerImages].\n\nweb: named after `flutter_widget_from_html`'s `HtmlWidget(html)` (the\nmost used package of the two; `flutter_html`'s `Html(data:)` would also\ncollide with `package:thor_ui/html.dart`, the raw elements). Unlike\nboth, nothing is parsed or laid out in Dart at runtime: the browser\ndraws the HTML, and `onLinkTap`/`customWidgetBuilder` have no\nequivalent (links are `<a href>`).",
+  "doc": "HTML you do not control (a catalog description, a CMS body, a comment)\nas safe markup, styled with the theme.\n\nThe [html] goes through [sanitizeHtml] with the [policy] on the server\n(the page never carries a script, an event handler or a `javascript:`\nURL from it), then is written as the children of one `<div>`. Paragraphs,\nheadings, lists, links, images and tables get the theme's typography and\ncolors through descendant rules in the page's stylesheet: no inline\nstyles, and nothing nested widgets (a `Card` inside the content) can\ninherit by accident.\n\n```dart\nHtmlWidget(product.description)\nHtmlWidget(comment.body, policy: HtmlPolicy(linkTarget: '_blank', nofollow: true))\nHtmlWidget(post.body, policy: HtmlPolicy(eagerImages: 1)) // a cover image on top\n```\n\nA block container does not fit where only text is allowed (a `<p>`,\na `<button>`): the parser closes the `<p>` at the first `<div>` inside\nit. [inline] `true` writes a `<span>` and keeps only the text-level tags\nof the policy ([HtmlPolicy.inlineTags]: `strong`, `em`, `a`, `br`…); the\nblock ones are unwrapped and their text stays.\n\n```dart\nText.rich(...)\nHtmlWidget(product.description, inline: true) // inside a paragraph\n```\n\nImages load lazily (`loading=\"lazy\"`) except the first\n[HtmlPolicy.eagerImages].\n\nweb: named after `flutter_widget_from_html`'s `HtmlWidget(html)` (the\nmost used package of the two; `flutter_html`'s `Html(data:)` would also\ncollide with `package:thor_ui/html.dart`, the raw elements). Unlike\nboth, nothing is parsed or laid out in Dart at runtime: the browser\ndraws the HTML, and `onLinkTap`/`customWidgetBuilder` have no\nequivalent (links are `<a href>`).",
   "flutter": null,
   "constructors": [
    {
     "name": "HtmlWidget",
-    "signature": "HtmlWidget(\n  String html, {\n  Key? key,\n  HtmlPolicy policy = const HtmlPolicy(),\n})",
+    "signature": "HtmlWidget(\n  String html, {\n  Key? key,\n  HtmlPolicy policy = const HtmlPolicy(),\n  bool inline = false,\n})",
     "summary": "Shows [html] sanitized with [policy].",
     "params": [
      {
@@ -7890,6 +7890,13 @@
       "required": false,
       "default": "const HtmlPolicy()",
       "doc": "What is allowed through (tags, attributes, schemes, link target)."
+     },
+     {
+      "name": "inline",
+      "type": "bool",
+      "required": false,
+      "default": "false",
+      "doc": "Whether the content is text-level only: a `<span>` with the policy's phrasing tags, safe inside a `<p>` or a `<button>`. `// web:` no Flutter counterpart (a Flutter widget can always be a block)."
      }
     ]
    }
