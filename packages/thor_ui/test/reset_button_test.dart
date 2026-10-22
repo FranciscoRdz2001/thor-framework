@@ -30,8 +30,7 @@ Future<String> _page(Widget body) async {
 
 void main() {
   test('thorResetStyles resets the browser button in thor.reset', () async {
-    final out = await _page(html.button([Widget.text('Share')]));
-    print(out.substring(out.indexOf('box-sizing') - 200, out.indexOf('box-sizing') + 400));
+    final out = await _page(const html.button([Widget.text('Share')]));
     final start = out.indexOf('@layer thor.reset {');
     expect(start, isNonNegative);
     final reset = out.substring(start, out.indexOf('</style>', start));

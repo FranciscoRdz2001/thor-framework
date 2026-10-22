@@ -25,26 +25,29 @@ List<String> _classes(String html) =>
 void main() {
   setUpAll(initializeThorTests);
 
-  test('the declarations are in the base layer, shared by every link', () async {
-    final out = await _page(
-      const Column(
-        children: [
-          Link(href: RouteUrl('/a'), child: Text('A')),
-          Link(href: RouteUrl('/b'), child: Text('B')),
-        ],
-      ),
-    );
-    final base = _layer(out, 'thor.reset');
-    expect(base, contains('color: inherit'));
-    expect(base, contains('text-decoration: none'));
-    expect(
-      RegExp('color: inherit').allMatches(base),
-      hasLength(1),
-      reason: 'one class for all the links',
-    );
-    expect(_layer(out, 'thor.props'), isNot(contains('color: inherit')));
-    expect(_layer(out, 'thor.overrides'), isNot(contains('color: inherit')));
-  });
+  test(
+    'the declarations are in the base layer, shared by every link',
+    () async {
+      final out = await _page(
+        const Column(
+          children: [
+            Link(href: RouteUrl('/a'), child: Text('A')),
+            Link(href: RouteUrl('/b'), child: Text('B')),
+          ],
+        ),
+      );
+      final base = _layer(out, 'thor.reset');
+      expect(base, contains('color: inherit'));
+      expect(base, contains('text-decoration: none'));
+      expect(
+        RegExp('color: inherit').allMatches(base),
+        hasLength(1),
+        reason: 'one class for all the links',
+      );
+      expect(_layer(out, 'thor.props'), isNot(contains('color: inherit')));
+      expect(_layer(out, 'thor.overrides'), isNot(contains('color: inherit')));
+    },
+  );
 
   test('a Text color still wins over the link', () async {
     final out = await _page(
@@ -59,8 +62,8 @@ void main() {
 
   test('an app class on the element has no link color above it', () async {
     final out = await _page(
-      Link(
-        href: const RouteUrl('/a'),
+      const Link(
+        href: RouteUrl('/a'),
         child: html.span([Widget.text('A')], classes: 'cat-chip'),
       ),
     );

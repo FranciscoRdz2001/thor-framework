@@ -23,9 +23,7 @@ String _classOf(String html, String tag) {
   final classes = RegExp('<$tag class="([^"]+)"').firstMatch(html)![1]!;
   return [
     for (final cls in classes.split(' '))
-      RegExp(
-        '\\.$cls\\{([^}]*)\\}',
-      ).firstMatch(html)![1]!.replaceAll(' ', ''),
+      RegExp('\\.$cls\\{([^}]*)\\}').firstMatch(html)![1]!.replaceAll(' ', ''),
   ].join(';');
 }
 
