@@ -511,19 +511,21 @@ const thorResetLayer = 'thor.reset';
 /// The layer of the app theme (variables on `:root`).
 const thorTokensLayer = 'thor.tokens';
 
-/// Cascade layers of the per-element classes, lowest first (see
+/// Cascade layers of the per-element classes (see
 /// [thorLayerOrder] for the whole order).
 enum ThorLayer {
-  /// Defaults under everything else, the app's classes included (a `Link`'s
-  /// `color: inherit`): it shares the page reset's layer.
-  base('thor.reset'),
-
   /// Widget props (`Container(color: …)`): the defaults.
   props('thor.props'),
 
   /// Explicit overrides (`Responsive`, conditional wrappers) that must beat
   /// the props of the element they wrap.
-  overrides('thor.overrides');
+  overrides('thor.overrides'),
+
+  /// Defaults under everything else, the app's classes included (a `Link`'s
+  /// `color: inherit`): it shares the page reset's layer. (Last in the
+  /// enum, so the content hash of the other classes stays as it was; the
+  /// cascade order is `thorLayerOrder`.)
+  base('thor.reset');
 
   const ThorLayer(this.cssName);
 
