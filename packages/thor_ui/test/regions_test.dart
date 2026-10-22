@@ -106,6 +106,21 @@ void main() {
           ],
         ),
       ),
+      PageRoute<Widget, _Rows>(
+        path: 'infinite',
+        load: rows,
+        build: (s) => Column(
+          children: [
+            LoadMore(
+              id: 'people',
+              next: s.data.next,
+              trigger: LoadMoreTrigger.visible,
+              items: [for (final n in s.data.items) Text('person $n')],
+              child: const Text('More people'),
+            ),
+          ],
+        ),
+      ),
       PageRoute<Widget, void>(
         path: 'shop',
         build: (s) => const Column(
@@ -553,6 +568,7 @@ void main() {
       List<String> urls,
       String steps, {
       Map<String, Object> extra = const {},
+      bool observer = false,
     }) async {
       final h = handler();
       final page = bodyOf((await h.handle(get(path))).text);
@@ -603,6 +619,16 @@ const click = (el, extra = {}) => {
 const words = (n) => n.nodeType === 3 ? [n.data] : n.localName === 'style' ? [] : n.childNodes.flatMap(words);
 const text = (el) => words(el).join(' ').replace(/\\s+/g, ' ').trim();
 const out = {};
+// An observer that fires only when a test says so (`io.fire()`).
+const io = { targets: [] };
+if (input.observer) {
+  globalThis.IntersectionObserver = class {
+    constructor(cb) { io.cb = cb; }
+    observe(t) { io.targets.push(t); }
+    unobserve() {}
+  };
+  io.fire = () => io.cb(io.targets.map((target) => ({ target, isIntersecting: true })));
+}
 eval(input.script);
 (async () => { $steps; console.log(JSON.stringify(out)); })();
 ''';
@@ -613,12 +639,79 @@ eval(input.script);
           'page': page,
           'fragments': fragments,
           'script': lazyScript,
+          'observer': observer,
         }),
       ]);
       expect(result.exitCode, 0, reason: '${result.stderr}');
       return jsonDecode((result.stdout as String).trim().split('\n').last)
           as Map<String, Object?>;
     }
+
+    test('a click on an infinite-scroll control appends in place before the '
+        'observer fires', () async {
+      final out = await run(
+        '/infinite',
+        ['/infinite?cursor=4&thor-piece=people'],
+        r'''
+          const link = D.querySelector('a[rel="next"]');
+          out.observed = io.targets.length;
+          out.before = text(D.body);
+          out.ev = click(link);
+          await tick();
+          out.prevented = out.ev.defaultPrevented;
+          delete out.ev;
+          out.after = text(D.body);
+          out.calls = calls.map((c) => c.join(' '));
+          out.navigated = calls.some((c) => c[0] == 'assign');
+        ''',
+        observer: true,
+      );
+      expect(out['observed'], 1, reason: 'the observer is still waiting');
+      expect(out['prevented'], isTrue);
+      expect(out['before'], isNot(contains('person elena')));
+      expect(out['after'], contains('person elena'));
+      expect(out['after'], contains('person beto'));
+      expect(out['calls'], ['fetch /infinite?cursor=4&thor-piece=people']);
+    }, skip: hasNode ? false : 'node is not installed');
+
+    test(
+      'the observer firing after the click does not ask twice',
+      () async {
+        final out = await run(
+          '/infinite',
+          ['/infinite?cursor=4&thor-piece=people'],
+          r'''
+          click(D.querySelector('a[rel="next"]'));
+          io.fire();
+          await tick();
+          out.calls = calls.map((c) => c.join(' '));
+        ''',
+          observer: true,
+        );
+        expect(out['calls'], ['fetch /infinite?cursor=4&thor-piece=people']);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
+
+    test(
+      'a modified click on the control is left to the browser',
+      () async {
+        final out = await run(
+          '/infinite',
+          ['/infinite?cursor=4&thor-piece=people'],
+          r'''
+          const ev = click(D.querySelector('a[rel="next"]'), { metaKey: true });
+          await tick();
+          out.prevented = ev.defaultPrevented;
+          out.calls = calls.length;
+        ''',
+          observer: true,
+        );
+        expect(out['prevented'], isFalse);
+        expect(out['calls'], 0);
+      },
+      skip: hasNode ? false : 'node is not installed',
+    );
 
     test(
       'a synced region swap hands the engine the states\' JSON',

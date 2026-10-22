@@ -1248,8 +1248,9 @@ enum LoadMoreTrigger {
 /// [child] is the control: a `Text`, a `Container`, a chip (not a button: it
 /// becomes the `<a>`). It is a real link to the same page with `?cursor=…`
 /// (`rel="next"`), so without JavaScript, for a search engine, with a modified
-/// click or if the request fails, the visitor goes to the next page. A
-/// [LoadMoreTrigger.visible] control loads by itself when it nears the
+/// click or if the request fails, the visitor goes to the next page. A plain
+/// click always loads in place, whatever the trigger. A
+/// [LoadMoreTrigger.visible] control also loads by itself when it nears the
 /// screen (infinite scroll).
 ///
 /// [items] and the control are the widget's siblings in its parent: put it in
