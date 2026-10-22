@@ -124,6 +124,16 @@ class HtmlPolicy {
     'th', 'td',
   };
 
+  /// The phrasing tags of [defaultTags]: text-level markup only, no block.
+  /// Content kept to these fits inside a `<p>`, a `<button>` or a `<span>`
+  /// (a block there makes the parser close the container early).
+  static const inlineTags = {
+    'br', 'span', //
+    'strong', 'em', 'b', 'i', 'u', 's', 'del', 'ins', 'mark', 'small', 'sub',
+    'sup', 'abbr',
+    'code', 'a', 'img',
+  };
+
   /// `title`, `lang` and `dir` anywhere; `href`, `src`, `alt` and the table
   /// and list counters where they mean something.
   static const defaultAttributes = <String, Set<String>>{

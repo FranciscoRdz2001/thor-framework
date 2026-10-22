@@ -23,6 +23,39 @@ void main() {
     });
 
     test(
+      'inline: a span with text-level tags only, safe inside a <p>',
+      () async {
+        final html = await renderHtml(
+          const HtmlWidget(
+            '<div><p>One <b>two</b></p><ul><li>three</li></ul></div>'
+            '<a href="/x">l</a><br><script>x</script>',
+            inline: true,
+          ),
+        );
+        expect(html, contains('<span'));
+        expect(html, isNot(contains('<div')));
+        expect(html, isNot(contains('<p>')));
+        expect(html, isNot(contains('<ul')));
+        expect(html, isNot(contains('<li')));
+        expect(html, contains('One <b>two</b>'));
+        expect(html, contains('three'));
+        expect(html, contains('<a href="/x">l</a>'));
+        expect(html, isNot(contains('<script')));
+      },
+    );
+
+    test('inline keeps no block margins in its stylesheet', () async {
+      final doc = await renderDocument(
+        const ThorApp(child: HtmlWidget('<p>a</p>', inline: true)),
+      );
+      final css = RegExp(
+        r'<style[^>]*>([\s\S]*?)</style>',
+      ).allMatches(doc).map((m) => m[1]).join().replaceAll(' ', '');
+      expect(css, isNot(contains('blockquote')));
+      expect(css, contains('--t-primary'));
+    });
+
+    test(
       'styles come from the theme through one class, no inline CSS',
       () async {
         final doc = await renderDocument(
