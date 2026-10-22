@@ -485,7 +485,12 @@ class _ThorElement {
     final css = {'display': 'inline-flex', ...wrap!.baseCss};
     return Widget.element(
       tag: tag,
-      classes: registry?.classFor(css),
+      classes: registry == null
+          ? null
+          : wrap.floorCss.isEmpty
+          ? registry.classFor(css)
+          : '${registry.classFor(css)} '
+                '${registry.classFor(wrap.floorCss, layer: ThorLayer.base)}',
       styles: registry == null ? Styles(raw: css) : null,
       attributes: bindRowMarkers(tagAttributes),
       children: [element],

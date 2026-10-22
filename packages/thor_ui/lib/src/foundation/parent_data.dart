@@ -39,6 +39,7 @@ class WrapData {
   const WrapData({
     this.classes = const [],
     this.baseCss = const {},
+    this.floorCss = const {},
     this.css = const {},
     this.classCss = const {},
     this.conditions = const [],
@@ -97,6 +98,15 @@ class WrapData {
   /// a non-thor child they apply with the wrapper's other declarations.
   final CssDeclarations baseCss;
 
+  /// Defaults in the lowest layer of the cascade (`thor.reset`), under every
+  /// other class: the element's own, and the app's (`Styled(classes:)`,
+  /// `html.span(classes:)`, a `css.components` rule). A `Link`'s
+  /// `color: inherit` goes here: Flutter's `Link` imposes no color, the
+  /// child's style (or its class) decides; the declaration only keeps the
+  /// browser's blue where nothing else sets one. Without a [ThorApp] there
+  /// are no layers, and it applies like [baseCss].
+  final CssDeclarations floorCss;
+
   /// Declarations that win over the element's own props, like Flutter
   /// parent data wins over the child's preferences (`Positioned(width:)`).
   final CssDeclarations css;
@@ -120,6 +130,7 @@ class WrapData {
   WrapData merge(WrapData inner) => WrapData(
     classes: [...classes, ...inner.classes],
     baseCss: mergeCss(inner.baseCss, baseCss),
+    floorCss: mergeCss(inner.floorCss, floorCss),
     css: _composeTransform(
       css,
       inner.css,
@@ -149,6 +160,35 @@ class WrapData {
     closesDialog: closesDialog || inner.closesDialog,
   );
 
+  /// This data with [floorCss] as a class in the lowest layer when the page
+  /// of [context] has a registry, or folded into [baseCss] when it has none.
+  WrapData _withFloorClass(BuildContext context) {
+    if (floorCss.isEmpty) return this;
+    final registry = ThorStyleRegistry.active(context);
+    final floor = registry?.classFor(floorCss, layer: ThorLayer.base);
+    return WrapData(
+      classes: [
+        ...classes,
+        if (floor != null && !classes.contains(floor)) floor,
+      ],
+      baseCss: registry == null ? mergeCss(floorCss, baseCss) : baseCss,
+      // (kept: an element that nests inside the tag gives it its own class)
+      floorCss: floorCss,
+      css: css,
+      classCss: classCss,
+      conditions: conditions,
+      attributes: attributes,
+      fillsWidth: fillsWidth,
+      fixesWidth: fixesWidth,
+      fillsHeight: fillsHeight,
+      debugAttributes: debugAttributes,
+      tag: tag,
+      flexible: flexible,
+      viewTransitionName: viewTransitionName,
+      closesDialog: closesDialog,
+    );
+  }
+
   /// This data with the `commandfor` of the nearest dialog above [context]
   /// when [closesDialog] (a build error when there is none: the button
   /// would silently do nothing).
@@ -165,6 +205,7 @@ class WrapData {
     return WrapData(
       classes: classes,
       baseCss: baseCss,
+      floorCss: floorCss,
       css: css,
       classCss: classCss,
       conditions: conditions,
@@ -201,6 +242,7 @@ class WrapData {
     return WrapData(
       classes: classes,
       baseCss: baseCss,
+      floorCss: floorCss,
       css: css,
       classCss: classCss,
       conditions: conditions,
@@ -307,7 +349,10 @@ abstract class ParentDataWrapper extends StatelessWidget {
     }
     if (outer != null) data = outer.merge(data);
     // A Hero in the chain: claimed once for the whole chain, here.
-    data = data._withNearestDialog(context)._withViewTransitionName(context);
+    data = data
+        ._withNearestDialog(context)
+        ._withViewTransitionName(context)
+        ._withFloorClass(context);
 
     // A thor element below (also through app components): it
     // compiles the data into its own single class.

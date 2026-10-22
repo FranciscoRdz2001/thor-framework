@@ -496,7 +496,8 @@ class ConditionalCss {
 /// - `thor.reset`: the page reset (`thorResetStyles`);
 /// - `thor.tokens`: the app theme (variables on `:root`, `color-scheme`);
 /// - `thor.components`: component recipes (reserved);
-/// - `thor.props` / `thor.overrides`: one class per element ([ThorLayer]).
+/// - `thor.props` / `thor.overrides`: one class per element ([ThorLayer]);
+///   a few wrapper defaults (a `Link`'s color) sit in `thor.reset`.
 ///
 /// App stylesheets are unlayered, so they override every thor layer. Every
 /// page states this order first, so a stylesheet linked before it (a shared
@@ -513,6 +514,10 @@ const thorTokensLayer = 'thor.tokens';
 /// Cascade layers of the per-element classes, lowest first (see
 /// [thorLayerOrder] for the whole order).
 enum ThorLayer {
+  /// Defaults under everything else, the app's classes included (a `Link`'s
+  /// `color: inherit`): it shares the page reset's layer.
+  base('thor.reset'),
+
   /// Widget props (`Container(color: …)`): the defaults.
   props('thor.props'),
 

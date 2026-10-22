@@ -58,8 +58,16 @@ void main() {
       // The <a> itself carries the link reset (else the icon turns blue),
       // as a class, not an inline style.
       expect(html, isNot(contains('style="display')));
-      final cls = RegExp(r'<a class="(t\w+)"').firstMatch(html)!.group(1);
-      expect(head(doc), matches(RegExp('\\.$cls\\{[^}]*color: inherit')));
+      final classes = RegExp(
+        r'<a class="([^"]+)"',
+      ).firstMatch(html)!.group(1)!.split(' ');
+      expect(
+        classes.any(
+          (c) => RegExp('\\.$c\\{[^}]*color: inherit').hasMatch(head(doc)),
+        ),
+        isTrue,
+        reason: head(doc),
+      );
     });
 
     test("the child's color wins over the link reset", () async {
@@ -70,8 +78,9 @@ void main() {
         ),
       );
       final css = head(html);
-      final rule = RegExp(r'\{[^}]*color: inherit[^}]*\}').firstMatch(css);
-      expect(rule, isNull, reason: 'reset merged under the Text color');
+      // The reset sits in the lowest layer only: no class above it has it.
+      final above = css.replaceAll(RegExp(r'@layer thor\.reset\{.*?\}\}'), '');
+      expect(above, isNot(contains('color: inherit')));
       expect(css, contains('#ff0000'));
     });
   });

@@ -17,12 +17,16 @@ Widget _link(TextAlign align) => Link(
 
 Future<String> _page(Widget w) => renderDocument(ThorApp(child: w));
 
-/// The declarations of the class of the first element with [tag].
+/// The declarations of the classes of the first element with [tag] (the
+/// link's own defaults sit in a class of the lowest layer).
 String _classOf(String html, String tag) {
-  final cls = RegExp('<$tag class="([^"]+)"').firstMatch(html)![1]!;
-  return RegExp(
-    '\\.$cls\\{([^}]*)\\}',
-  ).firstMatch(html)![1]!.replaceAll(' ', '');
+  final classes = RegExp('<$tag class="([^"]+)"').firstMatch(html)![1]!;
+  return [
+    for (final cls in classes.split(' '))
+      RegExp(
+        '\\.$cls\\{([^}]*)\\}',
+      ).firstMatch(html)![1]!.replaceAll(' ', ''),
+  ].join(';');
 }
 
 void main() {
