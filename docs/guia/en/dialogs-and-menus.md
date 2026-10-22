@@ -300,6 +300,24 @@ Row(
 `permanentFrom` also works in `Scaffold(drawer:)` and `endDrawer:`. Always
 give the fixed panel a `label:`: it is what the screen reader announces.
 
+### Bottom sheet on the phone
+
+`Drawer(sheetBelow:)` makes the open drawer a bottom sheet below the given
+breakpoint: full width, rounded top corners and a grab bar, sliding up like a
+`ModalBottomSheet`. From the breakpoint up it is the side panel as usual. It
+combines with `permanentFrom`: sheet on the phone, side panel in the middle,
+fixed sidebar on wide windows. It is the same subtree and the same `<dialog>`.
+
+```dart
+Drawer(
+  id: 'filters',
+  sheetBelow: WindowSizeClass.medium,   // a bottom sheet on the phone
+  permanentFrom: WindowSizeClass.expanded,
+  label: 'Filters',
+  child: Filters(),
+)
+```
+
 ## Popover and menus
 
 `Popover` shows any content next to its button. `PopupMenuButton` is

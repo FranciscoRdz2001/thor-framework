@@ -8036,11 +8036,12 @@ thor_ui	Drawer.controller	DialogController? controller
 thor_ui	Drawer.id	String? id
 thor_ui	Drawer.initiallyOpen	bool initiallyOpen
 thor_ui	Drawer.label	String? label
-thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, bool initiallyOpen = false, bool showClose = false, String? closeLabel})
+thor_ui	Drawer.new	Drawer({Key? key, String? id, required Widget child, DrawerSide? side, double? width, Color? backgroundColor, String? label, bool closeOnNavigate = true, DialogController? controller, EdgeInsetsGeometry padding = const EdgeInsets.all(16), WindowSizeClass? permanentFrom, double? permanentWidth, EdgeInsetsGeometry? permanentPadding, WindowSizeClass? sheetBelow, bool initiallyOpen = false, bool showClose = false, String? closeLabel})
 thor_ui	Drawer.padding	EdgeInsetsGeometry padding
 thor_ui	Drawer.permanentFrom	WindowSizeClass? permanentFrom
 thor_ui	Drawer.permanentPadding	EdgeInsetsGeometry? permanentPadding
 thor_ui	Drawer.permanentWidth	double? permanentWidth
+thor_ui	Drawer.sheetBelow	WindowSizeClass? sheetBelow
 thor_ui	Drawer.showClose	bool showClose
 thor_ui	Drawer.side	DrawerSide? side
 thor_ui	Drawer.width	double? width

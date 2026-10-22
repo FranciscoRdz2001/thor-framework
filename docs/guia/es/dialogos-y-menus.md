@@ -301,6 +301,25 @@ Row(
 `permanentFrom` también sirve en `Scaffold(drawer:)` y `endDrawer:`. Da
 siempre un `label:` al panel fijo: es lo que anuncia el lector de pantalla.
 
+### Hoja inferior en el teléfono
+
+`Drawer(sheetBelow:)` hace que el cajón abierto sea una hoja inferior debajo
+del breakpoint indicado: ancho completo, esquinas superiores redondeadas y una
+barra de agarre, que sube como un `ModalBottomSheet`. Desde el breakpoint es el
+panel lateral de siempre. Se combina con `permanentFrom`: hoja en el teléfono,
+panel lateral en el medio, barra fija en pantallas anchas. Es el mismo subárbol
+y el mismo `<dialog>`.
+
+```dart
+Drawer(
+  id: 'filters',
+  sheetBelow: WindowSizeClass.medium,   // a bottom sheet on the phone
+  permanentFrom: WindowSizeClass.expanded,
+  label: 'Filters',
+  child: Filters(),
+)
+```
+
 ## Popover y menús
 
 `Popover` muestra cualquier contenido junto a su botón. `PopupMenuButton` es

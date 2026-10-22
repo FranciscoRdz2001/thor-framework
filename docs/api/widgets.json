@@ -4199,7 +4199,7 @@
   "constructors": [
    {
     "name": "Drawer",
-    "signature": "Drawer({\n  Key? key,\n  String? id,\n  required Widget child,\n  DrawerSide? side,\n  double? width,\n  Color? backgroundColor,\n  String? label,\n  bool closeOnNavigate = true,\n  DialogController? controller,\n  EdgeInsetsGeometry padding = const EdgeInsets.all(16),\n  WindowSizeClass? permanentFrom,\n  double? permanentWidth,\n  EdgeInsetsGeometry? permanentPadding,\n  bool initiallyOpen = false,\n  bool showClose = false,\n  String? closeLabel,\n})",
+    "signature": "Drawer({\n  Key? key,\n  String? id,\n  required Widget child,\n  DrawerSide? side,\n  double? width,\n  Color? backgroundColor,\n  String? label,\n  bool closeOnNavigate = true,\n  DialogController? controller,\n  EdgeInsetsGeometry padding = const EdgeInsets.all(16),\n  WindowSizeClass? permanentFrom,\n  double? permanentWidth,\n  EdgeInsetsGeometry? permanentPadding,\n  WindowSizeClass? sheetBelow,\n  bool initiallyOpen = false,\n  bool showClose = false,\n  String? closeLabel,\n})",
     "summary": "Creates a drawer.",
     "params": [
      {
@@ -4285,6 +4285,13 @@
       "required": false,
       "default": null,
       "doc": "[padding] of the inline panel when it differs from the modal's. Default: [padding]."
+     },
+     {
+      "name": "sheetBelow",
+      "type": "WindowSizeClass?",
+      "required": false,
+      "default": null,
+      "doc": "Below this breakpoint the open drawer is a bottom sheet instead of a side panel: full width, anchored to the bottom, rounded top corners (28 px, like `ModalBottomSheet`) and a grab bar, sliding up. From the breakpoint up it is the side panel (or the inline one with [permanentFrom]). One `<dialog>` and one subtree: a filter list is written once and is a sheet on a phone."
      },
      {
       "name": "initiallyOpen",

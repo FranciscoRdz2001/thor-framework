@@ -380,6 +380,65 @@ void main() {
     });
   });
 
+  group('Drawer(sheetBelow:)', () {
+    Future<String> css(Widget w) async => _head(await _page(w));
+
+    test('below the breakpoint it is a bottom sheet with a grab bar', () async {
+      final html = await _page(
+        const Drawer(
+          sheetBelow: WindowSizeClass.medium,
+          child: Text('filters'),
+        ),
+      );
+      final c = _head(html);
+      expect(
+        RegExp(
+          r'@media screen and \(max-width: 599\.98px\)\{\.t\w+\{[^}]*'
+          r'margin: auto auto 0[^}]*width: 100%[^}]*'
+          r'border-radius: 28px 28px 0 0[^}]*translate: 0 100%',
+        ).hasMatch(c),
+        isTrue,
+        reason: c,
+      );
+      expect(c, contains(r'@starting-style{.'));
+      expect(c, contains(r'[open]{translate: 0 100%}}'));
+      expect(c, contains(r'[open]{translate: 0 0}'));
+      // The grab bar is there and goes away from the breakpoint up.
+      expect(html, contains('aria-hidden="true"'));
+      expect(
+        RegExp(
+          r'@media screen and \(min-width: 600px\)\{\.t\w+\{display: none\}',
+        ).hasMatch(c),
+        isTrue,
+        reason: c,
+      );
+    });
+
+    test('a plain drawer has no sheet rules', () async {
+      final c = await css(const Drawer(child: Text('x')));
+      expect(c, isNot(contains('max-width: 599.98px')));
+      expect(c, isNot(contains('border-radius: 28px 28px 0 0')));
+    });
+
+    test('combines with permanentFrom: sheet, side modal, inline', () async {
+      final html = await _page(
+        const Row(
+          children: [
+            Drawer(
+              sheetBelow: WindowSizeClass.medium,
+              permanentFrom: WindowSizeClass.expanded,
+              child: Text('x'),
+            ),
+          ],
+        ),
+      );
+      expect('<dialog'.allMatches(html), hasLength(1));
+      final c = _head(html);
+      expect(c, contains('max-width: 599.98px'));
+      expect(c, contains('min-width: 840px'));
+    });
+  });
+
   group('Drawer(permanentFrom:)', () {
     String dialog(String html) => RegExp('<dialog[^>]*>').firstMatch(html)![0]!;
 
