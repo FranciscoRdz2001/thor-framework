@@ -1455,6 +1455,72 @@ globalThis.queueMicrotask = (f) => f();
     expect(out['afterTab'], ['x,w', 'q']);
   });
 
+  test('state(localScope:) of a late scope field, long and short names, '
+      'against a storage that is not called `store`', () async {
+    const source = '''
+$_header
+class CartState extends ThorState {
+  late final store = state('shop-a');
+  late final saved = state<List<String>>(const [], local: 'cart', localScope: store);
+
+  String label() => saved.value.join(',');
+  void add(String s) => saved.value = [...saved.value, s];
+}
+
+class OtherShopState extends ThorState {
+  late final store = state('shop-b');
+  late final saved = state<List<String>>(const [], local: 'cart', localScope: store);
+
+  String label() => saved.value.join(',');
+}
+''';
+    for (final short in [false, true]) {
+      final js = await _translate(source, shortNames: short);
+      if (!_node) return markTestSkipped('node is not installed');
+      final out = _run(
+        js,
+        r'''
+const run = () => { for (const f of effects) f(); };
+const b = make('OtherShopState');
+out.a = S.label();
+out.b = b.label();
+S.add('w'); run();
+frames.splice(0).forEach((f) => f());
+out.writes = writes.splice(0);
+// A reload: a new state over the storage the page left.
+out.reloaded = make('CartState').label();
+''',
+        head: r'''
+const writes = [];
+const data = new Map([['thor-s.cart:shop-a', '["x"]'], ['thor-s.cart:shop-b', '["y","z"]']]);
+const fakeStorage = {
+  get length() { return data.size; },
+  key: (i) => [...data.keys()][i],
+  getItem: (k) => (data.has(k) ? data.get(k) : null),
+  setItem: (k, v) => { writes.push(`${k}=${v}`); data.set(k, v); },
+};
+const effects = [], frames = [], listeners = {};
+globalThis.localStorage = fakeStorage;
+globalThis.document = { visibilityState: 'visible', addEventListener() {} };
+globalThis.requestAnimationFrame = (f) => frames.push(f);
+globalThis.addEventListener = (t, f) => (listeners[t] ||= []).push(f);
+''',
+        pre: r'''
+thor.effect = (fn) => { effects.push(fn); fn(); };
+globalThis.queueMicrotask = (f) => f();
+''',
+      );
+      expect(out['a'], 'x', reason: 'short: $short');
+      expect(out['b'], 'y,z', reason: 'short: $short');
+      expect(
+        (out['writes']! as List).where((w) => (w as String).contains('cart')),
+        ['thor-s.cart:shop-a=["x","w"]'],
+        reason: 'short: $short',
+      );
+      expect(out['reloaded'], 'x,w', reason: 'short: $short');
+    }
+  });
+
   test('state(localScope:) needs local: and a field made before it', () async {
     final errors = await _errors('''
 $_header
