@@ -288,6 +288,34 @@ final styles = css.states([
 ]);
 ```
 
+A rule nested in another is a descendant: inside `css('.mb', [...])`,
+`css('.row')` writes `.mb .row` (specificity 0,2,0). A breakpoint for it
+written *outside* the parent (`css.minWidth(480, [css('.row')...])`) writes
+`.row` (0,1,0) and loses. Put the media query inside the same parent, so the
+selector is the same and the later rule wins at its width:
+
+```dart no-check
+css('.mb', [
+  css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 8))),
+  css.minWidth(480, [
+    css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 10))),
+  ]),
+  WindowSizeClass.large.media([
+    css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 12))),
+  ]),
+]),
+```
+
+Two classes on one element, one from a shared reset (a `.ctl` that clears
+`padding`) and one from your component (`.ctl.own` or `.own` with its
+`padding`), compete by specificity and then by *order*. In the same layer
+(`css.components`) with the same specificity, the rule listed later in
+`styles:` wins, so list the reset before the components that use it. A rule
+listed twice is written once, in its first place. A widget's own props
+(`thor.props`) are above `css.components`; unlayered rules are above all.
+If the order can't be arranged, make the selector heavier
+(`.ctl.own`) instead of dropping the reset class.
+
 ### Stylesheets by level
 
 Each stylesheet belongs to a level (theme, components, app, module or page);

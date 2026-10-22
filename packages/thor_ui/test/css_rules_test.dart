@@ -95,6 +95,38 @@ void main() {
     }
   });
 
+  group('breakpoint overrides of a nested rule', () {
+    // `.mb .row` (0,2,0) beats a top-level `.row` (0,1,0) in a media query:
+    // the override goes inside the same parent to have the same weight.
+    test('a media query nested in the parent writes the same selector', () {
+      final css1 = css('.mb', [
+        css('.row').styles(raw: {'p': '8px'}),
+        css.minWidth(480, [
+          css('.row').styles(raw: {'p': '10px'}),
+        ]),
+        WindowSizeClass.large.media([
+          css('.row').styles(raw: {'p': '12px'}),
+        ]),
+      ]).toCss();
+      expect(css1, contains('.mb .row {'));
+      final medias = css1.split('@media').skip(1).toList();
+      expect(medias, hasLength(2));
+      for (final m in medias) {
+        expect(m, contains('.mb .row {'));
+      }
+      // Same selector, later in the sheet: the override wins at its width.
+      expect(css1.lastIndexOf('p: 12px'), greaterThan(css1.indexOf('p: 8px')));
+    });
+
+    test('outside the parent the media rule is lighter', () {
+      final out = css.minWidth(480, [
+        css('.row').styles(raw: {'p': '10px'}),
+      ]);
+      expect(out.toCss(), contains('  .row {'));
+      expect(out.toCss(), isNot(contains('.mb')));
+    });
+  });
+
   group('& resolution', () {
     test('a list parent: every item gets the child, none escapes', () {
       expect(resolveSelector('&:hover', '.a, .b'), '.a:hover, .b:hover');
@@ -233,6 +265,29 @@ void main() {
       final sheet = renderStyleRules([a, b, a]);
       expect(RegExp(r'\.a \{').allMatches(sheet), hasLength(1));
       expect(sheet.indexOf('.a {'), lessThan(sheet.indexOf('.b {')));
+    });
+
+    test('same layer, same specificity: the rule listed later wins', () {
+      // A kit's control reset and a module's class on the same element:
+      // both in thor.components, so the order of the list decides.
+      final reset = css.components([
+        css('.ctl').styles(raw: {'padding': '0'}),
+      ]);
+      final own = css.components([
+        css('.own').styles(raw: {'padding': '8px'}),
+      ]);
+      final sheet = renderStyleRules([reset, own]);
+      expect(sheet.indexOf('.own {'), greaterThan(sheet.indexOf('.ctl {')));
+      final reversed = renderStyleRules([own, reset]);
+      expect(reversed.indexOf('.own {'), lessThan(reversed.indexOf('.ctl {')));
+      // A compound selector is heavier, whatever the order.
+      final heavy = renderStyleRules([
+        css.components([
+          css('.ctl.own').styles(raw: {'padding': '8px'}),
+        ]),
+        reset,
+      ]);
+      expect(heavy, contains('.ctl.own {'));
     });
 
     test('equal rules built twice are both kept (identity, not content)', () {

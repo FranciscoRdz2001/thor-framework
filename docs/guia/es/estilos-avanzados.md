@@ -289,6 +289,34 @@ final styles = css.states([
 ]);
 ```
 
+Una regla anidada en otra es un descendiente: dentro de `css('.mb', [...])`,
+`css('.row')` escribe `.mb .row` (especificidad 0,2,0). Un breakpoint
+escrito *fuera* del padre (`css.minWidth(480, [css('.row')...])`) escribe
+`.row` (0,1,0) y pierde. Pon la media query dentro del mismo padre: el
+selector es el mismo y gana la regla posterior a su ancho:
+
+```dart no-check
+css('.mb', [
+  css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 8))),
+  css.minWidth(480, [
+    css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 10))),
+  ]),
+  WindowSizeClass.large.media([
+    css('.row').props(const StyleProps(padding: EdgeInsets.symmetric(vertical: 12))),
+  ]),
+]),
+```
+
+Dos clases en un elemento, una de un reset compartido (un `.ctl` que borra el
+`padding`) y otra de tu componente (`.ctl.propio` o `.propio` con su
+`padding`), compiten por especificidad y luego por *orden*. En la misma capa
+(`css.components`) y con la misma especificidad gana la regla que va después
+en `styles:`: lista el reset antes de los componentes que lo usan. Una regla
+listada dos veces se escribe una vez, en su primer lugar. Los props propios de
+un widget (`thor.props`) están sobre `css.components`; las reglas sin capa,
+sobre todo. Si el orden no se puede acomodar, sube la especificidad del
+selector (`.ctl.propio`) en vez de quitar la clase del reset.
+
 ### Hojas de estilo por nivel
 
 Cada hoja pertenece a un nivel (tema, componentes, app, módulo o página);
