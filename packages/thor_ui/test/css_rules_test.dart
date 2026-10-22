@@ -267,6 +267,29 @@ void main() {
       expect(sheet.indexOf('.a {'), lessThan(sheet.indexOf('.b {')));
     });
 
+    test('same layer, same specificity: the rule listed later wins', () {
+      // A kit's control reset and a module's class on the same element:
+      // both in thor.components, so the order of the list decides.
+      final reset = css.components([
+        css('.ctl').styles(raw: {'padding': '0'}),
+      ]);
+      final own = css.components([
+        css('.own').styles(raw: {'padding': '8px'}),
+      ]);
+      final sheet = renderStyleRules([reset, own]);
+      expect(sheet.indexOf('.own {'), greaterThan(sheet.indexOf('.ctl {')));
+      final reversed = renderStyleRules([own, reset]);
+      expect(reversed.indexOf('.own {'), lessThan(reversed.indexOf('.ctl {')));
+      // A compound selector is heavier, whatever the order.
+      final heavy = renderStyleRules([
+        css.components([
+          css('.ctl.own').styles(raw: {'padding': '8px'}),
+        ]),
+        reset,
+      ]);
+      expect(heavy, contains('.ctl.own {'));
+    });
+
     test('equal rules built twice are both kept (identity, not content)', () {
       final sheet = renderStyleRules([
         css('.a').styles(raw: {'x': '1'}),

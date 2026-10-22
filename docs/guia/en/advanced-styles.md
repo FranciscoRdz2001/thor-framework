@@ -306,6 +306,16 @@ css('.mb', [
 ]),
 ```
 
+Two classes on one element, one from a shared reset (a `.ctl` that clears
+`padding`) and one from your component (`.ctl.own` or `.own` with its
+`padding`), compete by specificity and then by *order*. In the same layer
+(`css.components`) with the same specificity, the rule listed later in
+`styles:` wins, so list the reset before the components that use it. A rule
+listed twice is written once, in its first place. A widget's own props
+(`thor.props`) are above `css.components`; unlayered rules are above all.
+If the order can't be arranged, make the selector heavier
+(`.ctl.own`) instead of dropping the reset class.
+
 ### Stylesheets by level
 
 Each stylesheet belongs to a level (theme, components, app, module or page);
