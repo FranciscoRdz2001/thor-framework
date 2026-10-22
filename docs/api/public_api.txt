@@ -19578,6 +19578,7 @@ thor_ui	SizedBox.expand	SizedBox.expand({Key? key, Widget? child})
 thor_ui	SizedBox.fillsWidth	bool get fillsWidth
 thor_ui	SizedBox.height	double? height
 thor_ui	SizedBox.heightLength	Length? heightLength
+thor_ui	SizedBox.isEmptyShrink	bool get isEmptyShrink
 thor_ui	SizedBox.new	SizedBox({Key? key, double? width, double? height, Length? widthLength, Length? heightLength, Widget? child})
 thor_ui	SizedBox.shrink	SizedBox.shrink({Key? key, Widget? child})
 thor_ui	SizedBox.square	SizedBox.square({Key? key, double? dimension, Widget? child})
